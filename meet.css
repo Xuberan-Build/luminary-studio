@@ -1,0 +1,354 @@
+/* Global Styles */
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: #2C003E; /* Dark Purple */
+    color: #B399FF; /* Light Purple */
+    margin: 0;
+    padding: 0;
+}
+
+/* Navigation Styles */
+nav {
+    background-color: #5D3FD3; /* Medium Purple */
+    padding: 1em;
+    position: fixed;
+    height: auto;
+    width: 100%;
+    z-index: 100;
+}
+
+nav ul {
+    list-style: none;
+    display: flex;
+    justify-content: center;
+    margin: 0;
+    padding: 0;
+}
+
+nav ul li {
+    margin: 0 1em;
+}
+
+nav ul li a {
+    text-decoration: none;
+    color: #cebeff; /* Light Purple */
+    font-family: 'Bodoni Moda', serif;
+}
+
+/* General section styling */
+section {
+    background-color: #030048;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 75vh;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 9rem;
+    z-index: 0;
+    border: 3px solid #18c6f6;
+    overflow: visible; /* Ensure overflow is visible */
+}
+
+/* Flex container styling */
+.section-works__content, .section-values__content, .section-meet__content {
+    display: flex;
+    position: relative;
+    overflow: visible;
+    flex-direction: column; /* Stack elements vertically */
+    justify-content: start; /* Center elements vertically */
+    align-items: center; /* Center elements horizontally */
+    height: 100vh;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0; /* Remove padding for alignment */
+    background-color: #030048; /* Background color */
+    border: 3px solid #16a1c8; /* Border for visual reference */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+}
+
+/*.section-meet__content */
+.section-meet__content {
+    margin-top: 42px;
+    left: 0;
+}
+.section-meet__header {
+    display: flex;
+    justify-content: center; /* Center the header content horizontally */
+    align-items: center; /* Center the header content vertically */
+    width: 100%;
+    padding: 20px; /* Add padding around the header */
+    margin-top: 2.7em;
+    color: white; /* Text color for the header */
+    border: 3px solid red;
+    align-content: start;
+    z-index: 3;
+}
+
+.section-meet__title {
+    font-size: 6rem; /* Larger font size for the title */
+    font-weight: bold; /* Bold font weight for the title */
+    margin: 0; /* Remove default margin */
+}
+
+.section-meet__body {
+    display: flex;
+    justify-content: flex-start; /* Align items to the start horizontally */
+    align-items: start; /* Center items vertically */
+    width: 100%;
+    padding: 20px; /* Add padding around the body */
+    margin-top: 3.5em;
+    color: white; /* Text color */
+    z-index: 2;
+}
+
+.section-meet__column {
+    flex: 1; /* Allow columns to grow and fill available space */
+    margin: 10px; /* Add margin around columns */
+    padding-left: 27px;
+    padding-right: 27px;
+    border: 3px solid #c816c5;
+}
+
+.section-meet__text {
+    font-size: 1.5rem; /* Font size for the text */
+    line-height: 1.5; /* Line height for readability */
+    color: white; /* Text color */
+}
+
+.section-meet__image-container {
+    width: 100%; /* Ensure the image container takes up the full width */
+    margin-top: 20px; /* Add some margin to separate it from the text boxes */
+    display: flex;
+    justify-content: center; /* Center the image horizontally within the container */
+}
+
+.section-meet__image {
+    max-width: 100%; /* Ensure the image does not overflow its container */
+    height: auto; /* Maintain the aspect ratio of the image */
+    width: 300px; /* Set a specific width for the thumbnail */
+    max-height: 300px; /* Set a specific height for the thumbnail */
+    margin-top: -85px;
+}
+
+/*.section-works__content */
+.section-works__content {
+    height: 45em;
+}
+.section-works__header {
+    display:flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    padding: 20px;
+    margin-top: -12em;
+    color: white;
+    border: 3px solid red;
+    align-content: start;
+    z-index: 3;
+}
+
+.section-works__body {
+    display: flex;
+    position:relative;
+    flex-direction: column;
+    justify-content: space-between; /* Space the columns evenly from top to bottom */
+    align-items: center; /* Center the columns horizontally */
+    margin-top: 2.7em;
+    margin-left: 25em;
+    margin-right: 25em;
+    height: 100vh;
+    width: 70vw;
+    border: 3px solid rgb(166, 255, 0);
+}
+
+.section-works__title {
+    font-size: 6rem;
+    color: antiquewhite;
+    font-weight: bold;
+    margin: 0;
+    }
+
+
+/* Modal Container Styles */
+.modal-container {
+    position: absolute;
+    width: 72%;
+    height: 36em;
+    padding: 0 1em;
+    border: 2px solid #9686d6;
+    border-radius: 9px;
+    background-color: #8c7ece; /* Match section-projects background */
+    box-sizing: border-box;
+    overflow: hidden; /* Ensure the overlay doesn't exceed the modal bounds */
+}
+
+/* Left Column Styles */
+.modal-column__banner {
+    flex: 1;
+    background-color: #5D3FD3;
+    border-radius: 6px;
+    position: relative;
+    top: 1.5em;
+    z-index: 1;
+    padding: 1em;
+    box-sizing: border-box;
+}
+
+/* Right Column Styles */
+.modal-column__banner2 {
+    flex: 1;
+    background-color: #5D3FD3;
+    position: relative;
+    z-index: 1;
+    padding: 1em;
+    box-sizing: border-box;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 36% 100%);
+}
+
+
+
+/* Styles background grid objects */
+.section-works__full-height {
+    display: flex;
+    position: relative;
+    height: 0.002px;
+    flex-direction: column;
+    justify-content: center;
+    overflow: visible;
+    margin-top: 0em;
+    align-items: center;
+    min-width: 0%;
+    min-height: 0%;
+    visibility: hidden;
+}
+
+.grid__object {
+    position: absolute; /* Ensure all .grid__object elements are positioned relatively */
+    border: 3px solid;
+    box-sizing: border-box; /* Ensure padding and border are included in the width and height */
+    margin: 10px; /* Add margin for spacing between the elements */
+    flex-grow: 0;
+    flex-shrink: 0;
+    z-index: 1;
+}
+
+/* Specific styles for each grid object */
+#top, #low {
+    width: 650px;
+    height: 650px;
+}
+
+#top-mid, #low-mid {
+    width: 500px;
+    height: 500px;
+}
+
+#top {
+    border-color: rgb(102, 21, 21);
+    background-color: #22018d;
+    top: 350px;
+    margin-bottom: 850px;
+}
+
+#top-mid {
+    border-color: rgb(149, 116, 53);
+    background-color: #3c0316;
+    top: 627px;
+    margin-bottom: 650px;
+    z-index: 1;
+}
+
+#low-mid {
+    border-color: rgb(0, 255, 213);
+    background-color: #3c0316;
+    margin-top: 323em;
+    z-index: 1;
+    width: 650px;
+    height: 650px;
+}
+
+#low {
+    border-color: rgb(28, 147, 38);
+    background-color: #190169;
+    margin-top: 1250px;
+    top: 850px;
+    width: 500px;
+    height: 500px;
+    z-index: 2;
+}
+
+/* Section Three */
+/* Section Three */
+/* Section Three */
+.section-values__content {
+    display: flex; /* Use flexbox */
+    height: 60vh;
+    flex-direction: column; /* Ensure children are stacked vertically */
+    align-items: center; /* Center children horizontally */
+    justify-content: center; /* Center children vertically */
+    border-color: rgb(102, 21, 21);
+    background-color: #22018d;
+    margin-top: 350px; /* Adjust based on your needs */
+    margin-bottom: 750px;
+    position: relative; /* Make it a positioning context */
+}
+
+
+.section-values__header {
+    margin-top: 6em;
+    height: auto;
+    width: auto; /* Ensure it takes full width */
+    display: flex;
+    border: 3px solid rgb(183, 21, 21);
+    justify-content: center; /* Center the title horizontally */
+    align-items: center; /* Center the title vertically */
+    position: relative; /* Ensure relative positioning */
+}
+
+.section-values__title {
+    font-size: 6rem;
+    color: antiquewhite;
+    font-weight: bold;
+    margin-bottom: 3em;
+    z-index: 3;
+}
+
+.section-values__body {
+    display: flex; /* Use flexbox for layout */
+    justify-content: space-around; /* Space columns around the container */
+    flex-direction: row;
+    align-items: flex-end; /* Center columns vertically */
+    height: 100%;
+    width: 100%;
+    padding: 20px; /* Add padding around the body */
+    box-sizing: border-box;
+}
+
+.section-values__column {
+    padding: 10px; /* Add padding for content inside columns */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    border: 3px solid red; /* Optional: Add border for visual reference */
+    z-index: 1; /* Ensure it stays in the correct stacking context */
+    width: 45%; /* Adjust width as needed */
+    height: auto; /* Let it grow based on content */
+    margin: 10px; /* Add margin for spacing */
+    position: relative;
+}
+
+#left, #right {
+    width: 45%; /* Adjust width as needed */
+    height: auto; /* Let it grow based on content */
+    flex: 1;
+    margin: 10px;
+    padding: 18px;
+    margin-bottom: 27.5em;
+    border: 3px solid #c816c5;
+}
+
+.section-values__text {
+    color: white;
+    font-size: 1.5rem; /* Font size for the text */
+    line-height: 1.5;
+}
