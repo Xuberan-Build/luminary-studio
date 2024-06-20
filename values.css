@@ -60,6 +60,7 @@ nav ul li a:hover {
     margin-top: 9em;
     padding: 120px 5%;
     background-color: #5D3FD3;
+    background: linear-gradient(to left top, #030048 80%, #2b02b0 85%, #9686d6 95%);
     color: white;
 }
 
@@ -96,7 +97,8 @@ nav ul li a:hover {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    padding: 120px 5%;
+    padding: 3% 5% 0 5%; /* Top, Right, Bottom, Left */
+
     gap: 20px;
 }
 
@@ -130,8 +132,9 @@ nav ul li a:hover {
 /* Form Column */
 .form-column {
     position: sticky;
-    top: 25em; /* Adjust this value as needed */
+    top: 25em;
     width: 35%;
+    background: linear-gradient(to right, #030048 20%, #2b02b0 40%, #9686d6 100%);
     background-color: #5D3FD3;
     padding: 20px;
     border-radius: 8px;

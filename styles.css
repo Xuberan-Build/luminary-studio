@@ -32,19 +32,22 @@ nav ul li a {
     color: #cebeff; /* Light Purple */
     font-family: 'Bodoni Moda', serif;
 }
-
+.hero-section {
+    background-color: #0b000f;
+}
 /* Hero Banner Styles */
 .hero-banner {
     position: relative;
     display: flex;
     justify-content: center;
     align-items: center;
-    /*background: url('https://i.ibb.co/zJqvfzJ/lum-header-reference1.webp') no-repeat center center;*/
+    background: url('https://i.ibb.co/QKQD6zT/lum-header-reference1-transformed.png') no-repeat center center;
+    background-color: #0b000f;
     background-size: cover;
     padding: 5em 1em;
     text-align: center;
-    margin: 20px;
-    height: 66vh;
+    top: 20px;
+    height: 100vh;
     z-index: 2;
 }
 
@@ -184,9 +187,7 @@ nav ul li a {
     width: 25%;
     padding: 10px;
     box-sizing: border-box;
-    border-style: solid;
-    border-color: #FF0000;
-    background-color: rgba(0, 0, 0, 0.5); /* Adding background for visibility */
+    background-color: rgba(0, 0, 0, 0.1); /* Adding background for visibility */
     height: 9rem;
     width: 27rem;
 }
@@ -236,10 +237,28 @@ nav ul li a {
     display: flex;
     justify-content: center;
     align-items: center;
-    border-style: solid;
-    border-color: #FF0000;
+    border: 10px solid transparent;
     border-radius: 50%;
-    z-index: 1; /* Ensure it sits on below other elements */
+    z-index: 1;
+
+/*outward gradient effect */
+ /* Create gradient effect */
+ background: linear-gradient(to right, rgba(93, 63, 211, 0.2), rgba(93, 63, 211, 0));
+ background-clip: border-box; /* Ensure background gradient doesn't bleed into content */
+ overflow: hidden; /* Prevent content overflow */
+}
+
+.center-wrap::before {
+ content: '';
+ position: absolute;
+ top: -10px; /* Position relative to the border width */
+ left: -10px; /* Position relative to the border width */
+ right: -10px; /* Position relative to the border width */
+ bottom: -10px; /* Position relative to the border width */
+ border-radius: 50%;
+ background: radial-gradient(circle, rgba(93, 63, 211, 0.2) 0%, rgba(93, 63, 211, 0) 70%);
+ z-index: -1; /* Ensure it sits behind the content */
+ border: 10px solid rgba(93, 63, 211, 0.2); /* Solid purple border */
 }
 
 .center-image {
@@ -263,7 +282,6 @@ p {
 header::before {
     content: '';
     position: absolute;
-    top: 0;
     left: 0;
     right: 0;
     bottom: 0;
@@ -277,8 +295,9 @@ header > .hero-banner > * {
 }
 
 /* section 2 - Introduction */
-
-/* Blue Circle in Section-Introduction */
+/* section 2 - Introduction */
+/* section 2 - Introduction */
+/* background Circle in Section-Introduction */
 #blue-circle {
     position: absolute;
     top: calc(-33%);
@@ -291,43 +310,6 @@ header > .hero-banner > * {
     box-sizing: border-box;
     background-color: #0b000f; /* Background color */
     box-shadow: 0 15px 30px rgba(0, 0, 0, 0.3); /* Downward shadow with blur */
-    z-index: -2; /* Ensure it stays behind other elements */
-}
-
-/* Infinity Symbol in Section-Introduction */
-#infinity-symbol {
-    position: relative;
-    width: 60em; /* Adjust size as needed */
-    height: 30em; /* Adjust size as needed */
-    margin: auto; /* Center the div */
-    top: -200px; /* Adjust as needed */
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
-
-#infinity-symbol:before,
-#infinity-symbol:after {
-    content: "";
-    position: absolute;
-    top: 50%; /* Center vertically within the container */
-    width: 20em; /* Adjust size as needed to be equal for perfect circles */
-    height: 20em; /* Adjust size as needed to be equal for perfect circles */
-    border: 2px solid blue; /* Blue border */
-    border-radius: 50%; /* Create the curved part of the infinity symbol */
-    box-sizing: border-box;
-    background-color: transparent; /* No fill */
-    transform-origin: center;
-}
-
-#infinity-symbol:before {
-    left: 0; /* Align to the left */
-    transform: translateY(-50%) rotate(-45deg);
-}
-
-#infinity-symbol:after {
-    right: 0; /* Align to the right */
-    transform: translateY(-50%) rotate(45deg);
 }
 
 
@@ -336,8 +318,10 @@ header > .hero-banner > * {
     position: relative;
     margin: 3em;
     padding: 2em;
-    background-color: #2C003E; /* Dark Purple */
-    color: #B399FF; /* Light Purple */
+    /*background-color: #2C003E;  Dark Purple */
+    background-size: cover;
+    background: url('images/untitled_artwork.png') no-repeat center center;
+    color: #0b000f;
     text-align: center;
     z-index: 1;
 }
@@ -446,6 +430,8 @@ header > .hero-banner > * {
     rotate: -36deg;
 }
 
+/* Projects Section Styles */
+/* Projects Section Styles */
 /* Projects Section Styles */
 
 .section-projects__content {
