@@ -1,7 +1,7 @@
 /* Global Styles */
 body {
     font-family: 'Open Sans', sans-serif;
-    background-color: #2C003E; /* Dark Purple */
+    background-color: #0b000f; /* Dark Purple */
     color: #B399FF; /* Light Purple */
     margin: 0;
     padding: 0;
@@ -316,11 +316,10 @@ header > .hero-banner > * {
 /* Introduction Section Styles */
 .section-introduction {
     position: relative;
-    margin: 3em;
     padding: 2em;
-    /*background-color: #2C003E;  Dark Purple */
     background-size: cover;
-    background: url('images/untitled_artwork.png') no-repeat center center;
+    background:linear-gradient(to bottom, #8c7ece .10%, #0b000f 50%, #030048 90%);
+    background-size: 100vw;
     color: #0b000f;
     text-align: center;
     z-index: 1;
@@ -334,6 +333,7 @@ header > .hero-banner > * {
 
 .section-introduction__header {
     margin-bottom: 2em;
+    font-size: 1.5rem;
     z-index: 3;
 }
 
@@ -342,18 +342,17 @@ header > .hero-banner > * {
     z-index: 3;
     color: #B399FF;
     text-align: center;
-    margin-bottom: 2em;
+    margin-bottom: 2rem;
 }
 
 .section-introduction__body {
-   postion: relative;
    height: 300px;
-    gap: 2em;
-    display: flex;
-    justify-content: space-between;
-    gap: 2em;
-    margin-bottom: 2em;
-    z-index: 2;
+   gap: 2em;
+   display: flex;
+   justify-content: space-between;
+   gap: 2em;
+   margin-bottom: 2em;
+   z-index: 2;
 }
 
 .section-introduction__column {
@@ -366,19 +365,17 @@ header > .hero-banner > * {
     margin-left: 9rem;
     top: 10.5em;
     left: -7em;
-    width: 30%; /* Adjust width as needed */
+    width: 30%;
     padding: 10px;
     box-sizing: border-box;
-
     text-align: left;
-     /* Specific styles for the left column */
 }
 
 .section-introduction__column_right {
     position: absolute;
     top: 10.5em;
     right: -7em;
-    width: 30%; /* Adjust width as needed */
+    width: 30%;
     margin-right: 9rem;
     padding: 10px;
     box-sizing: border-box;
@@ -445,6 +442,7 @@ header > .hero-banner > * {
     position: relative;
     padding: 2em;
     height: 66vh;
+    background:linear-gradient(to top, #8c7ece .10%, #0b000f 50%, #030048 90%);
     background-color: #5D3FD3; /* Medium Purple */
     color: #fefcfb; /* Light color */
     text-align: center;
@@ -506,18 +504,22 @@ header > .hero-banner > * {
     width: 72%;
     height: 27em;
     padding: 0 1em;
-    border: 2px solid #9686d6;
+    border: 3px solid rgba(3, 0, 72, 0.5); /* Translucent border */
+    box-shadow: 0 9px 9px rgba(3, 0, 60, 0.7);
     border-radius: 9px;
     transform: translate(-50%, -50%);
+    background: linear-gradient(to bottom, #8c7ece .10%, #0b000f 50%, #030048 90%);
     background-color: #8c7ece; /* Match section-projects background */
     box-sizing: border-box;
-    overflow: hidden; /* Ensure the overlay doesn't exceed the modal bounds */
+    overflow: hidden;
 }
 
 /* Left Column Styles */
 .modal-column__banner {
     flex: 1;
-    background-color: #5D3FD3;
+    background-color: #0b000f;
+    box-shadow: 0 -1.5px 9px rgba(3, 0, 60, 0.7);
+    opacity: .5;
     border-radius: 6px;
     position: relative;
     top: 1.5em;
@@ -529,7 +531,6 @@ header > .hero-banner > * {
 /* Right Column Styles */
 .modal-column__banner2 {
     flex: 1;
-    background-color: #5D3FD3;
     position: relative;
     z-index: 1;
     padding: 1em;
