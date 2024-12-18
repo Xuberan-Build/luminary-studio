@@ -1,10 +1,625 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta http-equiv="refresh" content="0; URL='./home.html'" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hero Section</title>
+  <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <p>If you are not redirected, <a href="./home.html">click here</a>.</p>
+  <div id="flash-overlay"></div>
+  <nav>
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="meet.html">Meet</a></li>
+        <li><a href="values.html">Values</a></li>
+    </ul>
+</nav>
+  <section>
+    <div class="hero-section">
+      <!-- Left column: Floating spaceship -->
+      <div class="hero-left">
+        <div id="ship-container">
+          <img src="https://i.ibb.co/4PRWQnT/ship1.png"
+               alt="space ship"
+               width="500"
+               height="333">
+      </div>
+        <svg
+          id="flight-path"
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 1000 600"
+          style="position: absolute; top: 0; left: 0; visibility: hidden;"
+        >
+          <path
+            id="path"
+            d="M200,100 Q550,200 900,400"
+            fill="none"
+            stroke="#3f8c4f"
+            stroke-width="3"
+            stroke-linecap="round"
+          />
+          <!-- Optional: Start and end points for reference -->
+          <circle cx="200" cy="100" r="4" fill="#2a6135"/>
+          <circle cx="900" cy="400" r="4" fill="#2a6135"/>
+        </svg>
+      </div>
+
+      <!-- Right column: Hero copy -->
+      <div class="hero-right">
+        <h1>Mastering The Art of Creating & Adding Value</h1>
+        <p class="tagline">Co-Creating Asset Vehicles for Scalable Growth.</p>
+        <div class="button-container">
+          <button class="btn right-btn">See Portfolio</button>
+          <button class="btn left-btn">See Experience</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="jobs-section">
+      <div class="left-container">
+        <div class="headline-container">
+          <h2 class="jobs-headline">Strategic Execution That Powers Business Growth</h2>
+        </div>
+        <div class="active-card-container">
+          <!-- Active Card Content -->
+          <div class="active-card" id="card-1">
+            <h3>Optimize Your Marketing Infrastructure</h3>
+            <p>
+              I'll help you rebuild your marketing systems for maximum efficiency and scale. I've delivered 500% business growth and identified $150,000+ in annual cost savings through strategic optimization.
+            </p>
+          </div>
+
+          <div class="active-card" id="card-2">
+            <h3>Maximize Your Customer Value</h3>
+            <p>
+              I'll develop strategies to transform your customer relationships into long-term partnerships. My approach has increased customer lifetime value by 20X through targeted engagement programs.
+            </p>
+          </div>
+
+          <div class="active-card" id="card-3">
+            <h3>Drive Revenue Through Strategic Campaigns</h3>
+            <p>
+              I'll create and execute campaigns that deliver measurable business impact. I've personally generated over $4M in direct sales and $12M in pipeline value across 150+ successful campaigns.
+            </p>
+          </div>
+
+          <div class="active-card" id="card-4">
+            <h3>Execute Your Marketing Vision</h3>
+            <p>
+              I'll help transform your marketing vision into actionable results. My strategic approach consistently achieves 8% month-over-month organic growth while optimizing acquisition costs.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-container">
+        <img src="/Users/luminary-studio/floating-ship-animation/images/Saturn-trans-transformed.png" alt="Saturn" class="saturn-image">
+        <div class="moon-container">
+          <div class="moon" data-card="1">
+            <div class="moon-indicator">
+              <span>Step 1</span>
+            </div>
+          </div>
+          <div class="moon" data-card="2">
+            <div class="moon-indicator">
+              <span>Step 2</span>
+            </div>
+          </div>
+          <div class="moon" data-card="3">
+            <div class="moon-indicator">
+              <span>Step 3</span>
+            </div>
+          </div>
+          <div class="moon" data-card="4">
+            <div class="moon-indicator">
+              <span>Step 4</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="results-section">
+    <div class="stars-container">
+      <div class="stars stars-1"></div>
+      <div class="stars stars-2"></div>
+      <div class="stars stars-3"></div>
+    </div>
+
+    <div class="space-objects">
+      <div class="planet"></div>
+      <div class="spaceship">
+        <svg viewBox="0 0 24 24" width="100%" height="100%">
+          <path fill="#a78bfa" d="M12,2C12,2 8,5 8,12C8,15 9,18 10,20C11,22 12,23 12,23C12,23 13,22 14,20C15,18 16,15 16,12C16,5 12,2 12,2Z"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="results-headline-container">
+      <h2 class="results-headline">Results of Execution</h2>
+    </div>
+      <section class="result-section">
+        <div class="result">
+          <h3>$4M+ in Direct Sales</h3>
+          <p>Generated $4 million in direct sales and $12 million in pipeline activity with optimized campaigns.</p>
+          <div class="result-glow"></div>
+        </div>
+      </section>
+
+      <section class="result-section">
+        <div class="result">
+          <h3>300% Client Retention</h3>
+          <p>Improved client retention through strategic frameworks, achieving consistent portfolio growth.</p>
+          <div class="result-glow"></div>
+        </div>
+      </section>
+
+      <section class="result-section">
+        <div class="result">
+          <h3>8X Lead Growth</h3>
+          <p>Drove an average of 8X increase in leads and 10X ROI for Client Portfolio through targeted strategies.</p>
+          <div class="result-glow"></div>
+        </div>
+      </section>
+    </div>
+  </section>
+
+ <!-- Experience Modal -->
+<div id="experienceModal" class="modal">
+  <div class="modal-content">
+    <span class="close-button">&times;</span>
+    <div class="modal-header">
+      <h2>Professional Experience</h2>
+    </div>
+    <div class="modal-body">
+      <div class="experience-item">
+        <h3>Director of Digital Marketing</h3>
+        <p class="company">Locus Digital</p>
+        <p class="duration">2023 - 2024</p>
+        <ul>
+          <li>Led end-to-end transformation of marketing service delivery, resulting in 300% improvement in client retention and 20X increase in customer lifetime value</li>
+          <li>Developed and executed 150+ integrated B2B marketing campaigns across SEO, email, and PPC channels</li>
+          <li>Restructured service offerings and implemented new retention model, generating 10X growth in content engagement</li>
+        </ul>
+      </div>
+
+      <div class="experience-item">
+        <h3>Managing Partner Revenue Growth</h3>
+        <p class="company">Xuberan Digital</p>
+        <p class="duration">2022 - 2024</p>
+        <ul>
+          <li>Architected comprehensive growth infrastructure delivering $150,000 in operational efficiency gains</li>
+          <li>Established scalable customer acquisition framework achieving 80% year-over-year growth</li>
+          <li>Developed cross-functional revenue acceleration strategies driving 20% overall business growth</li>
+        </ul>
+      </div>
+
+      <div class="experience-item">
+        <h3>Sales & Marketing Operations Director</h3>
+        <p class="company">Sunday Roast</p>
+        <p class="duration">2022 - 2024</p>
+        <ul>
+          <li>Spearheaded company-wide product expansion strategy, resulting in 80% increase in pipeline opportunities</li>
+          <li>Built and executed integrated multi-channel marketing campaigns maintaining consistent 50% ROI</li>
+          <li>Implemented enterprise-level marketing systems enhancing market presence and scalability</li>
+        </ul>
+      </div>
+
+      <div class="experience-item">
+        <h3>Director of SEO</h3>
+        <p class="company">Meridian Media Works</p>
+        <p class="duration">April 2021 - 2023</p>
+        <ul>
+          <li>Generated over $4 million in direct sales and $12 million in pipeline activity</li>
+          <li>Developed comprehensive workflow systems improving efficiency across marketing operations</li>
+          <li>Achieved consistent 8% month-over-month traffic growth and 3% conversion rate improvement</li>
+        </ul>
+      </div>
+
+      <div class="experience-item">
+        <h3>Agency Growth Marketing Specialist</h3>
+        <p class="company">Fannit</p>
+        <p class="duration">2019 - 2020</p>
+        <ul>
+          <li>Led agency growth initiatives resulting in 10% client base expansion</li>
+          <li>Implemented strategic marketing automation systems enhancing operational efficiency</li>
+          <li>Developed targeted lead generation campaigns increasing agency visibility</li>
+        </ul>
+      </div>
+
+      <div class="experience-item">
+        <h3>Digital Marketer & SEO Strategist</h3>
+        <p class="company">Self-Employed</p>
+        <p class="duration">2019 - 2022</p>
+        <ul>
+          <li>Created scalable marketing systems maintaining 60% profit margins</li>
+          <li>Achieved expert-vetted status (top 1%) on Upwork through consistent high-performance delivery</li>
+          <li>Developed high-ticket service packages achieving minimum 50% profit margins per client</li>
+        </ul>
+      </div>
+      <div class="button-container">
+        <button class="btn right-btn">Download PDF Copy</button>
+    </div>
+  </div>
+</div>
+
+
+  <section>
+    <div class="jobs-section">
+      <div class="left-container">
+        <div class="headline-container">
+          <h2 class="jobs-headline">Strategic Execution That Powers Business Growth</h2>
+        </div>
+        <div class="active-card-container">
+          <!-- Active Card Content -->
+          <div class="active-card" id="card-1">
+            <h3>Optimize Your Marketing Infrastructure</h3>
+            <p>
+              I'll help you rebuild your marketing systems for maximum efficiency and scale. I've delivered 500% business growth and identified $150,000+ in annual cost savings through strategic optimization.
+            </p>
+          </div>
+
+          <div class="active-card" id="card-2">
+            <h3>Maximize Your Customer Value</h3>
+            <p>
+              I'll develop strategies to transform your customer relationships into long-term partnerships. My approach has increased customer lifetime value by 20X through targeted engagement programs.
+            </p>
+          </div>
+
+          <div class="active-card" id="card-3">
+            <h3>Drive Revenue Through Strategic Campaigns</h3>
+            <p>
+              I'll create and execute campaigns that deliver measurable business impact. I've personally generated over $4M in direct sales and $12M in pipeline value across 150+ successful campaigns.
+            </p>
+          </div>
+
+          <div class="active-card" id="card-4">
+            <h3>Execute Your Marketing Vision</h3>
+            <p>
+              I'll help transform your marketing vision into actionable results. My strategic approach consistently achieves 8% month-over-month organic growth while optimizing acquisition costs.
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <div class="right-container">
+        <img src="/Users/luminary-studio/floating-ship-animation/images/Saturn-trans-transformed.png" alt="Saturn" class="saturn-image">
+        <div class="moon-container">
+          <div class="moon" data-card="1">
+            <div class="moon-indicator">
+              <span>Step 1</span>
+            </div>
+          </div>
+          <div class="moon" data-card="2">
+            <div class="moon-indicator">
+              <span>Step 2</span>
+            </div>
+          </div>
+          <div class="moon" data-card="3">
+            <div class="moon-indicator">
+              <span>Step 3</span>
+            </div>
+          </div>
+          <div class="moon" data-card="4">
+            <div class="moon-indicator">
+              <span>Step 4</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="results-section">
+    <div class="stars-container">
+      <div class="stars stars-1"></div>
+      <div class="stars stars-2"></div>
+      <div class="stars stars-3"></div>
+    </div>
+
+    <div class="space-objects">
+      <div class="planet"></div>
+      <div class="spaceship">
+        <svg viewBox="0 0 24 24" width="100%" height="100%">
+          <path fill="#a78bfa" d="M12,2C12,2 8,5 8,12C8,15 9,18 10,20C11,22 12,23 12,23C12,23 13,22 14,20C15,18 16,15 16,12C16,5 12,2 12,2Z"/>
+        </svg>
+      </div>
+    </div>
+
+    <div class="results-headline-container">
+      <h2 class="results-headline">Results of Execution</h2>
+    </div>
+      <section class="result-section">
+        <div class="result">
+          <h3>$4M+ in Direct Sales</h3>
+          <p>Generated $4 million in direct sales and $12 million in pipeline activity with optimized campaigns.</p>
+          <div class="result-glow"></div>
+        </div>
+      </section>
+
+      <section class="result-section">
+        <div class="result">
+          <h3>300% Client Retention</h3>
+          <p>Improved client retention through strategic frameworks, achieving consistent portfolio growth.</p>
+          <div class="result-glow"></div>
+        </div>
+      </section>
+
+      <section class="result-section">
+        <div class="result">
+          <h3>8X Lead Growth</h3>
+          <p>Drove an average of 8X increase in leads and 10X ROI for Client Portfolio through targeted strategies.</p>
+          <div class="result-glow"></div>
+        </div>
+      </section>
+    </div>
+  </section>
+
+  <!-- Portfolio Modal -->
+<div id="portfolioModal" class="modal">
+  <div class="modal-content">
+    <span class="close-button">&times;</span>
+    <div class="modal-header">
+      <h2>SEO Portfolio</h2>
+    </div>
+    <div class="modal-body">
+      <div class="portfolio-grid">
+        <!-- Locus Digital Case Study -->
+        <div class="portfolio-item">
+          <div class="portfolio-card">
+
+            <h3>Digital Marketing Transformation</h3>
+            <p>Transformed Locus Digital's service delivery through strategic optimization and process improvements, resulting in 300% improvement in customer retention and 20X increase in customer lifetime value.</p>
+            <button class="btn">View Case Study</button>
+          </div>
+        </div>
+
+        <!-- Amcon Case Study -->
+        <div class="portfolio-item">
+          <div class="portfolio-card">
+
+            <h3>SEO Visibility Growth</h3>
+            <p>Elevated Amcon's digital presence from zero visibility to 15,900% increase in page visits, achieving a 1,400% boost in leads and $125,000 additional monthly revenue.</p>
+            <button class="btn">View Case Study</button>
+          </div>
+        </div>
+
+        <!-- Resolved Analytics Case Study -->
+        <div class="portfolio-item">
+          <div class="portfolio-card">
+
+            <h3>Technical SEO Optimization</h3>
+            <p>Implemented comprehensive technical SEO framework for Resolved Analytics, doubling conversion rates while maintaining steady traffic growth through strategic content optimization.</p>
+            <button class="btn">View Case Study</button>
+          </div>
+        </div>
+
+        <!-- Swish Dental Case Study -->
+        <div class="portfolio-item">
+          <div class="portfolio-card">
+            <h3>Traffic & Keyword Growth</h3>
+            <p>Increased Swish Dental's monthly traffic from 4,200 to 7,600 visitors while expanding keyword portfolio by 216 new entries through targeted content strategy.</p>
+            <button class="btn">View Case Study</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Locus Digital Case Study Modal -->
+<div id="locusModal" class="case-study-modal">
+  <div class="modal-content">
+    <span class="close-button">&times;</span>
+    <div class="modal-header">
+      <h2>Case Study: Locus Digital</h2>
+    </div>
+    <div class="modal-body">
+      <div class="case-study-grid">
+        <div class="problem-section">
+          <h3>The Problem</h3>
+          <p>Locus Digital struggled with bandwidth and fulfillment, hindering the execution of digital marketing strategies and impacting profitability. The existing "Site Booster Package" lacked focus and efficiency, leading to suboptimal customer retention and limited upsell opportunities.</p>
+        </div>
+
+        <div class="solution-section">
+          <h3>The Solution</h3>
+          <p>Transformed the "Site Booster Package" into the focused "Campaign Booster Package (CBP)." Conducted thorough analysis to streamline services and eliminate inefficiencies. Developed clear product goals to enhance clarity. Implemented advanced tools and processes to improve fulfillment and team productivity.</p>
+        </div>
+
+        <div class="results-section">
+          <h3>Results</h3>
+          <ul>
+            <li>300% improvement in client retention</li>
+            <li>20X increase in customer lifetime value</li>
+            <li>150+ integrated B2B marketing campaigns</li>
+            <li>10X growth in content engagement</li>
+          </ul>
+        </div>
+
+        <div class="testimonial-section">
+          <blockquote>
+            "Austin has been such an amazing Marketing Strategist for our growing company. His organizational skills and professionalism are unmatched"
+          </blockquote>
+          <cite>- Abe Rubarts, Founder & CEO | Locus Digital</cite>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Amcon Case Study Modal -->
+<div id="amconModal" class="case-study-modal">
+  <div class="modal-content">
+    <span class="close-button">&times;</span>
+    <div class="modal-header">
+      <h2>Case Study: Amcon Consultants</h2>
+    </div>
+    <div class="modal-body">
+      <div class="case-study-grid">
+        <div class="problem-section">
+          <h3>The Problem</h3>
+          <p>When Amcon approached me, they faced a common yet challenging problem: their business growth was limited by a reliance on word-of-mouth referrals, and they were virtually invisible in the digital landscape. Even searches for their own brand name failed to bring them up.</p>
+        </div>
+
+        <div class="solution-section">
+          <h3>The Solution</h3>
+          <p>Enhanced their visibility for branded keywords, collaborating with their developer to track progress. By refining their service offerings in partnership with their CEO, I targeted a wider audience, unlocking new revenue opportunities. Optimizing on-page content and crafting compelling copy positioned Amcon to convert leads more effectively.</p>
+        </div>
+
+        <div class="results-section">
+          <h3>Results</h3>
+          <ul>
+            <li>15,900% increase in page visits</li>
+            <li>1,400% increase in leads</li>
+            <li>$125,000 additional monthly revenue</li>
+            <li>Search ranking improved from 60 to 20 in one week</li>
+          </ul>
+        </div>
+
+        <div class="testimonial-section">
+          <blockquote>
+            "Austin was able to bring in incredible growth to my company. With him we saw 5x growth in leads and 10x ROI."
+          </blockquote>
+          <cite>- Sean Pandya, Principal Amcon Consultants</cite>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Resolved Analytics Case Study Modal -->
+<div id="resolvedModal" class="case-study-modal">
+  <div class="modal-content">
+    <span class="close-button">&times;</span>
+    <div class="modal-header">
+      <h2>Case Study: Resolved Analytics</h2>
+    </div>
+    <div class="modal-body">
+      <div class="case-study-grid">
+        <div class="problem-section">
+          <h3>The Problem</h3>
+          <p>Resolved Analytics faced an initial hurdle with their newly built website: blog posts were under-optimized and there was an absence of a robust technical SEO framework. This was impeding website traffic and hindering conversion rates.</p>
+        </div>
+
+        <div class="solution-section">
+          <h3>The Solution</h3>
+          <p>Phase One addressed the technical SEO by implementing canonical tags to resolve duplications and enhancing site navigation with internal linking. Phase Two involved auditing content and refining the strategy, optimizing existing blogs, and producing targeted new articles to bolster traffic and conversions.</p>
+        </div>
+
+        <div class="results-section">
+          <h3>Results</h3>
+          <ul>
+            <li>Doubled conversion rates</li>
+            <li>Significant increase in qualified traffic</li>
+            <li>Improved technical SEO foundation</li>
+            <li>Enhanced content performance metrics</li>
+          </ul>
+        </div>
+
+        <div class="testimonial-section">
+          <blockquote>
+            "The project was a resounding success. Not only did we meet our objectives, but we also learned valuable lessons about the impact of a strong technical SEO foundation on conversion rates." -Stewart Bible
+          </blockquote>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Swish Dental Case Study Modal -->
+<div id="swishModal" class="case-study-modal">
+  <div class="modal-content">
+    <span class="close-button">&times;</span>
+    <div class="modal-header">
+      <h2>Case Study: Swish Dental</h2>
+    </div>
+    <div class="modal-body">
+      <div class="case-study-grid">
+        <div class="problem-section">
+          <h3>The Problem</h3>
+          <p>Swish Dental faced the challenge of stagnant website traffic and a limited organic reach due to an inadequate keyword portfolio. The goal was clear: boost site visits and diversify the range of high-ranking keywords.</p>
+        </div>
+
+        <div class="solution-section">
+          <h3>The Solution</h3>
+          <p>A thorough SEO audit pinpointed crucial enhancements, leading to a dynamic traffic strategy aimed at increasing visitors. Simultaneously, a deliberate keyword expansion plan was set in motion, positioning Swish Dental for improved organic visibility and reach.</p>
+        </div>
+
+        <div class="results-section">
+          <h3>Results</h3>
+          <ul>
+            <li>Monthly visits increased from 4,200 to 7,600</li>
+            <li>Added 216 new keyword rankings</li>
+            <li>Significant improvement in search visibility</li>
+            <li>Sustained organic traffic growth</li>
+          </ul>
+        </div>
+
+        <div class="testimonial-section">
+          <blockquote>
+            "Congrats on Swish. Y'all Murked it"
+          </blockquote>
+          <cite>- Josh Hampson, Founder | HMPSN Studio</cite>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+  <section class="contact-section">
+    <div class="contact-container">
+      <!-- Heading -->
+      <h2 class="contact-headline">Contact</h2>
+
+      <!-- Main Content -->
+      <div class="contact-content">
+        <!-- Left column with image and toggles -->
+        <div class="image-container">
+          <!-- Contact Options moved here -->
+          <div class="contact-options">
+            <div class="circle-option email-toggle active" data-toggle="email">
+              <span>Email</span>
+            </div>
+            <div class="circle-option calendar-toggle" data-toggle="calendar">
+              <span>Book a Call</span>
+            </div>
+          </div>
+          <img class="contact-image" src="https://i.ibb.co/5kBrLSz/Austin-Headshot-cropped-2-transformed-2.png" alt="Austin Headshot">
+        </div>
+
+        <!-- Right Form -->
+        <div class="form-container">
+          <iframe
+            id="contact-iframe"
+            src="https://docs.google.com/forms/d/e/1FAIpQLSfiOL95LteVJpnqd-au0uO1oSAY-lpc_LKqnAOpRb9G2eFhSg/viewform?embedded=true"
+            width="100%"
+            height="100%"
+            frameborder="0"
+            marginheight="0"
+            marginwidth="0"
+          >Loading…</iframe>
+          <iframe
+            id="google-calendar"
+            class="embedded-content"
+            src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ14pSdT57UMffOY9pWiLb0z0b0tu9WUZuJ1q050pXyTC0ADfI3d_DsAf3HjiSs2AlSX-yWs7F5e?gv=true"
+            frameborder="0"
+            style="border: 0; display: none;"
+            width="100%"
+            height="600"
+          ></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+
+  <script src="script.js"></script>
 </body>
 </html>
-<!-- Add an image or other visual element here -->
