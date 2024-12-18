@@ -2,14 +2,14 @@
 body {
     font-family: 'Open Sans', sans-serif;
     background-color: #030048;
-    color: #B399FF; /* Light Purple */
+    color: #B399FF;
     margin: 0;
     padding: 0;
 }
 
 /* Navigation Styles */
 nav {
-    background-color: #5D3FD3; /* Medium Purple */
+    background-color: #5D3FD3;
     padding: 1em;
     position: fixed;
     width: 100%;
@@ -30,7 +30,7 @@ nav ul li {
 
 nav ul li a {
     text-decoration: none;
-    color: #cebeff; /* Light Purple */
+    color: #cebeff;
     font-family: 'Bodoni Moda', serif;
 }
 
@@ -43,83 +43,83 @@ section {
     width: 100%;
     max-width: 1400px;
     margin: 0 auto;
-    padding: 6rem 1rem; /* Adjusted padding for better spacing */
+    padding: 6rem 1rem;
     z-index: 0;
-    overflow: visible; /* Ensure overflow is visible */
+    overflow: visible;
 }
 
-/* Flex container styling */
-.section-works__content, .section-values__content, .section-meet__content {
+/* Section content containers */
+.section-works__content,
+.section-values__content,
+.section-meet__content {
     display: flex;
     position: relative;
-    overflow: visible;
-    flex-direction: column; /* Stack elements vertically */
-    justify-content: start; /* Align items to the start */
-    align-items: center; /* Center elements horizontally */
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
     width: 100%;
     margin: 0 auto;
-    padding: 0; /* Remove padding for alignment */
-    background-color: #030048; /* Background color */
-    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    padding: 0;
+    background-color: #030048;
+    box-sizing: border-box;
+    overflow: visible;
 }
-
-/* Meet Section */
 .section-meet__content {
     margin-top: 3rem;
 }
 
 .section-meet__header {
     display: flex;
-    justify-content: center; /* Center the header content horizontally */
-    align-items: center; /* Center the header content vertically */
+    justify-content: center;
+    align-items: center;
     width: 100%;
     padding: 20px;
-    color: white; /* Text color for the header */
+    color: #fff;
     align-content: start;
     z-index: 3;
 }
 
 .section-meet__title {
-    font-size: 4rem; /* Slightly smaller font size for the title */
-    font-weight: bold; /* Bold font weight for the title */
-    margin: 0; /* Remove default margin */
+    font-size: 4rem;
+    font-weight: 700;
+    margin: 0;
 }
 
 .section-meet__body {
     background: linear-gradient(to left bottom, #030048 50%, #2b02b0 70%, #9686d6 90%);
-    padding: 40px; /* Adjust padding as needed */
+    padding: 40px;
     position: relative;
 }
 
 .section-meet__column {
     position: relative;
-    z-index: 1; /* Ensure text content is above the background */
-    color: #FFFFFF; /* Text color for contrast */
-    padding: 20px; /* Add padding for spacing */
+    z-index: 1;
+    color: #fff;
+    padding: 20px;
 }
 
 .section-meet__text {
-    font-size: 1.25rem; /* Font size for the text */
-    line-height: 1.6; /* Line height for readability */
-    color: white; /* Text color */
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: #fff;
 }
 
 .section-meet__image-container {
     display: flex;
-    width: 100%; /* Ensure the image container takes up the full width */
-    margin-top: 50px; /* Adjust margin to separate it from the text boxes */
-    justify-content: center; /* Center the image horizontally within the container */
+    width: 100%;
+    margin-top: 50px;
+    justify-content: center;
 }
 
 .section-meet__image {
-    max-width: 100%; /* Ensure the image does not overflow its container */
-    height: auto; /* Maintain the aspect ratio of the image */
-    width: 300px; /* Set a specific width for the thumbnail */
-    max-height: 300px; /* Set a specific height for the thumbnail */
+    max-width: 100%;
+    height: auto;
+    width: 300px;
+    max-height: 300px;
     margin-top: -50px;
 }
 
-/* Works Section */
+/* Works Section Base */
 .section-works__content {
     height: 100vh;
     margin-top: 2rem;
@@ -153,17 +153,7 @@ section {
     text-align: center;
 }
 
-.section-works__body {
-    display: flex;
-    position: relative;
-    flex-direction: column;
-    justify-content: space-between; /* Space the columns evenly from top to bottom */
-    align-items: center; /* Center the columns horizontally */
-    margin: 0 auto;
-    width: 80%;
-}
-
-#subheader {
+.section-works__text {
     margin-top: 1rem;
     text-align: center;
     color: antiquewhite;
@@ -171,113 +161,202 @@ section {
 
 .modal-container {
     display: flex;
-    flex-direction: column; /* Stack elements vertically */
-    justify-content: center;
-    align-items: center;
+    flex-direction: column;
     width: 70%;
     padding: 2rem;
     background: linear-gradient(to left bottom, #030048 50%, #2b02b0 70%, #9686d6 90%);
-    border-radius: 9px; /* Satisfying border radius */
+    border-radius: 9px;
     box-sizing: border-box;
-    margin-top: 2rem; /* Adjust margin to position below the header and subheader */
-    height: 66vh; /* Take up about 50% of the viewport height */
+    margin-top: 2rem;
+    height: 66vh;
 }
 
-.modal-column__banner, .modal-column__banner2 {
-    background-color: #5D3FD3;
-    border-radius: 9px; /* Satisfying border radius */
-    padding: 1em;
-    box-sizing: border-box;
-    text-align: center;
-    margin-bottom: 1rem; /* Add margin for spacing */
-    width: 100%; /* Make the banner take full width */
-    height: calc(50% - 2rem); /* Set height to be taller */
-    opacity: 0.48;
-}
-
-.section-works__column {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    width: 100%;
-    height: calc(50% - 2rem); /* Set height to be taller */
-}
-
-.section-works__column > div {
+.modal-column__banner {
     background-color: #5D3FD3;
     border-radius: 9px;
     padding: 1em;
     box-sizing: border-box;
     text-align: center;
-    width: 48%;
-    height: 77%;
-    margin-bottom: 0;
-}
-
-
-/* Styles background grid objects */
-.section-works__full-height {
-    display: flex;
+    margin-bottom: 1rem;
+    width: 100%;
+    height: calc(33% - 2rem);
+    opacity: 0.48;
     position: relative;
+}
+
+.section-works__container {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: calc(67% - 1rem);
+    gap: 2rem;
+}
+
+.modal-column__right {
+    display: flex;
     flex-direction: column;
-    justify-content: center;
-    overflow: visible;
+    gap: 1rem;
+    width: 50%;
+    height: 100%;
+}
+
+.column-row {
+    display: flex;
+    gap: 1rem;
+    height: 50%;
+}
+
+.resume-section {
+    background-color: #5D3FD3;
+    border-radius: 9px;
+    padding: 1em;
+    opacity: 0.48;
+    width: 50%;
+    display: flex;
     align-items: center;
-    min-width: 0%;
-    min-height: 0%;
-    visibility: visible;
+    justify-content: center;
 }
 
-.grid__object {
-    position: absolute; /* Ensure all .grid__object elements are positioned relatively */
-    box-sizing: border-box; /* Ensure padding and border are included in the width and height */
-    margin: 10px; /* Add margin for spacing between the elements */
-    flex-grow: 0;
-    flex-shrink: 0;
-    z-index: 1;
+.view-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 1rem;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Specific styles for each grid object */
-#top, #low {
-    width: 650px;
-    height: 650px;
+.icon-container {
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
 }
 
-#top-mid, #low-mid {
-    width: 500px;
-    height: 500px;
+.view-icon {
+    width: 24px;
+    height: 24px;
+    fill: #fff;
 }
 
-#top-mid {
-    border-color: rgb(149, 116, 53);
-    background-color: #3c0316;
-    top: 627px;
-    margin-bottom: 650px;
-    z-index: 1;
+.content {
+    color: #fff;
+}
+
+.content h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+    background: linear-gradient(135deg, #fff 0%, rgba(255, 255, 255, 0.7) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.content p {
+    margin: 0.5rem 0 0;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+
+.view-button {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.view-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.view-button:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+    .modal-column__right {
+        width: 100%;
+    }
+
+    .content h2 {
+        font-size: 1.25rem;
+    }
+
+    .content p {
+        font-size: 0.85rem;
+    }
+
+    .view-button {
+        padding: 0.6rem 1.2rem;
+    }
+}
+
+.view-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+}
+
+.view-button:active {
+    transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+    .modal-column__right {
+        grid-template: repeat(4, 1fr) / 1fr;
+    }
+
+    .content h2 {
+        font-size: 1.25rem;
+    }
+
+    .content p {
+        font-size: 0.85rem;
+    }
+
+    .view-button {
+        padding: 0.6rem 1.2rem;
+    }
 }
 
 /* Values Section */
 .section-values__content {
-    display: flex; /* Use flexbox */
+    display: flex;
     height: auto;
-    flex-direction: column; /* Ensure children are stacked vertically */
-    align-items: center; /* Center children horizontally */
-    justify-content: center; /* Center children vertically */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     background-color: #22018d;
     background: linear-gradient(to left top, #030048 50%, #2b02b0 70%, #9686d6 90%);
     margin-top: -5rem;
-    padding: 6rem 1rem; /* Adjust padding for better spacing */
-    position: relative; /* Make it a positioning context */
+    padding: 6rem 1rem;
+    position: relative;
 }
 
 .section-values__header {
     position: absolute;
     height: 250px;
-    width: 100%; /* Ensure it takes full width */
+    width: 100%;
     display: flex;
     justify-content: center; /* Center the title horizontally */
     align-items: center; /* Center the title vertically */
-    top: -10rem;
+    top: -12rem;
     z-index: 2; /* Ensure it stays above the previous section */
 }
 

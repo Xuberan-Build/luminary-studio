@@ -98,7 +98,6 @@ nav ul li a:hover {
     justify-content: space-between;
     align-items: flex-start;
     padding: 3% 5% 0 5%; /* Top, Right, Bottom, Left */
-
     gap: 20px;
 }
 
@@ -119,12 +118,13 @@ nav ul li a:hover {
 .text-column h2 {
     color: #cebeff;
     font-size: 2rem;
+    line-height: 1.7;
     margin-top: 2em;
     margin-bottom: 0.5em;
 }
 
 .text-column p {
-    line-height: 1.6;
+    line-height: 1.9;
     margin-bottom: 1.5em;
     font-size: 1.1rem;
 }
