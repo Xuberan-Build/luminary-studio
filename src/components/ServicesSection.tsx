@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 export default function ServicesSection() {
-  const [activeCard, setActiveCard] = useState(2); // default to your screenshot's card
+  const [activeCard, setActiveCard] = useState(2);
 
   const cards = [
     {
@@ -33,12 +33,13 @@ export default function ServicesSection() {
   const card = cards.find((c) => c.id === activeCard)!;
 
   return (
-    <section aria-labelledby="services-heading" className="container" style={{ paddingBlock: "3rem", color: "white" }}>
+    <section aria-labelledby="services-heading" className="container services-section" style={{ paddingBlock: "3rem", color: "white" }}>
       <h2 id="services-heading" style={{ margin: 0, fontSize: "var(--step-2)", lineHeight: 1.2 }}>
         Strategic Execution That Powers Business Growth
       </h2>
 
       <div
+        className="services-grid"
         style={{
           position: "relative",
           display: "grid",
@@ -63,7 +64,7 @@ export default function ServicesSection() {
         </article>
 
         {/* Saturn + moons (right) */}
-        <div style={{ position: "relative", width: "100%", maxWidth: 620, justifySelf: "end" }}>
+        <div className="saturn-container" style={{ position: "relative", width: "100%", maxWidth: 620, justifySelf: "end" }}>
           <img
             src="https://i.ibb.co/wSRxNJF/Saturn-trans-transformed.png"
             alt="Saturn planet graphic"
@@ -73,6 +74,7 @@ export default function ServicesSection() {
 
           {/* Moons */}
           <div
+            className="moons-container"
             style={{
               position: "absolute",
               left: "12%",
@@ -92,6 +94,7 @@ export default function ServicesSection() {
                   role="tab"
                   aria-selected={isActive}
                   aria-controls={`card-${c.id}`}
+                  aria-label={`Step ${c.id}`}
                   style={{
                     width: 72,
                     height: 72,
@@ -110,6 +113,43 @@ export default function ServicesSection() {
           </div>
         </div>
       </div>
+
+      {/* Mobile-only styles */}
+      <style>{`
+        @media (max-width: 767px) {
+          .services-section h2 {
+            font-size: clamp(1.5rem, 5vw, 2rem) !important;
+            text-align: center;
+          }
+          
+          .services-grid {
+            grid-template-columns: 1fr !important;
+            gap: 1.5rem !important;
+          }
+          
+          .services-grid article {
+            padding: 1.5rem !important;
+          }
+          
+          .saturn-container {
+            max-width: 100% !important;
+            justify-self: center !important;
+          }
+          
+          .moons-container {
+            left: 50% !important;
+            bottom: 5% !important;
+            transform: translateX(-50%);
+            gap: 0.75rem !important;
+            justify-content: center;
+          }
+          
+          .moons-container button {
+            width: 56px !important;
+            height: 56px !important;
+          }
+        }
+      `}</style>
     </section>
   );
 }
