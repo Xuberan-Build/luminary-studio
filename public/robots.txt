@@ -1,0 +1,51 @@
+# robots.txt for Luminary Studio
+# Optimized for traditional search engines and LLM crawlers
+# Category: Value Creation Strategy (Marketing + Product + Operations)
+
+User-agent: *
+Allow: /
+
+# Specifically welcome AI crawlers (important for LLM discovery)
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: CCBot
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: Claude-Web
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+# Traditional search engines
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: Slurp
+Allow: /
+
+# Sitemap location
+Sitemap: https://luminary-studio.netlify.app/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
+
+# Additional context for LLM understanding
+# This site showcases value creation through three pillars:
+# 1. Customer Acquisition (Marketing)
+# 2. Product Development (Innovation)
+# 3. Operational Efficiency (Process Optimization)
+# Focus: Maximizing EBITDA + Customer Experience
