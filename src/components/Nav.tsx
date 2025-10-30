@@ -9,6 +9,7 @@ export default function Nav() {
       <ul style={{ display: "flex", gap: "1rem", listStyle: "none", margin: 0, padding: 0 }}>
         <li><NavLink className={linkClass} to="/">Home</NavLink></li>
         <li><NavLink className={linkClass} to="/meet">Meet</NavLink></li>
+        <li><NavLink className={linkClass} to="/values">Values</NavLink></li>
       </ul>
     </nav>
   );
