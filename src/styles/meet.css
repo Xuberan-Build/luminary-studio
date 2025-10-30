@@ -1,0 +1,538 @@
+/* Meet Page Styles - Scoped to prevent conflicts */
+
+/* Hero Banner */
+.hero-banner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 3em;
+    margin-top: 2em;
+    padding: 120px 5%;
+    background: linear-gradient(to left top, #030048 80%, #2b02b0 85%, #9686d6 95%);
+    color: white;
+    border-radius: 15px;
+}
+
+.hero-text {
+    width: 50%;
+    margin-right: 3em;
+}
+
+.hero-text h1 {
+    font-size: 3rem;
+    margin-bottom: 0.5em;
+    font-family: 'Bodoni Moda', serif;
+    color: #fefcfb;
+}
+
+.hero-text p {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    margin-bottom: 1em;
+    color: #cebeff;
+}
+
+.hero-image {
+    width: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.hero-image img {
+    max-width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+/* Meet Section */
+.section-meet {
+    background-color: #030048;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 3rem 1rem;
+}
+
+.section-meet__content {
+    display: flex;
+    position: relative;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.section-meet__body {
+    background: linear-gradient(to left bottom, #030048 50%, #2b02b0 70%, #9686d6 90%);
+    padding: 40px;
+    position: relative;
+    border-radius: 15px;
+    width: 100%;
+}
+
+.section-meet__column {
+    position: relative;
+    z-index: 1;
+    color: #fff;
+    padding: 20px;
+}
+
+.section-meet__text {
+    font-size: 1.25rem;
+    line-height: 1.6;
+    color: #fff;
+    margin-bottom: 1.5rem;
+}
+
+/* Works Section */
+.section-works {
+    min-height: 100vh;
+    padding: 8rem 2rem 6rem;
+    background-color: #030048;
+}
+
+.section-works__content {
+    max-width: 1400px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background: linear-gradient(to right top, #030048 50%, #2b02b0 70%, #9686d6 90%);
+    padding: 4rem 2rem;
+    border-radius: 20px;
+}
+
+.section-works__header {
+    text-align: center;
+    margin-bottom: 2rem;
+    position: relative;
+    width: 100%;
+}
+
+.section-works__title {
+    font-size: 4rem;
+    color: antiquewhite;
+    font-weight: bold;
+    margin: 0;
+    text-align: center;
+    font-family: 'Bodoni Moda', serif;
+}
+
+.section-works__text {
+    margin-top: 1rem;
+    text-align: center;
+    color: antiquewhite;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Modal Container */
+.modal-container {
+    width: 100%;
+    max-width: 1200px;
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
+.modal-column__banner {
+    background-color: rgba(93, 63, 211, 0.3);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(206, 190, 255, 0.2);
+}
+
+.section-projects__text {
+    color: #ffffff;
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+/* Cards Container */
+.section-works__container {
+    width: 100%;
+}
+
+.modal-column__right {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    width: 100%;
+}
+
+.column-row {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2rem;
+    width: 100%;
+}
+
+/* Individual Card Styles */
+.resume-section {
+    background: rgba(93, 63, 211, 0.3);
+    border-radius: 12px;
+    padding: 0;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(206, 190, 255, 0.2);
+    transition: all 0.3s ease;
+    min-height: 280px;
+}
+
+.resume-section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(206, 190, 255, 0.3);
+    border-color: rgba(206, 190, 255, 0.5);
+}
+
+.view-container {
+    width: 100%;
+    height: 100%;
+    min-height: 280px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 1rem;
+    padding: 2rem;
+    box-sizing: border-box;
+}
+
+.icon-container {
+    width: 64px;
+    height: 64px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    margin-bottom: 0.5rem;
+}
+
+.view-icon {
+    width: 32px;
+    height: 32px;
+    fill: #fff;
+}
+
+.content {
+    color: #fff;
+    flex-grow: 1;
+}
+
+.content h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin: 0 0 0.75rem 0;
+    color: #ffffff;
+    font-family: 'Bodoni Moda', serif;
+}
+
+.content p {
+    margin: 0;
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+/* Button Styles */
+.view-button,
+a.view-button {
+    padding: 0.75rem 1.5rem;
+    background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    text-decoration: none;
+    display: inline-block;
+    margin-top: 0.5rem;
+}
+
+.view-button:hover,
+a.view-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+    background: linear-gradient(135deg, #7c7ff1 0%, #6366f1 100%);
+}
+
+.view-button:active,
+a.view-button:active {
+    transform: translateY(0);
+}
+
+/* Skills Section */
+.section-skills {
+    background: linear-gradient(to right bottom, #030048 50%, #2b02b0 70%, #9686d6 90%);
+    padding: 6rem 2rem;
+    margin-top: -2rem;
+}
+
+.section-skills__content {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.section-skills__header {
+    text-align: center;
+    margin-bottom: 4rem;
+}
+
+.section-skills__title {
+    font-size: 4rem;
+    color: antiquewhite;
+    font-weight: bold;
+    font-family: 'Bodoni Moda', serif;
+    margin: 0;
+}
+
+.skills-showcase {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 2rem 0;
+}
+
+.skills-category-card {
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 2rem;
+    border: 1px solid rgba(206, 190, 255, 0.2);
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(30px);
+}
+
+.skills-category-card.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.skills-category-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(206, 190, 255, 0.3);
+    border-color: rgba(206, 190, 255, 0.5);
+}
+
+.skills-category-card h3 {
+    color: #ffffff;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    font-family: 'Bodoni Moda', serif;
+}
+
+.skills-category-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.skills-category-card li {
+    color: #cebeff;
+    font-size: 0.95rem;
+    padding: 0.5rem 0;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.skills-category-card li::before {
+    content: "→";
+    position: absolute;
+    left: 0;
+    color: #a78bfa;
+}
+
+/* Values Section */
+.section-values__content {
+    display: flex;
+    height: auto;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(to left top, #030048 50%, #2b02b0 70%, #9686d6 90%);
+    margin-top: -5rem;
+    padding: 6rem 1rem;
+    position: relative;
+}
+
+.section-values__header {
+    text-align: center;
+    margin-bottom: 3rem;
+    width: 100%;
+}
+
+.section-values__title {
+    font-size: 4rem;
+    color: antiquewhite;
+    font-weight: bold;
+    margin: 0;
+    font-family: 'Bodoni Moda', serif;
+}
+
+.section-values__body {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    background: linear-gradient(to right bottom, #030048 50%, #2b02b0 70%, #9686d6 90%);
+    padding: 3rem;
+    border-radius: 15px;
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 1200px;
+    gap: 2rem;
+}
+
+.section-values__column {
+    padding: 20px;
+    width: 45%;
+    position: relative;
+    box-sizing: border-box;
+}
+
+.section-values__text {
+    color: white;
+    font-size: 1.25rem;
+    line-height: 1.6;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+    .column-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .hero-banner {
+        flex-direction: column;
+        padding: 60px 3%;
+    }
+    
+    .hero-text,
+    .hero-image {
+        width: 100%;
+        margin-right: 0;
+    }
+    
+    .hero-text {
+        margin-bottom: 2rem;
+    }
+    
+    .section-works__title,
+    .section-skills__title,
+    .section-values__title {
+        font-size: 3rem;
+    }
+}
+
+@media (max-width: 768px) {
+    .hero-banner {
+        margin: 2em 1em;
+        margin-top: 7em;
+        padding: 40px 5%;
+    }
+    
+    .hero-text h1 {
+        font-size: 2.5rem;
+    }
+    
+    .hero-text p {
+        font-size: 1.1rem;
+    }
+    
+    .section-works__title,
+    .section-skills__title,
+    .section-values__title {
+        font-size: 2.5rem;
+    }
+    
+    .skills-showcase {
+        grid-template-columns: 1fr;
+    }
+    
+    .section-skills {
+        padding: 4rem 1rem;
+    }
+    
+    .section-works {
+        padding: 6rem 1rem 4rem;
+    }
+    
+    .section-works__content {
+        padding: 3rem 1.5rem;
+    }
+    
+    .modal-container {
+        gap: 1.5rem;
+    }
+    
+    .column-row {
+        gap: 1.5rem;
+    }
+    
+    .resume-section {
+        min-height: 240px;
+    }
+    
+    .view-container {
+        min-height: 240px;
+        padding: 1.5rem;
+    }
+    
+    .content h3 {
+        font-size: 1.25rem;
+    }
+    
+    .content p {
+        font-size: 0.85rem;
+    }
+    
+    .view-button,
+    a.view-button {
+        padding: 0.6rem 1.2rem;
+        font-size: 0.85rem;
+    }
+    
+    .section-values__body {
+        flex-direction: column;
+        padding: 2rem;
+    }
+    
+    .section-values__column {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .hero-text h1 {
+        font-size: 2rem;
+    }
+    
+    .section-works__title,
+    .section-skills__title,
+    .section-values__title {
+        font-size: 2rem;
+    }
+    
+    .modal-column__banner {
+        padding: 1.5rem;
+    }
+    
+    .section-projects__text {
+        font-size: 1.2rem;
+    }
+}

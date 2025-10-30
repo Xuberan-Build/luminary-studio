@@ -1,0 +1,210 @@
+/* CSS Reset for Values Page */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Hero Banner */
+.hero-banner {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 3em;
+  margin-top: 9em;
+  padding: 120px 5%;
+  background-color: #5D3FD3;
+  background: linear-gradient(to left top, #030048 80%, #2b02b0 85%, #9686d6 95%);
+  color: white;
+  border-radius: 15px;
+}
+
+.hero-text {
+  width: 50%;
+  margin-right: 9em;
+  text-align: center;
+}
+
+.hero-text h1 {
+  font-size: 3rem;
+  margin-bottom: 0.5em;
+  font-family: 'Bodoni Moda', serif;
+}
+
+.hero-text p {
+  font-size: 1.5rem;
+  line-height: 1.6;
+}
+
+.hero-image {
+  width: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.hero-image img {
+  max-width: 100%;
+  border-radius: 8px;
+}
+
+/* Flex Container */
+.flex-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 3% 5% 0 5%;
+  gap: 20px;
+}
+
+/* Text Column */
+.text-column {
+  width: 60%;
+  padding-right: 20px;
+}
+
+.text-column h1 {
+  color: #f0e6ff;
+  font-size: 2.5rem;
+  margin-bottom: 1em;
+  border-bottom: 2px solid #5D3FD3;
+  padding-bottom: 0.5em;
+  font-family: 'Bodoni Moda', serif;
+}
+
+.text-column h2 {
+  color: #cebeff;
+  font-size: 2rem;
+  line-height: 1.7;
+  margin-top: 2em;
+  margin-bottom: 0.5em;
+  font-family: 'Bodoni Moda', serif;
+}
+
+.text-column p {
+  line-height: 1.9;
+  margin-bottom: 1.5em;
+  font-size: 1.1rem;
+  color: #B399FF;
+}
+
+.text-column .pillar-subtitle {
+  color: #a78bfa;
+  font-style: italic;
+}
+
+/* Form Column */
+.form-column {
+  position: sticky;
+  top: 25em;
+  width: 35%;
+  background: linear-gradient(to right, #030048 20%, #2b02b0 40%, #9686d6 100%);
+  background-color: #5D3FD3;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.form-column h2 {
+  color: #ffffff;
+  margin-bottom: 10px;
+  font-family: 'Bodoni Moda', serif;
+}
+
+.form-column p {
+  color: #ffffff;
+  margin-bottom: 20px;
+}
+
+.form-column label {
+  color: #ffffff;
+  display: block;
+  margin-bottom: 8px;
+}
+
+.form-column input[type="email"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: none;
+  border-radius: 4px;
+}
+
+.form-column button {
+  background-color: #cebeff;
+  color: #5D3FD3;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 4px;
+  cursor: pointer;
+  width: 100%;
+  font-size: 1.1rem;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.form-column button:hover {
+  background-color: #ffffff;
+  color: #5D3FD3;
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .hero-banner {
+    flex-direction: column;
+    padding: 60px 3%;
+    margin: 2em 1em;
+    margin-top: 8em;
+  }
+
+  .hero-text,
+  .hero-image {
+    width: 100%;
+    margin-right: 0;
+  }
+
+  .hero-text {
+    margin-bottom: 2rem;
+  }
+
+  .flex-container {
+    flex-direction: column;
+  }
+
+  .text-column,
+  .form-column {
+    width: 100%;
+    padding-right: 0;
+  }
+
+  .form-column {
+    position: static;
+    margin-top: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-banner {
+    margin-top: 6em;
+    padding: 40px 5%;
+  }
+
+  .hero-text h1 {
+    font-size: 2.5rem;
+  }
+
+  .hero-text p {
+    font-size: 1.2rem;
+  }
+
+  .text-column h1 {
+    font-size: 2rem;
+  }
+
+  .text-column h2 {
+    font-size: 1.75rem;
+  }
+
+  .text-column p {
+    font-size: 1rem;
+  }
+}
