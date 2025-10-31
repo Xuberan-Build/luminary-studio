@@ -53,7 +53,7 @@ export default function Hero({ onOpenResume, onOpenPortfolio }: Props) {
       justifyItems: "center",
       padding: "clamp(1rem, 3vw, 2rem)",
       position: "relative",
-      overflow: "hidden",
+      overflow: "visible", // ← CHANGED FROM "hidden"
       backgroundImage: "url('https://i.ibb.co/4TkDk2p/bg.png')",
       backgroundRepeat: "no-repeat",
       backgroundPosition: "left center",

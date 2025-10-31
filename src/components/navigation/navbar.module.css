@@ -1,0 +1,267 @@
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 9999;
+  background: rgba(3, 0, 72, 0.8) !important;
+  backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(150, 134, 214, 0.1);
+  box-shadow: 0 4px 30px rgba(93, 63, 211, 0.15);
+}
+
+.container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.logo {
+  font-size: 1.5rem;
+  font-weight: 700;
+  font-family: 'Bodoni Moda', serif;
+  color: #fefcfb !important;
+  text-decoration: none;
+  background: linear-gradient(135deg, #fefcfb 0%, #cebeff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  transition: all 0.3s ease;
+}
+
+.logo:hover {
+  background: linear-gradient(135deg, #cebeff 0%, #a78bfa 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.navList {
+  display: flex;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  align-items: center;
+}
+
+.navItem {
+  position: relative;
+  z-index: 10001;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
+  color: #cebeff !important;
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  background: transparent !important;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
+  position: relative;
+}
+
+.navLink::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  padding: 1px;
+  background: linear-gradient(135deg, transparent, rgba(150, 134, 214, 0.3));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.navLink:hover {
+  color: #fefcfb !important;
+  background: rgba(93, 63, 211, 0.15) !important;
+  box-shadow: 0 0 20px rgba(93, 63, 211, 0.2);
+}
+
+.navLink:hover::before {
+  opacity: 1;
+}
+
+.navLink.active {
+  color: #fefcfb !important;
+  background: rgba(93, 63, 211, 0.25) !important;
+  box-shadow: 0 0 25px rgba(93, 63, 211, 0.3);
+}
+
+/* Dropdown Styles */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  min-width: 280px;
+  background: rgba(3, 0, 72, 0.98) !important;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(150, 134, 214, 0.2);
+  border-radius: 12px;
+  padding: 0.5rem;
+  box-shadow: 0 8px 40px rgba(93, 63, 211, 0.3);
+  animation: fadeInDropdown 0.2s ease;
+  z-index: 10002;
+}
+
+.dropdownLink {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: #cebeff !important;
+  text-decoration: none !important;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.dropdownLink:hover {
+  background: rgba(93, 63, 211, 0.2) !important;
+  color: #fefcfb !important;
+}
+
+.dropdownLink.active {
+  background: rgba(93, 63, 211, 0.3) !important;
+  color: #fefcfb !important;
+}
+
+.dropdownLabel {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+  color: inherit !important;
+}
+
+.dropdownDescription {
+  font-size: 0.85rem;
+  color: #B399FF !important;
+  opacity: 0.8;
+}
+
+/* Mega Menu Styles */
+.megaMenu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  max-width: 90vw;
+  background: rgba(3, 0, 72, 0.98) !important;
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(150, 134, 214, 0.2);
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 12px 60px rgba(93, 63, 211, 0.4);
+  animation: fadeInDown 0.3s ease;
+  z-index: 10002;
+}
+
+.megaMenuContent {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2rem;
+}
+
+.megaMenuSection {
+  min-width: 0;
+}
+
+.megaMenuTitle {
+  font-size: 0.85rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #fefcfb !important;
+  margin-bottom: 1rem;
+  background: linear-gradient(135deg, #fefcfb 0%, #cebeff 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.megaMenuList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.megaMenuLink {
+  display: block;
+  padding: 0.5rem 0.75rem;
+  color: #B399FF !important;
+  text-decoration: none !important;
+  font-size: 0.9rem;
+  border-radius: 6px;
+  transition: all 0.2s ease;
+}
+
+.megaMenuLink:hover {
+  color: #fefcfb !important;
+  background: rgba(93, 63, 211, 0.2) !important;
+  padding-left: 1rem;
+  box-shadow: 0 0 15px rgba(93, 63, 211, 0.15);
+}
+
+.megaMenuLink.active {
+  color: #fefcfb !important;
+  background: rgba(93, 63, 211, 0.3) !important;
+  font-weight: 600;
+}
+
+/* Animations */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) translateX(-50%);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) translateX(-50%);
+  }
+}
+
+@keyframes fadeInDropdown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .megaMenuContent {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  
+  .megaMenu {
+    width: 600px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .navList {
+    display: none; /* TODO: Add mobile menu */
+  }
+  
+  .logo {
+    font-size: 1.25rem;
+  }
+}
