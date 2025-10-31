@@ -241,27 +241,31 @@
   }
 }
 
-/* Responsive */
+/* Responsive - CHANGED TO 1024px */
 @media (max-width: 1024px) {
-  .megaMenuContent {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  
-  .megaMenu {
-    width: 600px;
-  }
-}
-
-@media (max-width: 768px) {
   .container {
     padding: 1rem;
   }
 
   .navList {
-    display: none; /* TODO: Add mobile menu */
+    display: none; /* HIDE DESKTOP NAV */
   }
-  
+
+  /* Defensive: never show desktop dropdowns on mobile */
+  .dropdown,
+  .megaMenu {
+    display: none !important;
+  }
+
   .logo {
     font-size: 1.25rem;
+  }
+
+  .megaMenuContent {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .megaMenu {
+    width: 600px;
   }
 }
