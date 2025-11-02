@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import styles from "./services.module.css";
 
 export default function ServicesSection() {
   const [activeCard, setActiveCard] = useState(2);
@@ -33,74 +34,28 @@ export default function ServicesSection() {
   return (
     <section
       aria-labelledby="services-heading"
-      className="container services-section"
-      style={{ paddingBlock: "3rem", color: "white" }}
+      className={`container ${styles.servicesSection}`}
     >
-      <h2
-        id="services-heading"
-        style={{ margin: 0, fontSize: "var(--step-2)", lineHeight: 1.2 }}
-      >
+      <h2 id="services-heading" className={styles.heading}>
         Strategic Execution That Powers Business Growth
       </h2>
 
-      <div
-        className="services-grid"
-        style={{
-          position: "relative",
-          display: "grid",
-          gap: "2rem",
-          alignItems: "center",
-          gridTemplateColumns: "1.2fr .8fr",
-          marginTop: "2rem",
-        }}
-      >
-        <article
-          style={{
-            background: "rgba(0,0,0,.8)",
-            borderRadius: "16px",
-            boxShadow: "0 10px 30px rgba(0,0,0,.45)",
-            padding: "2rem",
-            border: "1px solid rgba(206,190,255,.15)",
-          }}
-        >
-          <h3
-            style={{
-              marginTop: 0,
-              marginBottom: ".75rem",
-              fontSize: "var(--step-1)",
-              color: "#fff",
-            }}
-          >
-            {card.title}
-          </h3>
-          <p style={{ margin: 0, color: "white", opacity: 0.9 }}>{card.body}</p>
+      <div className={styles.servicesGrid}>
+        <article className={styles.card}>
+          <h3 className={styles.cardTitle}>{card.title}</h3>
+          <p className={styles.cardBody}>{card.body}</p>
         </article>
 
-        <div
-          className="saturn-container"
-          style={{ position: "relative", width: "100%", maxWidth: 620, justifySelf: "end" }}
-        >
+        <div className={styles.saturnContainer}>
           <img
             src="https://i.ibb.co/wSRxNJF/Saturn-trans-transformed.png"
             alt="Saturn planet graphic"
-            style={{
-              width: "100%",
-              height: "auto",
-              display: "block",
-              filter: "drop-shadow(0 20px 40px rgba(0,0,0,.45))",
-            }}
+            className={styles.saturnImage}
             loading="lazy"
           />
 
           <div
-            className="moons-container"
-            style={{
-              position: "absolute",
-              left: "12%",
-              bottom: "10%",
-              display: "flex",
-              gap: "1.25rem",
-            }}
+            className={styles.moonsContainer}
             role="tablist"
             aria-label="Service navigation"
           >
@@ -114,62 +69,15 @@ export default function ServicesSection() {
                   aria-selected={isActive}
                   aria-controls={`card-${c.id}`}
                   aria-label={`Step ${c.id}`}
-                  style={{
-                    width: 72,
-                    height: 72,
-                    borderRadius: "50%",
-                    border: "none",
-                    cursor: "pointer",
-                    background: isActive ? "#ffffff" : "rgba(255,255,255,.55)",
-                    boxShadow: isActive
-                      ? "0 6px 16px rgba(255,255,255,.35)"
-                      : "0 4px 12px rgba(0,0,0,.25)",
-                    transition: "transform .15s ease, background .2s ease, box-shadow .2s ease",
-                  }}
-                  onMouseEnter={(e) => (e.currentTarget.style.transform = "translateY(-2px)")}
-                  onMouseLeave={(e) => (e.currentTarget.style.transform = "translateY(0)")}
+                  className={`${styles.moonButton} ${
+                    isActive ? styles.moonButtonActive : styles.moonButtonInactive
+                  }`}
                 />
               );
             })}
           </div>
         </div>
       </div>
-
-      <style>{`
-        @media (max-width: 767px) {
-          .services-section h2 {
-            font-size: clamp(1.5rem, 5vw, 2rem) !important;
-            text-align: center;
-          }
-          
-          .services-grid {
-            grid-template-columns: 1fr !important;
-            gap: 1.5rem !important;
-          }
-          
-          .services-grid article {
-            padding: 1.5rem !important;
-          }
-          
-          .saturn-container {
-            max-width: 100% !important;
-            justify-self: center !important;
-          }
-          
-          .moons-container {
-            left: 50% !important;
-            bottom: 5% !important;
-            transform: translateX(-50%);
-            gap: 0.75rem !important;
-            justify-content: center;
-          }
-          
-          .moons-container button {
-            width: 56px !important;
-            height: 56px !important;
-          }
-        }
-      `}</style>
     </section>
   );
 }

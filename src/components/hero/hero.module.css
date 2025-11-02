@@ -1,0 +1,124 @@
+/* Hero Section - Mobile First */
+.hero {
+  min-height: calc(100svh - var(--nav-height, 60px));
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: center;
+  justify-items: center;
+  padding: clamp(0.5rem, 2vw, 2rem) clamp(0.75rem, 2vw, 2rem);
+  position: relative;
+  overflow: visible;
+  background-image: url('https://i.ibb.co/4TkDk2p/bg.png');
+  background-repeat: no-repeat;
+  background-position: left center;
+  background-size: contain;
+}
+
+/* Desktop: original padding */
+@media (min-width: 900px) {
+  .hero {
+    padding: clamp(1rem, 3vw, 2rem);
+  }
+}
+
+.heroContent {
+  width: min(100%, 1200px);
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: clamp(1rem, 3vw, 2rem);
+  align-items: center;
+}
+
+/* Desktop: 2 columns */
+@media (min-width: 900px) {
+  .heroContent {
+    grid-template-columns: 1.1fr 1fr;
+  }
+}
+
+.shipWrapper {
+  position: relative;
+  isolation: isolate;
+  display: grid;
+  place-items: center;
+  min-height: min(35vh, 280px); /* Reduced on mobile */
+  order: 1; /* Ship first on mobile */
+}
+
+@media (min-width: 900px) {
+  .shipWrapper {
+    min-height: min(50vh, 420px); /* Original desktop size */
+    order: 0; /* Ship on left on desktop */
+  }
+}
+
+.ship {
+  width: min(90%, 520px);
+  aspect-ratio: 3 / 2;
+  transition: transform 120ms linear;
+  filter: drop-shadow(0 12px 24px rgba(0, 0, 0, 0.38));
+  will-change: transform;
+}
+
+.ship:hover {
+  transition: transform 140ms ease;
+}
+
+.textContent {
+  order: 2; /* Text second on mobile */
+}
+
+@media (min-width: 900px) {
+  .textContent {
+    order: 1; /* Text on right on desktop */
+  }
+}
+
+.heading {
+  margin: 0;
+  color: #fff;
+  font-size: var(--step-3);
+  line-height: 1.2;
+}
+
+.tagline {
+  margin-top: 0.25rem;
+  color: var(--ink-soft);
+  font-size: var(--step-0);
+}
+
+/* Buttons - MOBILE FIRST - Side by Side */
+.buttonRow {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+  flex-wrap: nowrap; /* Keep side by side on mobile */
+}
+
+.buttonRow .btn {
+  flex: 1 1 auto; /* Equal width, can grow/shrink */
+  min-width: 0; /* Allow shrinking below content width */
+  font-size: clamp(0.85rem, 2.5vw, 1rem);
+  padding: clamp(0.6rem, 2vw, 0.7rem) clamp(0.75rem, 3vw, 1.1rem);
+  white-space: nowrap;
+}
+
+/* Desktop: Allow wrapping if needed (though they should fit) */
+@media (min-width: 900px) {
+  .buttonRow {
+    flex-wrap: wrap;
+  }
+}
+
+.backgroundGlow {
+  position: absolute;
+  inset: -20% -10% auto;
+  height: 60%;
+  background: radial-gradient(
+    60% 60% at 40% 45%,
+    rgba(93, 63, 211, 0.22),
+    rgba(93, 63, 211, 0) 70%
+  );
+  pointer-events: none;
+  z-index: -1;
+}

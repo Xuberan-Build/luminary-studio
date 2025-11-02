@@ -1,0 +1,138 @@
+/* Services Section - Mobile First */
+.servicesSection {
+  padding-block: 3rem;
+  color: white;
+}
+
+.heading {
+  margin: 0;
+  font-size: var(--step-2);
+  line-height: 1.2;
+}
+
+/* Mobile: center heading */
+@media (max-width: 767px) {
+  .heading {
+    font-size: clamp(1.5rem, 5vw, 2rem);
+    text-align: center;
+  }
+}
+
+.servicesGrid {
+  position: relative;
+  display: grid;
+  gap: 2rem;
+  align-items: center;
+  grid-template-columns: 1fr;
+  margin-top: 2rem;
+}
+
+/* Desktop: 2 columns */
+@media (min-width: 768px) {
+  .servicesGrid {
+    grid-template-columns: 1.2fr 0.8fr;
+  }
+}
+
+/* Mobile: reduce gap */
+@media (max-width: 767px) {
+  .servicesGrid {
+    gap: 1.5rem;
+  }
+}
+
+.card {
+  background: rgba(0, 0, 0, 0.8);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+  padding: 2rem;
+  border: 1px solid rgba(206, 190, 255, 0.15);
+}
+
+@media (max-width: 767px) {
+  .card {
+    padding: 1.5rem;
+  }
+}
+
+.cardTitle {
+  margin-top: 0;
+  margin-bottom: 0.75rem;
+  font-size: var(--step-1);
+  color: #fff;
+}
+
+.cardBody {
+  margin: 0;
+  color: white;
+  opacity: 0.9;
+}
+
+.saturnContainer {
+  position: relative;
+  width: 100%;
+  max-width: 620px;
+  justify-self: end;
+}
+
+@media (max-width: 767px) {
+  .saturnContainer {
+    max-width: 100%;
+    justify-self: center;
+  }
+}
+
+.saturnImage {
+  width: 100%;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.45));
+}
+
+.moonsContainer {
+  position: absolute;
+  left: 12%;
+  bottom: 10%;
+  display: flex;
+  gap: 1.25rem;
+}
+
+@media (max-width: 767px) {
+  .moonsContainer {
+    left: 50%;
+    bottom: 5%;
+    transform: translateX(-50%);
+    gap: 0.75rem;
+    justify-content: center;
+  }
+}
+
+.moonButton {
+  width: 72px;
+  height: 72px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.2s ease, box-shadow 0.2s ease;
+}
+
+@media (max-width: 767px) {
+  .moonButton {
+    width: 56px;
+    height: 56px;
+  }
+}
+
+.moonButton:hover {
+  transform: translateY(-2px);
+}
+
+.moonButtonActive {
+  background: #ffffff;
+  box-shadow: 0 6px 16px rgba(255, 255, 255, 0.35);
+}
+
+.moonButtonInactive {
+  background: rgba(255, 255, 255, 0.55);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}

@@ -86,7 +86,7 @@ export default function Navbar() {
                 return (
                   <li
                     key={item.label}
-                    ref={(el) => { navItemRefs.current[item.label] = el; }}
+                    ref={(el) => (navItemRefs.current[item.label] = el)}
                     className={styles.navItem}
                     onMouseEnter={() => handleMouseEnter(item.label)}
                     onMouseLeave={handleMouseLeave}
@@ -130,7 +130,7 @@ export default function Navbar() {
                 return (
                   <li
                     key={item.label}
-                    ref={(el) => { navItemRefs.current[item.label] = el; }}
+                    ref={(el) => (navItemRefs.current[item.label] = el)}
                     className={styles.navItem}
                     onMouseEnter={() => handleMouseEnter(item.label)}
                     onMouseLeave={handleMouseLeave}

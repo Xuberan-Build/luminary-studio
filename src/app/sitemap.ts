@@ -1,0 +1,31 @@
+import type { MetadataRoute } from "next";
+import { getAllContent } from "@/lib/mdx/getMDXContent";
+
+export const dynamic = "force-static";
+export const revalidate = false;
+
+export default function sitemap(): MetadataRoute.Sitemap {
+  const base = "https://luminary-studio.netlify.app"; // replace on deploy
+
+  const staticRoutes: MetadataRoute.Sitemap = [
+    { url: `${base}/`, lastModified: new Date(), changeFrequency: "weekly", priority: 1 },
+    { url: `${base}/meet/`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.6 },
+    { url: `${base}/values/`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.6 },
+  ];
+
+  const blog = getAllContent("blog").map((p) => ({
+    url: `${base}/blog/${p.slug}/`,
+    lastModified: p["date"] ? new Date(p["date"]) : new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  const resources = getAllContent("resources").map((p) => ({
+    url: `${base}/resources/${p.slug}/`,
+    lastModified: p["date"] ? new Date(p["date"]) : new Date(),
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
+  return [...staticRoutes, ...blog, ...resources];
+}
