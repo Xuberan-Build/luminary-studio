@@ -76,7 +76,7 @@ export default function Navbar() {
   return (
     <nav className={styles.navbar} aria-label="Main navigation">
       <div className={styles.container}>
-        <Link href="/" className={styles.logo}>Luminary Studio</Link>
+        <Link href="/" className={styles.logo}>Quantum Strategies</Link>
 
         {/* Desktop Navigation: render only on desktop */}
         {isDesktop && (

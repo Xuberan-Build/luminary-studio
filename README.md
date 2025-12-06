@@ -1,36 +1,57 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Quantum Strategies
+
+Strategic consulting and course platform built with Next.js 16.
+
+## Project Overview
+
+**Quantum Strategies** is a professional consulting website featuring:
+- Strategic consulting services
+- Educational course platform (VCAP - Visionary Creator's Activation Protocol)
+- Pillar/cluster content marketing (Articles, White Papers)
+- Case studies and portfolio
+
+## Tech Stack
+
+- **Framework:** Next.js 16 (App Router)
+- **Database:** Supabase (PostgreSQL)
+- **Auth:** Supabase Auth
+- **Hosting:** Netlify
+- **Styling:** Tailwind CSS 4
+- **Content:** MDX (next-mdx-remote)
+- **Video:** Vimeo embeds
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/
+│   ├── (marketing)/      # Public pages (Home, About, Values)
+│   ├── (content)/        # Articles, Blog, White Papers
+│   └── (courses)/        # Course platform (VCAP)
+├── components/
+├── content/              # MDX content files
+└── lib/                  # Utilities and configs
+```
 
-## Learn More
+## Deployment
 
-To learn more about Next.js, take a look at the following resources:
+Deployed on Netlify with automatic deployments from the `nextjs` branch.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Environment Variables Required:**
+- `NEXT_PUBLIC_SUPABASE_URL`
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- `SUPABASE_SERVICE_ROLE_KEY`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Documentation
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+- [Course Architecture](./COURSE_ARCHITECTURE.md)
+- [Migration Plan](./MIGRATION_PLAN.md)

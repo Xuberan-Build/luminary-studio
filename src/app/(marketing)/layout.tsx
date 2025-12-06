@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: {
-    template: "%s | Luminary Studio",
-    default: "Luminary Studio - Value Creation & Digital Marketing",
+    template: "%s | Quantum Strategies",
+    default: "Quantum Strategies - Value Creation & Digital Marketing",
   },
 };
 

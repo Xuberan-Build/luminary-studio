@@ -14,9 +14,9 @@ export const viewport: Viewport = {
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Luminary Studio - Value Creation & Digital Marketing",
+  title: "Quantum Strategies - Strategic Consulting & Business Growth",
   description:
-    "Mastering the art of creating and adding value. Strategic digital marketing, SEO, and business growth solutions.",
+    "Transform your business with strategic consulting, proven frameworks, and actionable courses. Master customer acquisition, product development, and operations.",
 };
 
 export default function RootLayout({

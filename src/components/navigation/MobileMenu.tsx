@@ -57,7 +57,7 @@ export default function MobileMenu() {
             <div id="mobile-drawer" role="dialog" aria-modal="true" className={`${styles.drawer} ${styles.drawerOpen}`}>
               <div className={styles.drawerHeader}>
                 <Link href="/" className={styles.drawerLogo} onClick={closeMenu}>
-                  Luminary Studio
+                  Quantum Strategies
                 </Link>
                 <button className={styles.closeButton} onClick={closeMenu} aria-label="Close menu">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor">

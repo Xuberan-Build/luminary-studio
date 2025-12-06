@@ -9,7 +9,7 @@ export default function Values() {
       <section>
         <div className="hero-banner">
           <div className="hero-text">
-            <h1>Welcome to Luminary Studio</h1>
+            <h1>Welcome to Quantum Strategies</h1>
             <p>Discover the values that guide us and how we bring our vision to life.</p>
           </div>
           <div className="hero-image">

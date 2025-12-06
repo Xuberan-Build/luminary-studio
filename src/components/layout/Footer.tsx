@@ -9,7 +9,7 @@ export default function Footer() {
         <div className={styles.grid}>
           {/* Brand Column */}
           <div className={styles.brandColumn}>
-            <h3 className={styles.brandName}>Luminary Studio</h3>
+            <h3 className={styles.brandName}>Quantum Strategies</h3>
             <p className={styles.brandTagline}>
               Mastering the art of creating and adding value through strategic execution
             </p>
@@ -87,7 +87,7 @@ export default function Footer() {
 
         <div className={styles.bottom}>
           <p className={styles.copyright}>
-            © {new Date().getFullYear()} Luminary Studio. All rights reserved.
+            © {new Date().getFullYear()} Quantum Strategies. All rights reserved.
           </p>
         </div>
       </div>
