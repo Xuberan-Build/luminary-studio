@@ -1,0 +1,42 @@
+{
+  "id": "vcap",
+  "slug": "visionary-creators-activation-protocol",
+  "title": "Visionary Creator's Activation Protocol",
+  "tagline": "Reprogram Your Consciousness for Creative Life Mastery",
+  "description": "Master the 10 core presuppositions that separate visionary creators from those who stay stuck. This protocol integrates NLP, Psychocybernetics, and strategic frameworks to transform your identity, clarify your vision, and build systems that turn consciousness into commerce.",
+  "icon": "🧠",
+  "status": "active",
+  "pricing": {
+    "price": 997,
+    "currency": "USD",
+    "previewAvailable": true
+  },
+  "stats": {
+    "modules": 3,
+    "totalSlides": 125,
+    "totalDuration": "8 hours",
+    "students": "∞"
+  },
+  "outcomes": [
+    "Eliminate self-sabotage at unconscious level",
+    "Discover authentic Life's Task",
+    "Create predictable results through systems"
+  ],
+  "modules": [
+    {
+      "id": "module1",
+      "slug": "identity-presuppositions",
+      "order": 1
+    },
+    {
+      "id": "module2",
+      "slug": "vision-mission",
+      "order": 2
+    },
+    {
+      "id": "module3",
+      "slug": "strategic-frameworks",
+      "order": 3
+    }
+  ]
+}

@@ -1,0 +1,39 @@
+{
+  "id": "module3",
+  "number": "03",
+  "title": "The Manifestation Engine",
+  "subtitle": "Building Systems That Turn Consciousness Into Commerce",
+  "description": "Create predictable results through strategic frameworks and systems thinking. Become the obvious choice in your market by aligning consciousness with commercial strategy.",
+  "icon": "⚡",
+  "color": "#10B981",
+  "outcome": "Build systems that create predictable, scalable results",
+  "highlights": [
+    "Strategic Framework Implementation",
+    "Systems Thinking & Design",
+    "Market Positioning Strategy"
+  ],
+  "lessons": [
+    {
+      "id": "intro",
+      "title": "Introduction to Strategic Systems",
+      "type": "text",
+      "duration": 15,
+      "order": 1
+    },
+    {
+      "id": "slides",
+      "title": "Interactive Slide Presentation",
+      "type": "slides",
+      "slideCount": 35,
+      "order": 2
+    },
+    {
+      "id": "recitation",
+      "title": "Video Recitation: Systems Mastery",
+      "type": "video",
+      "videoId": "vimeo-placeholder",
+      "duration": 30,
+      "order": 3
+    }
+  ]
+}
