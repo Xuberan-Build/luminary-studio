@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { navigationConfig } from "@/lib/constants/navigation";
 import DropdownPortal from "./DropdownPortal";
 import MobileMenu from "./MobileMenu";
+import NestedMenuItem from "./NestedMenuItem";
 import styles from "./navbar.module.css";
 
 export default function Navbar() {
@@ -157,14 +158,11 @@ export default function Navbar() {
                                 <h3 className={styles.megaMenuTitle}>{section.title}</h3>
                                 <ul className={styles.megaMenuList}>
                                   {section.links.map((link, idx) => (
-                                    <li key={`${section.title}-${idx}`}>
-                                      <Link
-                                        href={link.href}
-                                        className={`${styles.megaMenuLink} ${isActive(link.href) ? styles.active : ""}`}
-                                      >
-                                        {link.label}
-                                      </Link>
-                                    </li>
+                                    <NestedMenuItem
+                                      key={`${section.title}-${idx}`}
+                                      link={link}
+                                      isActive={isActive}
+                                    />
                                   ))}
                                 </ul>
                               </div>

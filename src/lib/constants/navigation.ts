@@ -1,7 +1,8 @@
 export interface NavLink {
   label: string;
-  href: string;
+  href?: string;
   description?: string;
+  submenu?: NavLink[];
 }
 
 export interface NavSection {
@@ -31,28 +32,40 @@ export const navigationConfig = {
           {
             title: "Content Types",
             links: [
-              { label: "All Articles", href: "/articles" },
+              {
+                label: "Articles",
+                href: "/articles",
+                submenu: [
+                  {
+                    label: "Customer Acquisition",
+                    submenu: [
+                      { label: "Complete Guide", href: "/articles/customer-acquisition" },
+                      { label: "B2B Digital Marketing", href: "/articles/b2b-digital-marketing-strategy" },
+                      { label: "SEO Lead Generation", href: "/articles/seo-lead-generation" },
+                      { label: "Content Marketing", href: "/articles/content-marketing" },
+                    ],
+                  },
+                  {
+                    label: "Operations",
+                    submenu: [
+                      { label: "Automation Tools", href: "/articles/automation-tools" },
+                      { label: "CRM Implementation", href: "/articles/crm-implementation" },
+                      { label: "Marketing Operations", href: "/articles/marketing-operations" },
+                    ],
+                  },
+                  {
+                    label: "Product Development",
+                    submenu: [
+                      { label: "MVP Strategy", href: "/articles/mvp-strategy" },
+                      { label: "Product Market Fit", href: "/articles/product-market-fit" },
+                      { label: "User Research", href: "/articles/user-research" },
+                    ],
+                  },
+                ],
+              },
               { label: "Courses", href: "/courses" },
               { label: "White Papers", href: "/whitepapers" },
               { label: "Blog", href: "/blog" },
-            ],
-          },
-          {
-            title: "Customer Acquisition",
-            links: [
-              { label: "Complete Guide", href: "/articles/customer-acquisition" },
-              { label: "B2B Digital Marketing", href: "/articles/b2b-digital-marketing-strategy" },
-              { label: "SEO Lead Generation", href: "/articles/seo-lead-generation" },
-              { label: "Content Marketing", href: "/articles/content-marketing" },
-            ],
-          },
-          {
-            title: "Product & Operations",
-            links: [
-              { label: "Product Market Fit", href: "/articles/product-market-fit" },
-              { label: "MVP Strategy", href: "/articles/mvp-strategy" },
-              { label: "Marketing Operations", href: "/articles/marketing-operations" },
-              { label: "CRM Implementation", href: "/articles/crm-implementation" },
             ],
           },
         ],
