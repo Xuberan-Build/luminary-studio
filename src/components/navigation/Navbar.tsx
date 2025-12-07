@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation";
 import { navigationConfig } from "@/lib/constants/navigation";
 import DropdownPortal from "./DropdownPortal";
 import MobileMenu from "./MobileMenu";
-import NestedMenuItem from "./NestedMenuItem";
+import StackedMegaMenu from "./StackedMegaMenu";
 import styles from "./navbar.module.css";
 
 export default function Navbar() {
@@ -146,28 +146,14 @@ export default function Navbar() {
                     {activeDropdown === item.label && (
                       <DropdownPortal>
                         <div
-                          className={styles.megaMenu}
                           style={{ position: "fixed", top: `${dropdownPosition.top}px`, left: "50%", transform: "translateX(-50%)" }}
                           onMouseEnter={handleDropdownEnter}
-                          onMouseLeave={handleDropdownLeave}
                           role="menu"
                         >
-                          <div className={styles.megaMenuContent}>
-                            {item.megaMenu.sections.map((section) => (
-                              <div key={section.title} className={styles.megaMenuSection}>
-                                <h3 className={styles.megaMenuTitle}>{section.title}</h3>
-                                <ul className={styles.megaMenuList}>
-                                  {section.links.map((link, idx) => (
-                                    <NestedMenuItem
-                                      key={`${section.title}-${idx}`}
-                                      link={link}
-                                      isActive={isActive}
-                                    />
-                                  ))}
-                                </ul>
-                              </div>
-                            ))}
-                          </div>
+                          <StackedMegaMenu
+                            isActive={isActive}
+                            onMouseLeave={handleDropdownLeave}
+                          />
                         </div>
                       </DropdownPortal>
                     )}
