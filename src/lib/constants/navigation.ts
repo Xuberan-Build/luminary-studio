@@ -29,28 +29,30 @@ export const navigationConfig = {
       megaMenu: {
         sections: [
           {
+            title: "Content Types",
+            links: [
+              { label: "All Articles", href: "/articles" },
+              { label: "Courses", href: "/courses" },
+              { label: "White Papers", href: "/whitepapers" },
+              { label: "Blog", href: "/blog" },
+            ],
+          },
+          {
             title: "Customer Acquisition",
             links: [
-              { label: "Complete Guide", href: "/resources/customer-acquisition/complete-guide" },
-              { label: "B2B Digital Marketing Strategy", href: "/resources/customer-acquisition/b2b-digital-marketing-strategy" },
-              { label: "SEO Lead Generation", href: "/resources/customer-acquisition/seo-lead-generation" },
-              { label: "Content Marketing", href: "/resources/customer-acquisition/content-marketing" },
+              { label: "Complete Guide", href: "/articles/customer-acquisition" },
+              { label: "B2B Digital Marketing", href: "/articles/b2b-digital-marketing-strategy" },
+              { label: "SEO Lead Generation", href: "/articles/seo-lead-generation" },
+              { label: "Content Marketing", href: "/articles/content-marketing" },
             ],
           },
           {
-            title: "Product Development",
+            title: "Product & Operations",
             links: [
-              { label: "Product Market Fit", href: "/resources/product-development/product-market-fit" },
-              { label: "MVP Strategy", href: "/resources/product-development/mvp-strategy" },
-              { label: "User Research", href: "/resources/product-development/user-research" },
-            ],
-          },
-          {
-            title: "Operations & Systems",
-            links: [
-              { label: "Marketing Operations", href: "/resources/operations/marketing-operations" },
-              { label: "CRM Implementation", href: "/resources/operations/crm-implementation" },
-              { label: "Automation Tools", href: "/resources/operations/automation-tools" },
+              { label: "Product Market Fit", href: "/articles/product-market-fit" },
+              { label: "MVP Strategy", href: "/articles/mvp-strategy" },
+              { label: "Marketing Operations", href: "/articles/marketing-operations" },
+              { label: "CRM Implementation", href: "/articles/crm-implementation" },
             ],
           },
         ],
@@ -65,10 +67,10 @@ export const navigationConfig = {
       { label: "Contact", href: "/contact" },
     ],
     resources: [
-      { label: "All Resources", href: "/resources" },
-      { label: "Customer Acquisition", href: "/resources/customer-acquisition" },
-      { label: "Product Development", href: "/resources/product-development" },
-      { label: "Operations & Systems", href: "/resources/operations" },
+      { label: "Articles", href: "/articles" },
+      { label: "Courses", href: "/courses" },
+      { label: "White Papers", href: "/whitepapers" },
+      { label: "Blog", href: "/blog" },
     ],
     work: [
       { label: "Portfolio", href: "/portfolio" },
