@@ -5,24 +5,28 @@
   backdrop-filter: blur(20px);
   border: 1px solid rgba(150, 134, 214, 0.2);
   border-radius: 16px;
-  padding: 0;
+  margin-top: .8rem;
+  padding: .8rem;
   box-shadow: 0 12px 60px rgba(93, 63, 211, 0.4);
   overflow: hidden;
+  z-index: 10002;
+  position: relative;
 }
 
-/* Header */
-.header {
-  padding: 1.5rem 2rem;
-  font-size: 0.85rem;
-  font-weight: 700;
+/* Rows */
+.headerRow {
+  background: linear-gradient(135deg, rgba(93, 63, 211, 0.2) 0%, rgba(93, 63, 211, 0.05) 100%);
+  border-bottom: 2px solid rgba(150, 134, 214, 0.3);
+  padding: 1rem 1.5rem;
+}
+
+.headerRow .typeLink,
+.headerRow .typeLabel {
+  font-size: 1rem;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
-  color: #fefcfb !important;
-  background: linear-gradient(135deg, rgba(93, 63, 211, 0.3) 0%, rgba(93, 63, 211, 0.1) 100%);
-  border-bottom: 1px solid rgba(150, 134, 214, 0.2);
-  background: linear-gradient(135deg, #fefcfb 0%, #cebeff 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  padding: 0.75rem 1.75rem;
 }
 
 /* Rows */

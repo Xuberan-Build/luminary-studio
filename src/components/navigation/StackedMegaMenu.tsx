@@ -56,8 +56,49 @@ const contentTypes: ContentType[] = [
       },
     ],
   },
-  { label: "Courses", href: "/courses" },
-  { label: "White Papers", href: "/whitepapers" },
+  {
+    label: "Courses",
+    href: "/courses",
+    categories: [
+      {
+        label: "Visionary Creator's Activation Protocol",
+        articles: [
+          { label: "Reprogram Your Consciousness for Creative Life Mastery", href: "/courses/vcap" },
+          { label: "3 Modules • 125+ Interactive Slides • 8 Hours", href: "/courses/vcap" },
+          { label: "Preview Module 1 Free →", href: "/courses/vcap" },
+        ],
+      },
+      {
+        label: "Quantum Business Framework",
+        articles: [
+          { label: "Align Energy & Strategy for Sustainable Growth", href: "/courses/quantum-business-framework" },
+          { label: "Coming Soon: Consciousness Meets Commerce", href: "/courses" },
+        ],
+      },
+    ],
+  },
+  {
+    label: "White Papers",
+    href: "/whitepapers",
+    categories: [
+      {
+        label: "Energy & Business",
+        articles: [
+          { label: "Strategic Alignment: Bridging Consciousness & Commerce", href: "/whitepapers/strategic-alignment" },
+          { label: "Conscious Leadership in Modern Business", href: "/whitepapers/conscious-leadership" },
+          { label: "Energy Work as Competitive Advantage", href: "/whitepapers/energy-advantage" },
+        ],
+      },
+      {
+        label: "Transformation",
+        articles: [
+          { label: "From Hustle to Flow: Sustainable Growth", href: "/whitepapers/hustle-to-flow" },
+          { label: "Quantum Leaps in Business Development", href: "/whitepapers/quantum-leaps" },
+          { label: "The Awakened Entrepreneur Framework", href: "/whitepapers/awakened-entrepreneur" },
+        ],
+      },
+    ],
+  },
   { label: "Case Studies", href: "/portfolio" },
   { label: "Blog", href: "/blog" },
 ];
@@ -80,11 +121,8 @@ export default function StackedMegaMenu({ isActive, onMouseLeave }: StackedMegaM
 
   return (
     <div className={styles.stackedMenu} onMouseLeave={onMouseLeave}>
-      {/* Header */}
-      <div className={styles.header}>CONTENT TYPES</div>
-
-      {/* Row 1: Content Types (Horizontal) */}
-      <div className={styles.row}>
+      {/* Row 1: Content Types (Horizontal) - This IS the header */}
+      <div className={`${styles.row} ${styles.headerRow}`}>
         {contentTypes.map((type) => (
           <div
             key={type.label}
@@ -129,9 +167,9 @@ export default function StackedMegaMenu({ isActive, onMouseLeave }: StackedMegaM
       {/* Row 3: Articles (Vertical List) - Shows when hovering a category */}
       {activeCategoryData && (
         <div className={`${styles.articlesRow}`}>
-          {activeCategoryData.articles.map((article) => (
+          {activeCategoryData.articles.map((article, idx) => (
             <Link
-              key={article.href}
+              key={`${article.label}-${idx}`}
               href={article.href}
               className={`${styles.articleLink} ${isActive(article.href) ? styles.active : ""}`}
             >
