@@ -1,0 +1,127 @@
+.page {
+  position: fixed;
+  inset: 0;
+  background: #030048;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Header */
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.5rem;
+  background: rgba(3, 0, 72, 0.95);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(150, 134, 214, 0.2);
+  z-index: 100;
+}
+
+.exitButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(93, 63, 211, 0.2);
+  color: #B399FF;
+  border: 1px solid rgba(150, 134, 214, 0.3);
+  border-radius: 8px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.exitButton:hover {
+  background: rgba(93, 63, 211, 0.3);
+  border-color: rgba(150, 134, 214, 0.5);
+  color: #fefcfb;
+}
+
+.headerInfo {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.moduleTitle {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #B399FF;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.progress {
+  font-size: 0.875rem;
+  color: #9686D6;
+  font-variant-numeric: tabular-nums;
+}
+
+.spacer {
+  width: 80px; /* Match exit button width for centering */
+}
+
+/* Slideshow Container */
+.slideshowContainer {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+}
+
+.iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+/* Placeholder */
+.placeholder {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+  padding: 2rem;
+}
+
+.placeholder h1 {
+  font-size: 2rem;
+  color: #fefcfb;
+  margin: 0 0 1rem;
+}
+
+.placeholder p {
+  font-size: 1.125rem;
+  color: #9686D6;
+  margin: 0 0 2rem;
+}
+
+.placeholder .exitButton {
+  margin-top: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .header {
+    padding: 0.75rem 1rem;
+  }
+
+  .headerInfo {
+    gap: 1rem;
+  }
+
+  .moduleTitle,
+  .progress {
+    font-size: 0.75rem;
+  }
+
+  .spacer {
+    display: none;
+  }
+}

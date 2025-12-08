@@ -1,0 +1,428 @@
+.page {
+  min-height: 100vh;
+}
+
+/* Hero Section */
+.hero {
+  position: relative;
+  padding: 6rem 2rem 5rem;
+  background: linear-gradient(180deg, rgba(93, 63, 211, 0.08) 0%, transparent 100%);
+  overflow: hidden;
+}
+
+.heroContent {
+  max-width: 900px;
+  margin: 0 auto;
+  text-align: center;
+  position: relative;
+}
+
+.badge {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background: rgba(93, 63, 211, 0.2);
+  color: #B399FF;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  border-radius: 20px;
+  margin-bottom: 1.5rem;
+}
+
+.heroTitle {
+  font-size: clamp(2rem, 5vw, 3.5rem);
+  font-weight: 800;
+  color: #fefcfb;
+  margin: 0 0 1rem;
+  line-height: 1.1;
+}
+
+.heroSubtitle {
+  font-size: clamp(1.25rem, 2.5vw, 1.75rem);
+  color: #B399FF;
+  font-weight: 600;
+  margin: 0 0 1.5rem;
+  line-height: 1.3;
+}
+
+.heroDescription {
+  font-size: 1.125rem;
+  color: #9686D6;
+  line-height: 1.7;
+  margin: 0 0 3rem;
+}
+
+.trustIndicators {
+  display: flex;
+  justify-content: center;
+  gap: 2.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 3rem;
+}
+
+.indicator {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.indicatorIcon {
+  font-size: 1.5rem;
+}
+
+.indicatorValue {
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: #fefcfb;
+}
+
+.indicatorLabel {
+  font-size: 0.875rem;
+  color: #9686D6;
+}
+
+.heroCTA {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.primaryButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 2.5rem;
+  background: linear-gradient(135deg, #5D3FD3 0%, #9333EA 100%);
+  color: #fefcfb;
+  font-weight: 700;
+  font-size: 1.125rem;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 30px rgba(93, 63, 211, 0.3);
+}
+
+.primaryButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(93, 63, 211, 0.5);
+}
+
+.secondaryButton {
+  display: inline-flex;
+  align-items: center;
+  padding: 1rem 2.5rem;
+  background: transparent;
+  color: #B399FF;
+  font-weight: 600;
+  font-size: 1.125rem;
+  border: 2px solid rgba(150, 134, 214, 0.3);
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+}
+
+.secondaryButton:hover {
+  border-color: rgba(150, 134, 214, 0.6);
+  background: rgba(93, 63, 211, 0.1);
+}
+
+/* Transform Section */
+.transformSection {
+  padding: 5rem 2rem;
+}
+
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.sectionTitle {
+  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-weight: 700;
+  color: #fefcfb;
+  text-align: center;
+  margin: 0 0 1rem;
+}
+
+.sectionSubtitle {
+  font-size: 1.125rem;
+  color: #9686D6;
+  text-align: center;
+  max-width: 700px;
+  margin: 0 auto 4rem;
+  line-height: 1.6;
+}
+
+.transformGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+.transformCard {
+  background: linear-gradient(135deg, rgba(93, 63, 211, 0.1) 0%, rgba(93, 63, 211, 0.05) 100%);
+  border: 1px solid rgba(150, 134, 214, 0.2);
+  border-radius: 12px;
+  padding: 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.transformCard::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: linear-gradient(90deg, #5D3FD3 0%, #9333EA 100%);
+}
+
+.transformNumber {
+  font-size: 3rem;
+  font-weight: 800;
+  background: linear-gradient(135deg, #5D3FD3 0%, #9333EA 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  opacity: 0.5;
+  margin-bottom: 1rem;
+}
+
+.transformTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fefcfb;
+  margin: 0 0 0.5rem;
+}
+
+.transformSubtitle {
+  font-size: 0.9375rem;
+  color: #9686D6;
+  margin: 0 0 1.5rem;
+}
+
+.transformList {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.transformList li {
+  font-size: 0.9375rem;
+  color: #B399FF;
+  padding-left: 1.5rem;
+  position: relative;
+}
+
+.transformList li::before {
+  content: '→';
+  position: absolute;
+  left: 0;
+  color: #5D3FD3;
+  font-weight: bold;
+}
+
+/* Curriculum Section */
+.curriculumSection {
+  padding: 5rem 2rem;
+  background: rgba(93, 63, 211, 0.03);
+}
+
+.modulesTimeline {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.timelineItem {
+  position: relative;
+}
+
+.connector {
+  position: absolute;
+  left: 50%;
+  bottom: -3rem;
+  width: 2px;
+  height: 3rem;
+  background: linear-gradient(180deg, rgba(150, 134, 214, 0.5) 0%, rgba(150, 134, 214, 0.1) 100%);
+  transform: translateX(-50%);
+}
+
+/* Outcome Section */
+.outcomeSection {
+  padding: 5rem 2rem;
+}
+
+.outcomeContent {
+  max-width: 800px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.outcomeParagraph {
+  font-size: 1.25rem;
+  color: #B399FF;
+  line-height: 1.8;
+  margin: 0 0 2rem;
+}
+
+.outcomeParagraph strong {
+  color: #fefcfb;
+  font-weight: 700;
+}
+
+/* Enroll Section */
+.enrollSection {
+  padding: 5rem 2rem;
+  background: linear-gradient(135deg, rgba(93, 63, 211, 0.1) 0%, rgba(93, 63, 211, 0.05) 100%);
+}
+
+.enrollCard {
+  max-width: 700px;
+  margin: 0 auto;
+  text-align: center;
+  background: rgba(3, 0, 72, 0.5);
+  border: 2px solid rgba(150, 134, 214, 0.3);
+  border-radius: 16px;
+  padding: 3rem 2rem;
+  position: relative;
+  overflow: hidden;
+}
+
+.enrollCard::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at top center, rgba(93, 63, 211, 0.3), transparent 70%);
+  pointer-events: none;
+}
+
+.enrollTitle {
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  font-weight: 700;
+  color: #fefcfb;
+  margin: 0 0 1rem;
+  position: relative;
+}
+
+.enrollDescription {
+  font-size: 1.125rem;
+  color: #9686D6;
+  margin: 0 0 2rem;
+  position: relative;
+}
+
+.enrollButtons {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+}
+
+.enrollButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1.25rem 3rem;
+  background: linear-gradient(135deg, #5D3FD3 0%, #9333EA 100%);
+  color: #fefcfb;
+  font-weight: 700;
+  font-size: 1.25rem;
+  border-radius: 12px;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  box-shadow: 0 8px 30px rgba(93, 63, 211, 0.4);
+}
+
+.enrollButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 40px rgba(93, 63, 211, 0.6);
+}
+
+.enrollNote {
+  font-size: 0.875rem;
+  color: #9686D6;
+}
+
+/* FAQ Section */
+.faqSection {
+  padding: 5rem 2rem;
+}
+
+.faqGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.faqItem {
+  background: rgba(93, 63, 211, 0.05);
+  border: 1px solid rgba(150, 134, 214, 0.2);
+  border-radius: 12px;
+  padding: 2rem;
+}
+
+.faqQuestion {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #fefcfb;
+  margin: 0 0 1rem;
+}
+
+.faqAnswer {
+  font-size: 1rem;
+  color: #9686D6;
+  line-height: 1.7;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .hero {
+    padding: 4rem 1.5rem 3rem;
+  }
+
+  .trustIndicators {
+    gap: 1.5rem;
+  }
+
+  .heroCTA {
+    flex-direction: column;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .transformSection,
+  .curriculumSection,
+  .outcomeSection,
+  .enrollSection,
+  .faqSection {
+    padding: 3rem 1.5rem;
+  }
+
+  .transformGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .enrollCard {
+    padding: 2rem 1.5rem;
+  }
+
+  .faqGrid {
+    grid-template-columns: 1fr;
+  }
+}
