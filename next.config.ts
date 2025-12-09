@@ -1,7 +1,7 @@
 import type { NextConfig } from "next";
 
 const config: NextConfig = {
-  // Removed static export for SSR support (needed for courses with auth)
+  output: 'export',
   images: { unoptimized: true },
   trailingSlash: true,
   pageExtensions: ["js","jsx","ts","tsx","md","mdx"],
