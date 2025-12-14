@@ -1,6 +1,7 @@
 import { Metadata } from "next";
 import ProductHeader from "@/components/products/ProductHeader";
 import StripeCheckout from "@/components/products/StripeCheckout";
+import { PRODUCTS } from "@/lib/constants/products";
 import styles from "./quantum-initiation.module.css";
 
 export const metadata: Metadata = {
@@ -10,6 +11,7 @@ export const metadata: Metadata = {
 };
 
 export default function QuantumInitiationPage() {
+  const product = PRODUCTS['quantum-initiation'];
   return (
     <div className={styles.page}>
       <ProductHeader />
@@ -140,7 +142,11 @@ export default function QuantumInitiationPage() {
             </ul>
 
             {/* Stripe Checkout */}
-            <StripeCheckout />
+            <StripeCheckout
+              paymentLink={product.stripePaymentLink}
+              productName={product.name}
+              price={product.price}
+            />
 
             <div className={styles.guarantee}>
               🔒 Secure checkout • Instant delivery • No recurring charges

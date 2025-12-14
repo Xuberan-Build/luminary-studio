@@ -4,10 +4,15 @@ import { useEffect, useState } from "react";
 import Script from "next/script";
 import styles from "./stripe-checkout.module.css";
 
-export default function StripeCheckout() {
+interface StripeCheckoutProps {
+  paymentLink: string;
+  productName: string;
+  price: number;
+}
+
+export default function StripeCheckout({ paymentLink, productName, price }: StripeCheckoutProps) {
   const [isStripeLoaded, setIsStripeLoaded] = useState(false);
   const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
-  const paymentLink = process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK;
 
   const handleCheckout = () => {
     if (paymentLink) {
@@ -47,7 +52,7 @@ export default function StripeCheckout() {
           className={styles.checkoutButton}
           disabled={!isStripeLoaded}
         >
-          Purchase Quantum Initiation - $7
+          Purchase {productName} - ${price}
         </button>
         <p className={styles.checkoutNote}>
           Secure checkout powered by Stripe • Instant access
