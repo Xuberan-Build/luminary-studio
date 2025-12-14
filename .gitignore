@@ -14,3 +14,17 @@ coverage/
 # Env
 .env*
 !.env.example
+
+# Documentation (private plans and architecture)
+docs/
+*_ARCHITECTURE.md
+*_STRUCTURE.md
+*_PLAN.md
+*_INTEGRATION.md
+COURSE_*.md
+MIGRATION_*.md
+SLIDESHOW_*.md
+
+# System files
+.DS_Store
+*.DS_Store
