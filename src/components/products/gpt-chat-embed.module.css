@@ -1,0 +1,96 @@
+.container {
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  background: #030048;
+  min-height: calc(100vh - 80px);
+}
+
+.iframe {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: white;
+}
+
+.loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: #030048;
+  color: #F8F5FF;
+  z-index: 10;
+  gap: 1rem;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid rgba(192, 132, 252, 0.2);
+  border-top-color: #C084FC;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.warning,
+.placeholder {
+  max-width: 600px;
+  margin: 4rem auto;
+  padding: 3rem;
+  background: linear-gradient(135deg, rgba(9, 0, 24, 0.8) 0%, rgba(26, 0, 51, 0.6) 100%);
+  border: 1px solid rgba(192, 132, 252, 0.3);
+  border-radius: 16px;
+  text-align: center;
+  color: #F8F5FF;
+}
+
+.warning h2,
+.placeholder h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #F8F5FF;
+}
+
+.warning p,
+.placeholder p {
+  font-size: 1rem;
+  color: rgba(248, 245, 255, 0.8);
+  margin-bottom: 1.5rem;
+}
+
+.warning a,
+.placeholder a {
+  display: inline-block;
+  margin-top: 1.5rem;
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #9333EA, #C084FC);
+  border-radius: 9999px;
+  color: #F8F5FF;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.warning a:hover,
+.placeholder a:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(147, 51, 234, 0.4);
+}
+
+@media (max-width: 768px) {
+  .warning,
+  .placeholder {
+    margin: 2rem 1rem;
+    padding: 2rem;
+  }
+}

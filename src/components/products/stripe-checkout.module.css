@@ -1,0 +1,145 @@
+.checkoutContainer {
+  margin: 2rem 0;
+}
+
+/* Checkout Button - Matching Results Cards */
+.checkoutButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 1.25rem 2rem;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #090018 0%, #1a0033 100%);
+  border: 1px solid rgba(192, 132, 252, 0.4);
+  box-shadow:
+    0 0 30px rgba(147, 51, 234, 0.25),
+    0 8px 20px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  font-size: 1.15rem;
+  font-weight: 600;
+  color: #f8f5ff;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+  text-align: center;
+}
+
+.checkoutButton::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: linear-gradient(
+    135deg,
+    rgba(147, 51, 234, 0.15) 0%,
+    rgba(192, 132, 252, 0.15) 100%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.checkoutButton:hover {
+  transform: scale(1.02);
+  box-shadow:
+    0 0 40px rgba(147, 51, 234, 0.35),
+    0 12px 28px rgba(0, 0, 0, 0.5),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  border-color: rgba(192, 132, 252, 0.6);
+}
+
+.checkoutButton:hover::before {
+  opacity: 1;
+}
+
+.checkoutNote {
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: rgba(233, 213, 255, 0.6);
+  text-align: center;
+}
+
+/* Placeholder States */
+.placeholder {
+  padding: 2rem;
+  background: rgba(147, 51, 234, 0.05);
+  border: 2px dashed rgba(192, 132, 252, 0.3);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.placeholderTitle {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #f8f5ff;
+  margin-bottom: 0.75rem;
+}
+
+.placeholderText {
+  font-size: 0.95rem;
+  color: rgba(248, 245, 255, 0.7);
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.placeholderText code {
+  background: rgba(147, 51, 234, 0.2);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-family: "Courier New", monospace;
+  font-size: 0.9em;
+  color: #e9d5ff;
+}
+
+.placeholderSteps {
+  text-align: left;
+  max-width: 500px;
+  margin: 0 auto;
+  padding-left: 1.5rem;
+}
+
+.placeholderSteps li {
+  margin-bottom: 0.5rem;
+  color: rgba(248, 245, 255, 0.7);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.placeholderSteps code {
+  background: rgba(147, 51, 234, 0.2);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  font-family: "Courier New", monospace;
+  font-size: 0.85em;
+  color: #e9d5ff;
+}
+
+/* Embed Placeholder */
+.embedPlaceholder {
+  padding: 3rem 2rem;
+  background: rgba(9, 0, 24, 0.4);
+  border: 1px solid rgba(192, 132, 252, 0.2);
+  border-radius: 12px;
+  text-align: center;
+}
+
+.embedText {
+  font-size: 1rem;
+  color: rgba(248, 245, 255, 0.7);
+  margin-bottom: 0.5rem;
+}
+
+.embedHint {
+  font-size: 0.85rem;
+  color: rgba(233, 213, 255, 0.5);
+}
+
+.embedHint code {
+  background: rgba(147, 51, 234, 0.2);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  font-family: "Courier New", monospace;
+  color: #e9d5ff;
+}

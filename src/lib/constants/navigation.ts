@@ -71,7 +71,16 @@ export const navigationConfig = {
         ],
       },
     },
-    { label: "Contact", href: "/contact" },
+    {
+      label: "Products",
+      dropdown: [
+        {
+          label: "Quantum Initiation Protocol",
+          href: "/products/quantum-initiation",
+          description: "Your AI Brand Strategist - $7"
+        },
+      ],
+    },
   ],
   footer: {
     company: [

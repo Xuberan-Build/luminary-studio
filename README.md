@@ -50,6 +50,25 @@ Deployed on Netlify with automatic deployments from the `nextjs` branch.
 - `NEXT_PUBLIC_SUPABASE_URL`
 - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - `SUPABASE_SERVICE_ROLE_KEY`
+- `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY` - Stripe publishable key
+- `NEXT_PUBLIC_STRIPE_PAYMENT_LINK` - Default Stripe payment link
+- `NEXT_PUBLIC_STRIPE_PAYMENT_LINK_QUANTUM` - Quantum Initiation product payment link
+- `NEXT_PUBLIC_GPT_IFRAME_URL_QUANTUM` - Quantum Initiation GPT iframe URL
+
+## GPT Products
+
+The site includes embedded GPT knowledge products. Each product has:
+- Dedicated sales page at `/products/{slug}`
+- Interaction page at `/products/{slug}/interact` (post-purchase)
+- Product-specific Stripe payment link with redirect
+- Embedded ChatGPT iframe for interaction
+
+**Adding New GPT Products:**
+1. Add product config to `/src/lib/constants/products.ts`
+2. Create product directory under `/src/app/(content)/products/{slug}/`
+3. Add interact page by copying from existing product
+4. Configure Stripe payment link success URL
+5. Add environment variables for payment link and GPT iframe URL
 
 ## Documentation
 
