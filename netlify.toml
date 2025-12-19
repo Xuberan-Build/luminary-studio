@@ -7,6 +7,10 @@
   # Allow NEXT_PUBLIC_* vars in build output (they're meant to be public)
   SECRETS_SCAN_OMIT_KEYS = "NEXT_PUBLIC_STRIPE_PAYMENT_LINK_QUANTUM,NEXT_PUBLIC_GPT_IFRAME_URL_QUANTUM,NEXT_PUBLIC_STRIPE_PAYMENT_LINK,NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY"
 
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
 [[redirects]]
   from = "/*"
   to = "/index.html"
