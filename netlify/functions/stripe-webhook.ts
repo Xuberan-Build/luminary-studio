@@ -24,10 +24,11 @@ async function sendGPTAccessEmail(params: {
   productName: string;
   gptLink: string;
 }) {
-  // Load Gmail service account
-  const credentials = JSON.parse(
-    Buffer.from(process.env.GOOGLE_GMAIL_SERVICE_ACCOUNT_BASE64 || '', 'base64').toString('utf-8')
-  );
+  // Load Gmail service account from file (avoids AWS Lambda env var size limit)
+  const fs = require('fs');
+  const path = require('path');
+  const credentialsPath = path.join(__dirname, '..', '..', '.netlify-functions-data', 'gmail-service-account.json');
+  const credentials = JSON.parse(fs.readFileSync(credentialsPath, 'utf-8'));
 
   const auth = new google.auth.JWT({
     email: credentials.client_email,
@@ -302,10 +303,11 @@ async function logToGoogleSheets(data: {
   emailSent: string;
   status: string;
 }) {
-  // Load Drive service account
-  const credentials = JSON.parse(
-    Buffer.from(process.env.GOOGLE_DRIVE_SERVICE_ACCOUNT_BASE64 || '', 'base64').toString('utf-8')
-  );
+  // Load Drive service account from file (avoids AWS Lambda env var size limit)
+  const fs = require('fs');
+  const path = require('path');
+  const credentialsPath = path.join(__dirname, '..', '..', '.netlify-functions-data', 'drive-service-account.json');
+  const credentials = JSON.parse(fs.readFileSync(credentialsPath, 'utf-8'));
 
   const auth = new google.auth.JWT({
     email: credentials.client_email,

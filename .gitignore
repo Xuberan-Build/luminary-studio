@@ -17,6 +17,7 @@ coverage/
 
 # Secrets & Credentials
 .secrets/
+.netlify-functions-data/
 secrets/
 sercrets/
 *.json

@@ -1,5 +1,5 @@
 [build]
-  command = "npm run build"
+  command = "node scripts/prepare-function-secrets.js && npm run build"
   publish = "out"
 
 [build.environment]
@@ -10,6 +10,7 @@
 [functions]
   directory = "netlify/functions"
   node_bundler = "nft"
+  included_files = [".netlify-functions-data/**"]
 
 [[redirects]]
   from = "/*"
