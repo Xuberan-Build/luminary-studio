@@ -7,11 +7,14 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2024-12-18.acacia',
 });
 
-// Product configuration
-const PRODUCTS: Record<string, { name: string; gptLink: string }> = {
+// Product configuration (hardcoded to reduce env var size)
+const PRODUCTS: Record<string, { name: string; gptLink: string; sheetId: string; fromEmail: string; fromName: string }> = {
   'quantum-initiation': {
     name: 'Quantum Initiation Protocol',
-    gptLink: process.env.NEXT_PUBLIC_GPT_IFRAME_URL_QUANTUM || '',
+    gptLink: 'https://chatgpt.com/g/g-693966abf2ec81918f1f5c99802f7962-quantum-activation-initiation',
+    sheetId: '1EhC-MCjlqG_4otRZjxefEpttR98s5rXqr98vj2TnLTE',
+    fromEmail: 'austin@xuberandigital.com',
+    fromName: 'Quantum Strategies',
   },
 };
 
@@ -23,6 +26,8 @@ async function sendGPTAccessEmail(params: {
   name: string;
   productName: string;
   gptLink: string;
+  fromEmail: string;
+  fromName: string;
 }) {
   // Load Gmail service account from minimal env vars (avoids AWS Lambda 4KB limit)
   const credentials = {
@@ -34,13 +39,10 @@ async function sendGPTAccessEmail(params: {
     email: credentials.client_email,
     key: credentials.private_key,
     scopes: ['https://www.googleapis.com/auth/gmail.send'],
-    subject: process.env.GMAIL_FROM_EMAIL, // Impersonate this email
+    subject: params.fromEmail, // Impersonate this email
   });
 
   const gmail = google.gmail({ version: 'v1', auth });
-
-  const fromEmail = process.env.GMAIL_FROM_EMAIL || 'austin@xuberandigital.com';
-  const fromName = process.env.GMAIL_FROM_NAME || 'Quantum Strategies';
 
   // Create HTML email
   const emailHtml = `
@@ -184,7 +186,7 @@ async function sendGPTAccessEmail(params: {
       <p><strong>❓ Need Help?</strong></p>
       <ul>
         <li><strong>No ChatGPT Plus?</strong> <a href="https://openai.com/chatgpt/pricing" style="color: #6C5CE7;">Sign up here</a></li>
-        <li><strong>Questions?</strong> Email us at ${fromEmail}</li>
+        <li><strong>Questions?</strong> Email us at ${params.fromEmail}</li>
         <li><strong>Lost this email?</strong> Check your spam folder or contact us</li>
       </ul>
 
@@ -237,7 +239,7 @@ WHAT TO EXPECT:
 
 NEED HELP?
 - No ChatGPT Plus? Sign up: https://openai.com/chatgpt/pricing
-- Questions? Email: ${fromEmail}
+- Questions? Email: ${params.fromEmail}
 - Lost this email? Check spam folder or contact us
 
 Ready to build your Quantum Blueprint? Let's get started!
@@ -252,7 +254,7 @@ quantumstrategies.online
 
   // Compose email
   const email = [
-    `From: "${fromName}" <${fromEmail}>`,
+    `From: "${params.fromName}" <${params.fromEmail}>`,
     `To: ${params.to}`,
     `Subject: 🎉 Your ${params.productName} is Ready!`,
     'MIME-Version: 1.0',
@@ -302,6 +304,7 @@ async function logToGoogleSheets(data: {
   gptLink: string;
   emailSent: string;
   status: string;
+  sheetId: string;
 }) {
   // Load Drive service account from minimal env vars (avoids AWS Lambda 4KB limit)
   const credentials = {
@@ -316,7 +319,7 @@ async function logToGoogleSheets(data: {
   });
 
   const sheets = google.sheets({ version: 'v4', auth });
-  const spreadsheetId = process.env.GOOGLE_SHEET_ID;
+  const spreadsheetId = data.sheetId;
 
   await sheets.spreadsheets.values.append({
     spreadsheetId,
@@ -416,6 +419,8 @@ export const handler: Handler = async (event: HandlerEvent) => {
         name: customerName,
         productName: product.name,
         gptLink: product.gptLink,
+        fromEmail: product.fromEmail,
+        fromName: product.fromName,
       });
 
       emailSent = '✅ Sent';
@@ -442,6 +447,7 @@ export const handler: Handler = async (event: HandlerEvent) => {
         gptLink: product.gptLink,
         emailSent,
         status,
+        sheetId: product.sheetId,
       });
 
       console.log('Logged to Google Sheets successfully');
