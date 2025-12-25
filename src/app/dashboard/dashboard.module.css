@@ -1,0 +1,200 @@
+.container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #030048 0%, #1a0066 100%);
+}
+
+.header {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 24px;
+}
+
+.headerContent {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.header h1 {
+  color: #F8F5FF;
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.signOutButton {
+  padding: 10px 20px;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.signOutButton:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+.main {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.section {
+  margin-bottom: 48px;
+}
+
+.section h2 {
+  color: #F8F5FF;
+  font-size: 24px;
+  font-weight: 700;
+  margin: 0 0 24px 0;
+}
+
+.emptyState {
+  background: white;
+  border-radius: 12px;
+  padding: 48px;
+  text-align: center;
+}
+
+.emptyState p {
+  font-size: 18px;
+  color: #666;
+  margin: 0 0 24px 0;
+}
+
+.browseButton {
+  display: inline-block;
+  padding: 14px 28px;
+  background: #6C5CE7;
+  color: white;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.browseButton:hover {
+  background: #5b4bc4;
+}
+
+.productGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 24px;
+}
+
+.productCard {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.productCard:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+}
+
+.productHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  margin-bottom: 12px;
+}
+
+.productHeader h3 {
+  font-size: 20px;
+  font-weight: 700;
+  color: #030048;
+  margin: 0;
+  flex: 1;
+}
+
+.badge {
+  background: #22c55e;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.badgeInProgress {
+  background: #f59e0b;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.productDescription {
+  color: #666;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 0 0 16px 0;
+  flex: 1;
+}
+
+.productMeta {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  font-size: 14px;
+  color: #999;
+}
+
+.productButton {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: #6C5CE7;
+  color: white;
+  text-align: center;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  transition: background 0.2s;
+}
+
+.productButton:hover {
+  background: #5b4bc4;
+}
+
+.productActions {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+  flex-wrap: wrap;
+}
+
+.secondaryButton {
+  display: inline-block;
+  padding: 10px 14px;
+  background: rgba(108, 92, 231, 0.1);
+  color: #6C5CE7;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
+  border: 1px solid rgba(108, 92, 231, 0.3);
+  transition: background 0.2s, border 0.2s;
+}
+
+.secondaryButton:hover {
+  background: rgba(108, 92, 231, 0.15);
+  border-color: rgba(108, 92, 231, 0.45);
+}

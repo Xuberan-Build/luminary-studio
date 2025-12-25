@@ -26,9 +26,7 @@ export default function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <FlashOverlay active={false} />
-        <Navbar />
-        <main style={{ minHeight: "100vh", paddingTop: "80px" }}>{children}</main>
-        <Footer />
+        {children}
       </body>
     </html>
   );

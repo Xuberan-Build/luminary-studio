@@ -3,11 +3,16 @@ export interface ProductConfig {
   name: string;
   price: number;
   stripePaymentLink: string;
-  gptIframeUrl: string;
-  interactTitle: string;
-  interactInstructions: string;
-  estimatedDuration: string;
-  requiresChatGPTPlus?: boolean;
+  interactTitle?: string;
+  interactInstructions?: string;
+  estimatedDuration?: string;
+  gptIframeUrl?: string;
+
+  // Webhook & Email configuration
+  sheetId: string; // Google Sheet ID for CRM logging
+  fromEmail: string; // Sender email address
+  fromName: string; // Sender name
+  gptLink?: string; // legacy GPT link, optional
 }
 
 export const PRODUCTS: Record<string, ProductConfig> = {
@@ -15,15 +20,35 @@ export const PRODUCTS: Record<string, ProductConfig> = {
     slug: 'quantum-initiation',
     name: 'Quantum Initiation Protocol',
     price: 7,
-    stripePaymentLink: process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK_QUANTUM || '',
-    gptIframeUrl: process.env.NEXT_PUBLIC_GPT_IFRAME_URL_QUANTUM || '',
     interactTitle: 'Build Your Quantum Blueprint',
-    interactInstructions: 'Answer the questions below to generate your personalized brand strategy mapped to your Astrology and Human Design. This is a conversational process—be honest and thorough for the best results.',
-    estimatedDuration: '10-15 minutes',
-    requiresChatGPTPlus: true,
+    interactInstructions: 'Complete the guided intake to personalize your blueprint.',
+    estimatedDuration: '15-30 minutes',
+    gptIframeUrl: '',
+    stripePaymentLink: process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK_QUANTUM || '',
+    sheetId: '1EhC-MCjlqG_4otRZjxefEpttR98s5rXqr98vj2TnLTE',
+    fromEmail: 'austin@xuberandigital.com',
+    fromName: 'Quantum Strategies',
+  },
+
+  'quantum-structure-profit-scale': {
+    slug: 'quantum-structure-profit-scale',
+    name: 'Quantum Structure, Profit & Scale',
+    price: 14,
+    interactTitle: 'Structure, Profit & Scale',
+    interactInstructions: 'Walk through the strategic intake to map your profit plan.',
+    estimatedDuration: '25-35 minutes',
+    gptIframeUrl: '',
+    stripePaymentLink: process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK_STRUCTURE || '',
+    sheetId: '1EhC-MCjlqG_4otRZjxefEpttR98s5rXqr98vj2TnLTE',
+    fromEmail: 'austin@xuberandigital.com',
+    fromName: 'Quantum Strategies',
   },
 };
 
 export function getProductBySlug(slug: string): ProductConfig | null {
   return PRODUCTS[slug] || null;
+}
+
+export function getAllProducts(): ProductConfig[] {
+  return Object.values(PRODUCTS);
 }

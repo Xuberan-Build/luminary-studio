@@ -14,7 +14,6 @@ coverage/
 # Env
 .env*
 !.env.example
-!.env.production
 
 # Secrets & Credentials
 .secrets/
@@ -43,3 +42,4 @@ SLIDESHOW_*.md
 # System files
 .DS_Store
 *.DS_Store
+.vercel

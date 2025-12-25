@@ -1,3 +1,5 @@
+@import "tailwindcss";
+
 /* ===== Design tokens (mobile-first) ===== */
 :root{
   --bg: #0b000f;

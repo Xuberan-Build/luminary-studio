@@ -1,31 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
 import { google } from 'googleapis';
+import { PRODUCTS, getProductBySlug } from '@/lib/constants/products';
+import { supabaseAdmin } from '@/lib/supabase/server';
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-12-15.clover',
 });
 
-// Product configuration (hardcoded to reduce env var size)
-const PRODUCTS: Record<string, { name: string; gptLink: string; sheetId: string; fromEmail: string; fromName: string }> = {
-  'quantum-initiation': {
-    name: 'Quantum Initiation Protocol',
-    gptLink: 'https://chatgpt.com/g/g-693966abf2ec81918f1f5c99802f7962-quantum-activation-initiation',
-    sheetId: '1EhC-MCjlqG_4otRZjxefEpttR98s5rXqr98vj2TnLTE',
-    fromEmail: 'austin@xuberandigital.com',
-    fromName: 'Quantum Strategies',
-  },
-};
-
 /**
  * Send GPT access email via Gmail API
  */
-async function sendGPTAccessEmail(params: {
+async function sendProductAccessEmail(params: {
   to: string;
   name: string;
   productName: string;
-  gptLink: string;
   fromEmail: string;
   fromName: string;
 }) {
@@ -45,6 +35,8 @@ async function sendGPTAccessEmail(params: {
   const gmail = google.gmail({ version: 'v1', auth });
 
   // Create HTML email
+  const dashboardUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://quantumstrategies.online'}/dashboard`;
+
   const emailHtml = `
 <!DOCTYPE html>
 <html>
@@ -99,23 +91,16 @@ async function sendGPTAccessEmail(params: {
     .button:hover {
       background: #5b4bc4;
     }
-    .gpt-link {
-      background: #f8f9fa;
-      padding: 16px;
-      border-radius: 8px;
-      border-left: 4px solid #6C5CE7;
-      margin: 24px 0;
-      word-break: break-all;
-    }
     .instructions {
-      background: #fff8e1;
+      background: #e8f5e9;
       padding: 20px;
       border-radius: 8px;
       margin: 24px 0;
+      border-left: 4px solid #4caf50;
     }
     .instructions h3 {
       margin: 0 0 12px 0;
-      color: #f57c00;
+      color: #2e7d32;
       font-size: 18px;
     }
     .instructions ol {
@@ -152,45 +137,39 @@ async function sendGPTAccessEmail(params: {
     <div class="content">
       <p>Hi ${params.name},</p>
 
-      <p><strong>Thank you for your purchase!</strong> Your AI Brand Strategist is ready and waiting for you.</p>
+      <p><strong>Thank you for your purchase!</strong> Your personalized product experience is ready.</p>
 
       <div class="instructions">
-        <h3>📋 How to Access Your Custom GPT:</h3>
+        <h3>🚀 Getting Started (Simple 3-Step Process):</h3>
         <ol>
-          <li><strong>You need ChatGPT Plus</strong> - Make sure you have an active ChatGPT Plus subscription ($20/month from OpenAI)</li>
-          <li><strong>Click the button below</strong> or use the link to access your custom GPT</li>
-          <li><strong>Bookmark it!</strong> Save the link so you can access it anytime</li>
-          <li><strong>Start your session</strong> - The GPT will guide you through building your Quantum Blueprint</li>
+          <li><strong>Log in to your dashboard</strong> - Click the button below to access your account</li>
+          <li><strong>Start your experience</strong> - You'll see "${params.productName}" in your dashboard</li>
+          <li><strong>Complete the guided process</strong> - Answer questions and receive your deliverable</li>
         </ol>
       </div>
 
       <div style="text-align: center;">
-        <a href="${params.gptLink}" class="button">🚀 Access Your GPT Now</a>
-      </div>
-
-      <div class="gpt-link">
-        <strong>Your GPT Link:</strong><br>
-        <a href="${params.gptLink}" style="color: #6C5CE7;">${params.gptLink}</a>
+        <a href="${dashboardUrl}" class="button">Access Your Dashboard</a>
       </div>
 
       <p><strong>💡 What to Expect:</strong></p>
       <ul>
-        <li>A conversational AI trained on the Quantum Business Framework</li>
-        <li>Personalized insights based on your Astrology & Human Design</li>
-        <li>Strategic guidance aligned with your unique energetic blueprint</li>
-        <li>10-15 minute guided session to build your brand strategy</li>
+        <li>Step-by-step guided questionnaire</li>
+        <li>AI-powered insights based on your responses</li>
+        <li>Personalized deliverable generated at the end</li>
+        <li>Full progress tracking - pause and resume anytime</li>
       </ul>
 
       <hr>
 
       <p><strong>❓ Need Help?</strong></p>
       <ul>
-        <li><strong>No ChatGPT Plus?</strong> <a href="https://openai.com/chatgpt/pricing" style="color: #6C5CE7;">Sign up here</a></li>
+        <li><strong>First time?</strong> Create your account using the email: ${params.to}</li>
         <li><strong>Questions?</strong> Email us at ${params.fromEmail}</li>
-        <li><strong>Lost this email?</strong> Check your spam folder or contact us</li>
+        <li><strong>Technical issues?</strong> We're here to help!</li>
       </ul>
 
-      <p style="margin-top: 32px;">Ready to build your Quantum Blueprint? Click the button above and let's get started! ✨</p>
+      <p style="margin-top: 32px;">Ready to get started? Log in to your dashboard and begin your personalized experience! ✨</p>
 
       <p style="margin-top: 24px;">
         – Austin<br>
@@ -219,30 +198,29 @@ Welcome to ${params.productName}!
 
 Hi ${params.name},
 
-Thank you for your purchase! Your AI Brand Strategist is ready.
+Thank you for your purchase! Your personalized product experience is ready.
 
-HOW TO ACCESS YOUR CUSTOM GPT:
+GETTING STARTED (Simple 3-Step Process):
 
-1. You need ChatGPT Plus - Make sure you have an active ChatGPT Plus subscription ($20/month from OpenAI)
-2. Click this link: ${params.gptLink}
-3. Bookmark it so you can access it anytime
-4. Start your session - The GPT will guide you through building your Quantum Blueprint
+1. Log in to your dashboard - Visit: ${dashboardUrl}
+2. Start your experience - You'll see "${params.productName}" in your dashboard
+3. Complete the guided process - Answer questions and receive your deliverable
 
-YOUR GPT LINK:
-${params.gptLink}
+ACCESS YOUR DASHBOARD:
+${dashboardUrl}
 
 WHAT TO EXPECT:
-- A conversational AI trained on the Quantum Business Framework
-- Personalized insights based on your Astrology & Human Design
-- Strategic guidance aligned with your unique energetic blueprint
-- 10-15 minute guided session to build your brand strategy
+- Step-by-step guided questionnaire
+- AI-powered insights based on your responses
+- Personalized deliverable generated at the end
+- Full progress tracking - pause and resume anytime
 
 NEED HELP?
-- No ChatGPT Plus? Sign up: https://openai.com/chatgpt/pricing
+- First time? Create your account using the email: ${params.to}
 - Questions? Email: ${params.fromEmail}
-- Lost this email? Check spam folder or contact us
+- Technical issues? We're here to help!
 
-Ready to build your Quantum Blueprint? Let's get started!
+Ready to get started? Log in to your dashboard and begin your personalized experience!
 
 – Austin
 Quantum Strategies
@@ -301,7 +279,6 @@ async function logToGoogleSheets(data: {
   product: string;
   amount: string;
   sessionId: string;
-  gptLink: string;
   emailSent: string;
   status: string;
   sheetId: string;
@@ -323,7 +300,7 @@ async function logToGoogleSheets(data: {
 
   await sheets.spreadsheets.values.append({
     spreadsheetId,
-    range: 'Purchases!A:I',
+    range: 'Purchases!A:H',
     valueInputOption: 'USER_ENTERED',
     requestBody: {
       values: [[
@@ -333,7 +310,6 @@ async function logToGoogleSheets(data: {
         data.product,
         data.amount,
         data.sessionId,
-        data.gptLink,
         data.emailSent,
         data.status,
       ]],
@@ -396,24 +372,48 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Determine product (for now, default to quantum-initiation)
-    // In production, you'd get this from session metadata
-    const productSlug = 'quantum-initiation';
-    const product = PRODUCTS[productSlug];
+    // Determine product from session metadata or success URL
+    let productSlug = 'quantum-initiation'; // Default fallback
+
+    // Try 1: Get from session metadata (if configured in Stripe payment link)
+    if (session.metadata?.product_slug) {
+      productSlug = session.metadata.product_slug;
+      console.log('Product detected from metadata:', productSlug);
+    }
+    // Try 2: Parse from success URL (e.g., /products/quantum-initiation/interact)
+    else if (session.success_url) {
+      const urlMatch = session.success_url.match(/\/products\/([^\/]+)\//);
+      if (urlMatch && urlMatch[1]) {
+        productSlug = urlMatch[1];
+        console.log('Product detected from success URL:', productSlug);
+      }
+    }
+
+    // Get product configuration
+    const product = getProductBySlug(productSlug);
+
+    if (!product) {
+      console.error('Product not found:', productSlug);
+      return NextResponse.json(
+        { error: `Product not found: ${productSlug}` },
+        { status: 400 }
+      );
+    }
+
+    console.log('Using product:', product.name);
 
     const timestamp = new Date().toISOString();
     let emailSent = '❌ Failed';
     let status = 'Payment Received';
 
-    // Send GPT access email
+    // Send product access email
     try {
       console.log('Sending email to:', customerEmail);
 
-      await sendGPTAccessEmail({
+      await sendProductAccessEmail({
         to: customerEmail,
         name: customerName,
         productName: product.name,
-        gptLink: product.gptLink,
         fromEmail: product.fromEmail,
         fromName: product.fromName,
       });
@@ -428,6 +428,58 @@ export async function POST(request: NextRequest) {
       status = 'Email Failed';
     }
 
+    // Grant product access in Supabase
+    try {
+      console.log('Granting product access in Supabase');
+
+      // Check if user exists, create if not
+      const { data: existingUser } = await supabaseAdmin
+        .from('users')
+        .select('id')
+        .eq('email', customerEmail)
+        .single();
+
+      let userId = existingUser?.id;
+
+      if (!userId) {
+        // Create user account
+        const { data: newUser, error: createError } = await supabaseAdmin
+          .from('users')
+          .insert({
+            email: customerEmail,
+            name: customerName,
+          })
+          .select('id')
+          .single();
+
+        if (createError) throw createError;
+        userId = newUser.id;
+        console.log('Created new user:', userId);
+      }
+
+      // Grant product access
+      const { error: accessError } = await supabaseAdmin
+        .from('product_access')
+        .insert({
+          user_id: userId,
+          product_slug: productSlug,
+          stripe_session_id: session.id,
+          amount_paid: amount,
+          access_granted: true,
+          purchase_date: timestamp,
+        });
+
+      if (accessError && accessError.code !== '23505') {
+        // Ignore duplicate key errors (user already has access)
+        throw accessError;
+      }
+
+      console.log('Product access granted successfully');
+    } catch (supabaseError: any) {
+      console.error('Failed to grant Supabase access:', supabaseError);
+      // Don't fail the webhook if Supabase fails
+    }
+
     // Log to Google Sheets
     try {
       console.log('Logging to Google Sheets');
@@ -439,7 +491,6 @@ export async function POST(request: NextRequest) {
         product: product.name,
         amount: `$${amount}`,
         sessionId: session.id,
-        gptLink: product.gptLink,
         emailSent,
         status,
         sheetId: product.sheetId,

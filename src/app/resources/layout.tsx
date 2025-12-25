@@ -1,15 +1,7 @@
-import type { Metadata } from "next";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 
-export const metadata: Metadata = {
-  title: {
-    template: "%s | Quantum Strategies",
-    default: "Quantum Strategies - Value Creation & Digital Marketing",
-  },
-};
-
-export default function MarketingLayout({
+export default function ResourcesLayout({
   children,
 }: {
   children: React.ReactNode;

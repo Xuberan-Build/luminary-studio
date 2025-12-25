@@ -24,13 +24,13 @@ export default function QuantumInitiationInteractPage() {
       <ProductInteractHeader productName={product.name} />
 
       <InteractHero
-        title={product.interactTitle}
-        instructions={product.interactInstructions}
-        duration={product.estimatedDuration}
+        title={product.interactTitle || product.name}
+        instructions={product.interactInstructions || 'Complete the guided intake to personalize your blueprint.'}
+        duration={product.estimatedDuration || '15-30 minutes'}
       />
 
       <GPTChatEmbed
-        iframeUrl={product.gptIframeUrl}
+        iframeUrl={product.gptIframeUrl || ''}
         productSlug={product.slug}
       />
     </div>
