@@ -298,20 +298,25 @@ async function logToGoogleSheets(data: {
   const sheets = google.sheets({ version: 'v4', auth });
   const spreadsheetId = data.sheetId;
 
+  // Write to sheet columns A-I to match CRM structure:
+  // A: Timestamp, B: Email, C: Name, D: Product, E: Amount, F: Stripe Session ID
+  // G: GPT Link (empty, will be populated by automation later)
+  // H: Email Sent, I: Status
   await sheets.spreadsheets.values.append({
     spreadsheetId,
-    range: 'Purchases!A:H',
+    range: 'Purchases!A:I',
     valueInputOption: 'USER_ENTERED',
     requestBody: {
       values: [[
-        data.timestamp,
-        data.email,
-        data.name,
-        data.product,
-        data.amount,
-        data.sessionId,
-        data.emailSent,
-        data.status,
+        data.timestamp,   // A: Timestamp
+        data.email,       // B: Email
+        data.name,        // C: Name
+        data.product,     // D: Product
+        data.amount,      // E: Amount
+        data.sessionId,   // F: Stripe Session ID
+        '',               // G: GPT Link (empty, for future automation)
+        data.emailSent,   // H: Email Sent
+        data.status,      // I: Status
       ]],
     },
   });
