@@ -81,6 +81,7 @@ export const navigationConfig = {
         },
       ],
     },
+    { label: "Dashboard", href: "/dashboard" },
   ],
   footer: {
     company: [

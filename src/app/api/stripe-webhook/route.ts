@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 import { google } from 'googleapis';
 import { PRODUCTS, getProductBySlug } from '@/lib/constants/products';
 import { supabaseAdmin } from '@/lib/supabase/server';
+import { syncCustomer } from '@/lib/google-sheets/customer-sync';
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -505,6 +506,24 @@ export async function POST(request: NextRequest) {
     } catch (sheetError: any) {
       console.error('Failed to log to Google Sheets:', sheetError);
       // Don't fail the webhook if CRM logging fails
+    }
+
+    // Sync customer profile to Customers sheet
+    try {
+      console.log('Syncing customer profile');
+
+      await syncCustomer({
+        email: customerEmail,
+        name: customerName,
+        purchaseDate: timestamp,
+        product: product.name,
+        amount,
+      });
+
+      console.log('Customer profile synced successfully');
+    } catch (syncError: any) {
+      console.error('Failed to sync customer profile:', syncError);
+      // Don't fail the webhook if customer sync fails
     }
 
     return NextResponse.json({
