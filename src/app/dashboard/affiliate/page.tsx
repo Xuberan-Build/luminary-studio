@@ -12,7 +12,7 @@ interface AffiliateStats {
   availableBalanceCents: number;
   totalReferrals: number;
   activeReferrals: number;
-  dinnerPartyCredits Cents: number;
+  dinnerPartyCreditsCents: number;
   stripeConnectOnboardingComplete: boolean;
 }
 
@@ -155,7 +155,7 @@ export default function AffiliateDashboard() {
 
         <div className={styles.statCard}>
           <div className={styles.statLabel}>Dinner Party Credits</div>
-          <div className={styles.statValue}>{formatMoney(stats.dinnerPartyCredits Cents)}</div>
+          <div className={styles.statValue}>{formatMoney(stats.dinnerPartyCreditsCents)}</div>
         </div>
       </div>
 
