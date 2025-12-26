@@ -38,12 +38,8 @@
   opacity: 0.8;
 }
 
-.brandIcon {
-  font-size: 1.5rem;
-}
-
 .brandText {
-  display: none;
+  font-size: 1.125rem;
 }
 
 /* Navigation Tabs */
@@ -57,7 +53,6 @@
 .navTab {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
   padding: 0.75rem 1.5rem;
   border-radius: 12px;
   text-decoration: none;
@@ -86,10 +81,6 @@
   right: 0;
   height: 2px;
   background: linear-gradient(90deg, #8b5cf6, #7c3aed);
-}
-
-.navIcon {
-  font-size: 1.25rem;
 }
 
 .navLabel {
@@ -128,19 +119,9 @@
 }
 
 /* Responsive */
-@media (min-width: 640px) {
-  .brandText {
-    display: inline;
-  }
-}
-
 @media (min-width: 768px) {
   .userName {
     display: block;
-  }
-
-  .navLabel {
-    display: inline;
   }
 }
 
@@ -155,17 +136,11 @@
   }
 
   .navTab {
-    padding: 0.5rem 0.75rem;
-    flex-direction: column;
-    gap: 0.25rem;
+    padding: 0.5rem 1rem;
   }
 
   .navLabel {
-    font-size: 0.75rem;
-  }
-
-  .navIcon {
-    font-size: 1.125rem;
+    font-size: 0.875rem;
   }
 
   .signOutButton {
@@ -175,11 +150,15 @@
 }
 
 @media (max-width: 480px) {
-  .navTabs {
-    flex: initial;
+  .brandText {
+    font-size: 1rem;
   }
 
-  .brandText {
-    display: none;
+  .navTab {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .navLabel {
+    font-size: 0.8125rem;
   }
 }

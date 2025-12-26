@@ -19,7 +19,6 @@ export default function OnboardingComplete() {
   return (
     <div className={styles.container}>
       <div className={styles.successCard}>
-        <div className={styles.successIcon}>✓</div>
         <h1 className={styles.successTitle}>Onboarding Complete!</h1>
         <p className={styles.successDescription}>
           Your payout account is being verified. You'll be able to receive commissions once Stripe completes verification (usually instant).

@@ -144,7 +144,7 @@ export default async function DashboardPage() {
                     <div className={styles.productHeader}>
                       <h3>{product.name}</h3>
                       {isComplete && (
-                        <span className={styles.badge}>✅ Complete</span>
+                        <span className={styles.badge}>Complete</span>
                       )}
                       {!isComplete && isStarted && (
                         <span className={styles.badgeInProgress}>
@@ -158,8 +158,8 @@ export default async function DashboardPage() {
                     </p>
 
                     <div className={styles.productMeta}>
-                      <span>⏱️ {product.estimated_duration}</span>
-                      <span>📝 {product.total_steps} steps</span>
+                      <span>{product.estimated_duration}</span>
+                      <span>{product.total_steps} steps</span>
                     </div>
 
                     <Link
@@ -193,7 +193,7 @@ export default async function DashboardPage() {
                     <div className={styles.productHeader}>
                       <h3>{s.product_slug}</h3>
                       {completed ? (
-                        <span className={styles.badge}>✅ Complete</span>
+                        <span className={styles.badge}>Complete</span>
                       ) : (
                         <span className={styles.badgeInProgress}>In Progress</span>
                       )}
@@ -230,7 +230,7 @@ export default async function DashboardPage() {
                             background: 'rgba(255, 255, 255, 0.1)',
                           }}
                         >
-                          ↻ Reset Session
+                          Reset Session
                         </button>
                       </form>
                     </div>

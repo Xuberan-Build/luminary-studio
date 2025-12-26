@@ -109,7 +109,6 @@ export default function AffiliateDashboard() {
       {/* Onboarding Warning */}
       {!stats.stripeConnectOnboardingComplete && (
         <div className={styles.warning}>
-          <div className={styles.warningIcon}>⚠️</div>
           <div className={styles.warningContent}>
             <h3>Complete Payout Setup</h3>
             <p>You need to complete your Stripe onboarding to receive commission payouts.</p>
@@ -129,7 +128,7 @@ export default function AffiliateDashboard() {
         <div className={styles.referralLinkContainer}>
           <code className={styles.referralLink}>{stats.referralLink}</code>
           <button onClick={copyReferralLink} className={styles.copyButton}>
-            {copied ? '✓ Copied!' : 'Copy Link'}
+            {copied ? 'Copied!' : 'Copy Link'}
           </button>
         </div>
         <p className={styles.referralCode}>

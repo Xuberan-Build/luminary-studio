@@ -68,7 +68,6 @@ export default function AffiliateOnboarding() {
     return (
       <div className={styles.container}>
         <div className={styles.successCard}>
-          <div className={styles.successIcon}>✓</div>
           <h1 className={styles.successTitle}>Onboarding Complete!</h1>
           <p className={styles.successDescription}>
             Your payout account is set up and ready to receive commissions.
@@ -90,10 +89,10 @@ export default function AffiliateOnboarding() {
         </p>
 
         <ul className={styles.requirementsList}>
-          <li>✓ Legal name and date of birth</li>
-          <li>✓ Last 4 digits of SSN (for US)</li>
-          <li>✓ Bank account information</li>
-          <li>✓ Mailing address</li>
+          <li>Legal name and date of birth</li>
+          <li>Last 4 digits of SSN (for US)</li>
+          <li>Bank account information</li>
+          <li>Mailing address</li>
         </ul>
 
         {error && (
@@ -138,7 +137,7 @@ export default function AffiliateOnboarding() {
 
         <div className={styles.footer}>
           <p className={styles.secureNote}>
-            🔒 Secure onboarding powered by Stripe
+            Secure onboarding powered by Stripe
           </p>
           <p className={styles.taxNote}>
             Stripe handles all tax forms (W-9/1099) automatically

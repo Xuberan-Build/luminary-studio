@@ -16,13 +16,11 @@ export default function PortalNav({ userName }: PortalNavProps) {
     {
       label: 'Dashboard',
       href: '/dashboard',
-      icon: '🏠',
       active: pathname === '/dashboard',
     },
     {
       label: 'Affiliate',
       href: '/dashboard/affiliate',
-      icon: '💰',
       active: pathname?.startsWith('/dashboard/affiliate'),
     },
   ];
@@ -42,7 +40,6 @@ export default function PortalNav({ userName }: PortalNavProps) {
         {/* Logo/Brand */}
         <div className={styles.brand}>
           <Link href="/" className={styles.brandLink}>
-            <span className={styles.brandIcon}>✨</span>
             <span className={styles.brandText}>Quantum Strategies</span>
           </Link>
         </div>
@@ -55,7 +52,6 @@ export default function PortalNav({ userName }: PortalNavProps) {
               href={item.href}
               className={`${styles.navTab} ${item.active ? styles.navTabActive : ''}`}
             >
-              <span className={styles.navIcon}>{item.icon}</span>
               <span className={styles.navLabel}>{item.label}</span>
             </Link>
           ))}
