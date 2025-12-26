@@ -88,7 +88,7 @@ export async function GET(req: NextRequest) {
         availableBalanceCents: stats?.available_balance_cents || 0,
         totalReferrals: stats?.total_referrals || 0,
         activeReferrals: stats?.active_referrals || 0,
-        dinnerPartyCredits Cents: stats?.dinner_party_credits_cents || 0,
+        dinnerPartyCreditsCents: stats?.dinner_party_credits_cents || 0,
         stripeConnectOnboardingComplete: stats?.stripe_connect_onboarding_complete || false,
       },
       recentTransactions: recentTransactions || [],
