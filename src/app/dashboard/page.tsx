@@ -117,14 +117,8 @@ export default async function DashboardPage() {
   return (
     <div className={styles.container}>
       <header className={styles.header}>
-        <div className={styles.headerContent}>
-          <h1>Welcome back, {user?.name || 'there'}!</h1>
-          <form action="/api/auth/signout" method="post">
-            <button type="submit" className={styles.signOutButton}>
-              Sign Out
-            </button>
-          </form>
-        </div>
+        <h1>Welcome back, {user?.name || 'there'}!</h1>
+        <p className={styles.subtitle}>Manage your products and view your progress</p>
       </header>
 
       <main className={styles.main}>

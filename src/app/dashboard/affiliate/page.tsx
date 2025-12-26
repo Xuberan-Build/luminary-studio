@@ -101,10 +101,10 @@ export default function AffiliateDashboard() {
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
+      <header className={styles.header}>
         <h1 className={styles.title}>Affiliate Dashboard</h1>
         <p className={styles.subtitle}>Track your referrals and earnings</p>
-      </div>
+      </header>
 
       {/* Onboarding Warning */}
       {!stats.stripeConnectOnboardingComplete && (

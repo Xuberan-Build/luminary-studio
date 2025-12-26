@@ -2,31 +2,31 @@
   max-width: 600px;
   margin: 0 auto;
   padding: 2rem;
-  min-height: 80vh;
+  min-height: calc(100vh - 70px);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
 .card {
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 16px;
   padding: 2.5rem;
   width: 100%;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  backdrop-filter: blur(20px);
 }
 
 .title {
   font-size: 1.875rem;
   font-weight: 700;
-  color: #111;
+  color: #F8F5FF;
   margin-bottom: 1rem;
   text-align: center;
 }
 
 .description {
-  color: #666;
+  color: rgba(255, 255, 255, 0.7);
   font-size: 1rem;
   line-height: 1.6;
   margin-bottom: 1.5rem;
@@ -36,14 +36,15 @@
   list-style: none;
   padding: 0;
   margin: 0 0 2rem 0;
-  background: #f9fafb;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   padding: 1.5rem;
 }
 
 .requirementsList li {
   padding: 0.5rem 0;
-  color: #374151;
+  color: rgba(255, 255, 255, 0.8);
   font-size: 0.9375rem;
 }
 
@@ -68,7 +69,7 @@
 .statusInfo h3 {
   font-size: 1rem;
   margin: 0 0 1rem 0;
-  color: #1e40af;
+  color: #93c5fd;
 }
 
 .statusGrid {
@@ -82,6 +83,7 @@
   justify-content: space-between;
   align-items: center;
   font-size: 0.9375rem;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .statusYes {
@@ -125,7 +127,7 @@
 
 .secureNote,
 .taxNote {
-  color: #666;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 0.875rem;
   margin: 0.5rem 0;
 }
@@ -133,8 +135,8 @@
 .backButton {
   width: 100%;
   background: transparent;
-  color: #666;
-  border: 1px solid #e5e7eb;
+  color: rgba(255, 255, 255, 0.7);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   padding: 0.75rem;
   border-radius: 8px;
   font-size: 0.9375rem;
@@ -144,17 +146,18 @@
 }
 
 .backButton:hover {
-  background: #f9fafb;
-  border-color: #d1d5db;
+  background: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .successCard {
-  background: white;
-  border: 1px solid #10b981;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(16, 185, 129, 0.3);
   border-radius: 16px;
   padding: 3rem;
   text-align: center;
-  box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  backdrop-filter: blur(20px);
 }
 
 .successIcon {
@@ -174,18 +177,18 @@
 .successTitle {
   font-size: 2rem;
   font-weight: 700;
-  color: #111;
+  color: #F8F5FF;
   margin-bottom: 1rem;
 }
 
 .successDescription {
-  color: #666;
+  color: rgba(255, 255, 255, 0.8);
   font-size: 1.125rem;
   margin-bottom: 1rem;
 }
 
 .redirectNote {
-  color: #999;
+  color: rgba(255, 255, 255, 0.5);
   font-size: 0.875rem;
   font-style: italic;
 }

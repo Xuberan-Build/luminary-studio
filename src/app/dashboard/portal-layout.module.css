@@ -1,0 +1,16 @@
+.portalContainer {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 100%);
+  color: white;
+}
+
+.portalMain {
+  padding: 0;
+  max-width: 100%;
+}
+
+@media (max-width: 768px) {
+  .portalMain {
+    padding-top: 80px; /* Account for fixed mobile nav */
+  }
+}

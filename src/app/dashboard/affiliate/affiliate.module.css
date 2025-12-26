@@ -2,6 +2,7 @@
   max-width: 1200px;
   margin: 0 auto;
   padding: 2rem;
+  min-height: calc(100vh - 70px);
 }
 
 .header {
@@ -11,13 +12,14 @@
 .title {
   font-size: 2rem;
   font-weight: 700;
-  color: #111;
-  margin-bottom: 0.5rem;
+  color: #F8F5FF;
+  margin: 0 0 0.5rem 0;
 }
 
 .subtitle {
-  color: #666;
+  color: rgba(255, 255, 255, 0.7);
   font-size: 1rem;
+  margin: 0;
 }
 
 .loading,
@@ -70,18 +72,19 @@
 }
 
 .card {
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 1.5rem;
   margin-bottom: 1.5rem;
+  backdrop-filter: blur(10px);
 }
 
 .cardTitle {
   font-size: 1.25rem;
   font-weight: 600;
   margin: 0 0 1rem 0;
-  color: #111;
+  color: #F8F5FF;
 }
 
 .referralLinkContainer {
@@ -93,13 +96,14 @@
 
 .referralLink {
   flex: 1;
-  background: #f9fafb;
+  background: rgba(0, 0, 0, 0.3);
   padding: 1rem;
   border-radius: 8px;
   font-family: 'Monaco', 'Courier New', monospace;
   font-size: 0.875rem;
   overflow: auto;
-  color: #4b5563;
+  color: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .copyButton {
@@ -120,8 +124,12 @@
 }
 
 .referralCode {
-  color: #666;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 0.875rem;
+}
+
+.referralCode strong {
+  color: rgba(255, 255, 255, 0.9);
 }
 
 .statsGrid {
@@ -132,15 +140,16 @@
 }
 
 .statCard {
-  background: white;
-  border: 1px solid #e5e7eb;
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 12px;
   padding: 1.5rem;
   text-align: center;
+  backdrop-filter: blur(10px);
 }
 
 .statLabel {
-  color: #666;
+  color: rgba(255, 255, 255, 0.6);
   font-size: 0.875rem;
   margin-bottom: 0.5rem;
   text-transform: uppercase;
@@ -150,13 +159,13 @@
 .statValue {
   font-size: 2rem;
   font-weight: 700;
-  color: #111;
+  color: #F8F5FF;
 }
 
 .trackInfo {
   border-left: 4px solid;
   padding: 1rem;
-  background: #f9fafb;
+  background: rgba(0, 0, 0, 0.2);
   border-radius: 8px;
 }
 
@@ -164,7 +173,7 @@
   font-size: 1.25rem;
   font-weight: 600;
   margin-bottom: 1rem;
-  color: #111;
+  color: #F8F5FF;
 }
 
 .trackDetails {
@@ -177,18 +186,18 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  color: #666;
+  color: rgba(255, 255, 255, 0.7);
   font-size: 0.9375rem;
 }
 
 .trackDetail strong {
-  color: #111;
+  color: rgba(255, 255, 255, 0.9);
   font-weight: 600;
 }
 
 .emptyState {
   text-align: center;
-  color: #999;
+  color: rgba(255, 255, 255, 0.5);
   padding: 2rem;
   font-style: italic;
 }
@@ -204,13 +213,15 @@
   align-items: center;
   gap: 1rem;
   padding: 1rem;
-  background: #f9fafb;
+  background: rgba(0, 0, 0, 0.2);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   border-radius: 8px;
   transition: all 0.2s;
 }
 
 .transactionRow:hover {
-  background: #f3f4f6;
+  background: rgba(0, 0, 0, 0.3);
+  border-color: rgba(255, 255, 255, 0.2);
 }
 
 .transactionInfo {
@@ -219,13 +230,13 @@
 
 .transactionName {
   font-weight: 600;
-  color: #111;
+  color: rgba(255, 255, 255, 0.9);
   margin-bottom: 0.25rem;
 }
 
 .transactionDate {
   font-size: 0.875rem;
-  color: #666;
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .transactionAmount {

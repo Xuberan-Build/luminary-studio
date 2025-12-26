@@ -1,50 +1,30 @@
 .container {
-  min-height: 100vh;
-  background: linear-gradient(135deg, #030048 0%, #1a0066 100%);
+  min-height: calc(100vh - 70px);
 }
 
 .header {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  padding: 24px;
-}
-
-.headerContent {
   max-width: 1200px;
   margin: 0 auto;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
+  padding: 2rem 2rem 1rem 2rem;
 }
 
 .header h1 {
   color: #F8F5FF;
-  font-size: 32px;
+  font-size: 2rem;
   font-weight: 700;
+  margin: 0 0 0.5rem 0;
+}
+
+.subtitle {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1rem;
   margin: 0;
-}
-
-.signOutButton {
-  padding: 10px 20px;
-  background: rgba(255, 255, 255, 0.2);
-  color: white;
-  border: 1px solid rgba(255, 255, 255, 0.3);
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: 600;
-  transition: background 0.2s;
-}
-
-.signOutButton:hover {
-  background: rgba(255, 255, 255, 0.3);
 }
 
 .main {
   max-width: 1200px;
   margin: 0 auto;
-  padding: 48px 24px;
+  padding: 0 2rem 3rem 2rem;
 }
 
 .section {
