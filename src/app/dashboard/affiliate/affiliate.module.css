@@ -1,0 +1,281 @@
+.container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.header {
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111;
+  margin-bottom: 0.5rem;
+}
+
+.subtitle {
+  color: #666;
+  font-size: 1rem;
+}
+
+.loading,
+.error {
+  text-align: center;
+  padding: 3rem;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.warning {
+  background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+  border: 2px solid #f59e0b;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.warningIcon {
+  font-size: 2rem;
+}
+
+.warningContent h3 {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  color: #92400e;
+}
+
+.warningContent p {
+  margin: 0 0 1rem 0;
+  color: #78350f;
+}
+
+.warningButton {
+  background: #f59e0b;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.warningButton:hover {
+  background: #d97706;
+  transform: translateY(-1px);
+}
+
+.card {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.cardTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 0 0 1rem 0;
+  color: #111;
+}
+
+.referralLinkContainer {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 0.75rem;
+}
+
+.referralLink {
+  flex: 1;
+  background: #f9fafb;
+  padding: 1rem;
+  border-radius: 8px;
+  font-family: 'Monaco', 'Courier New', monospace;
+  font-size: 0.875rem;
+  overflow: auto;
+  color: #4b5563;
+}
+
+.copyButton {
+  background: #8b5cf6;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 8px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.copyButton:hover {
+  background: #7c3aed;
+  transform: translateY(-1px);
+}
+
+.referralCode {
+  color: #666;
+  font-size: 0.875rem;
+}
+
+.statsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.statCard {
+  background: white;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+}
+
+.statLabel {
+  color: #666;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.statValue {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #111;
+}
+
+.trackInfo {
+  border-left: 4px solid;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+}
+
+.trackName {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #111;
+}
+
+.trackDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.trackDetail {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: #666;
+  font-size: 0.9375rem;
+}
+
+.trackDetail strong {
+  color: #111;
+  font-weight: 600;
+}
+
+.emptyState {
+  text-align: center;
+  color: #999;
+  padding: 2rem;
+  font-style: italic;
+}
+
+.transactionsTable {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.transactionRow {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.transactionRow:hover {
+  background: #f3f4f6;
+}
+
+.transactionInfo {
+  flex: 1;
+}
+
+.transactionName {
+  font-weight: 600;
+  color: #111;
+  margin-bottom: 0.25rem;
+}
+
+.transactionDate {
+  font-size: 0.875rem;
+  color: #666;
+}
+
+.transactionAmount {
+  font-weight: 600;
+  color: #10b981;
+  font-size: 1.125rem;
+}
+
+.transactionStatus {
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  text-transform: capitalize;
+}
+
+.transactionStatus.paid {
+  background: #d1fae5;
+  color: #065f46;
+}
+
+.transactionStatus.processing {
+  background: #dbeafe;
+  color: #1e40af;
+}
+
+.transactionStatus.pending {
+  background: #fef3c7;
+  color: #92400e;
+}
+
+.transactionStatus.failed {
+  background: #fee2e2;
+  color: #991b1b;
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .statsGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .referralLinkContainer {
+    flex-direction: column;
+  }
+
+  .transactionRow {
+    flex-wrap: wrap;
+  }
+}

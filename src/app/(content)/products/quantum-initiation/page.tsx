@@ -146,6 +146,7 @@ export default function QuantumInitiationPage() {
               paymentLink={product.stripePaymentLink}
               productName={product.name}
               price={product.price}
+              productSlug={product.slug}
             />
 
             <div className={styles.guarantee}>

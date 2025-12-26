@@ -4,6 +4,8 @@ import { google } from 'googleapis';
 import { PRODUCTS, getProductBySlug } from '@/lib/constants/products';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { syncCustomer } from '@/lib/google-sheets/customer-sync';
+import { processReferralCommission, linkPurchaserToReferrer } from '@/lib/affiliate/commission-processor';
+import { createConnectAccount } from '@/lib/stripe/connect';
 
 // Initialize Stripe
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
@@ -484,6 +486,48 @@ export async function POST(request: NextRequest) {
     } catch (supabaseError: any) {
       console.error('Failed to grant Supabase access:', supabaseError);
       // Don't fail the webhook if Supabase fails
+    }
+
+    // Create Stripe Connect account for new affiliate (auto-enrollment happens via DB trigger)
+    try {
+      console.log('Creating Stripe Connect account for affiliate');
+
+      await createConnectAccount(userId, customerEmail);
+
+      console.log('Stripe Connect account created successfully');
+    } catch (connectError: any) {
+      console.error('Failed to create Stripe Connect account:', connectError);
+      // Don't fail the webhook if Connect account creation fails
+    }
+
+    // Process referral commission if referral code exists in session metadata
+    try {
+      const referralCode = session.metadata?.referral_code;
+
+      if (referralCode && referralCode !== '') {
+        console.log('Processing referral commission for code:', referralCode);
+
+        // Link purchaser to referrer (sets referred_by_id)
+        await linkPurchaserToReferrer(userId, referralCode);
+
+        // Process commission splits and payouts
+        await processReferralCommission({
+          purchaserId: userId,
+          purchaserEmail: customerEmail,
+          referralCode,
+          sessionId: session.id,
+          paymentIntentId: session.payment_intent as string | null,
+          amountCents: session.amount_total || 0,
+          productSlug,
+        });
+
+        console.log('Referral commission processed successfully');
+      } else {
+        console.log('No referral code in session metadata');
+      }
+    } catch (referralError: any) {
+      console.error('Failed to process referral commission:', referralError);
+      // Don't fail the webhook if referral processing fails
     }
 
     // Log to Google Sheets

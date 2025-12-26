@@ -1,25 +1,41 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Script from "next/script";
+import { redirectToCheckout } from "@/lib/stripe/checkout";
 import styles from "./stripe-checkout.module.css";
 
 interface StripeCheckoutProps {
-  paymentLink: string;
+  paymentLink?: string; // Legacy, not used anymore
   productName: string;
   price: number;
+  productSlug?: string; // New: used for checkout API
 }
 
-export default function StripeCheckout({ paymentLink, productName, price }: StripeCheckoutProps) {
+export default function StripeCheckout({ paymentLink, productName, price, productSlug }: StripeCheckoutProps) {
   const [isStripeLoaded, setIsStripeLoaded] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 
-  const handleCheckout = () => {
-    if (paymentLink) {
-      // Redirect to Stripe payment link
-      window.location.href = paymentLink;
-    } else {
-      console.error("Payment link not configured");
+  const handleCheckout = async () => {
+    if (isProcessing) return;
+
+    setIsProcessing(true);
+
+    try {
+      if (productSlug) {
+        // Use new checkout API with referral tracking
+        await redirectToCheckout(productSlug);
+      } else if (paymentLink) {
+        // Fallback to payment link (legacy)
+        window.location.href = paymentLink;
+      } else {
+        console.error("No payment method configured");
+        alert("Payment not configured. Please contact support.");
+      }
+    } catch (error) {
+      console.error("Checkout error:", error);
+      setIsProcessing(false);
     }
   };
 
@@ -50,9 +66,9 @@ export default function StripeCheckout({ paymentLink, productName, price }: Stri
         <button
           onClick={handleCheckout}
           className={styles.checkoutButton}
-          disabled={!isStripeLoaded}
+          disabled={!isStripeLoaded || isProcessing}
         >
-          Purchase {productName} - ${price}
+          {isProcessing ? 'Processing...' : `Purchase ${productName} - $${price}`}
         </button>
         <p className={styles.checkoutNote}>
           Secure checkout powered by Stripe • Instant access

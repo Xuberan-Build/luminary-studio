@@ -26,6 +26,31 @@ export async function middleware(req: NextRequest) {
     data: { session },
   } = await supabase.auth.getSession();
 
+  // Capture referral code from URL (?ref=ABC123)
+  const referralCode = req.nextUrl.searchParams.get('ref');
+  if (referralCode) {
+    // Validate referral code exists in database
+    const { data: referralExists } = await supabase
+      .from('referral_hierarchy')
+      .select('id')
+      .eq('referral_code', referralCode)
+      .single();
+
+    if (referralExists) {
+      // Store in cookie (30-day expiry)
+      res.cookies.set('referral_code', referralCode, {
+        maxAge: 30 * 24 * 60 * 60, // 30 days
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+      });
+      console.log('Referral code captured:', referralCode);
+    } else {
+      console.log('Invalid referral code:', referralCode);
+    }
+  }
+
   // Protected routes that require authentication
   const protectedPaths = ['/dashboard', '/products'];
   const isProtectedPath = protectedPaths.some(path =>
@@ -52,9 +77,13 @@ export async function middleware(req: NextRequest) {
 
 export const config = {
   matcher: [
-    '/dashboard/:path*',
-    '/products/:path*/experience',
-    '/login',
-    '/signup',
+    /*
+     * Match all request paths except for the ones starting with:
+     * - api (API routes)
+     * - _next/static (static files)
+     * - _next/image (image optimization files)
+     * - favicon.ico (favicon file)
+     */
+    '/((?!api|_next/static|_next/image|favicon.ico).*)',
   ],
 };
