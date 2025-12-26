@@ -26,7 +26,15 @@ export default function Navbar() {
     const element = navItemRefs.current[label];
     if (!element) return;
     const rect = element.getBoundingClientRect();
-    setDropdownPosition({ top: rect.bottom + 8, left: rect.left, width: rect.width });
+
+    // Check if dropdown would overflow on the right side
+    const dropdownWidth = 280; // min-width from CSS
+    const wouldOverflow = rect.left + dropdownWidth > window.innerWidth;
+
+    // If it would overflow, align to the right edge of the button instead
+    const left = wouldOverflow ? rect.right - dropdownWidth : rect.left;
+
+    setDropdownPosition({ top: rect.bottom + 8, left, width: rect.width });
   };
 
   const handleMouseEnter = (label: string) => {

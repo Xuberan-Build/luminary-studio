@@ -5,9 +5,9 @@ import { PRODUCTS } from "@/lib/constants/products";
 import styles from "./quantum-initiation.module.css";
 
 export const metadata: Metadata = {
-  title: "Quantum Initiation Protocol - Your AI Brand Strategist",
+  title: "Quantum Initiation Protocol - Know Exactly How to Earn",
   description:
-    "Personalized brand map from your Astrology & Human Design. Get instant strategic clarity through AI trained on the Quantum Business Framework.",
+    "Get a personalized money blueprint based on your Astrology & Human Design. Know what to sell, how to sell it, and your aligned pricing model in 20 minutes.",
 };
 
 export default function QuantumInitiationPage() {
@@ -27,18 +27,18 @@ export default function QuantumInitiationPage() {
           <div className={styles.badge}>Quantum Initiation Protocol</div>
 
           <h1 className={styles.heroTitle}>
-            Your AI Brand Strategist
-            <span className={styles.titleAccent}>Built From Your Design</span>
+            Know Exactly What to Sell
+            <span className={styles.titleAccent}>& How Much to Charge</span>
           </h1>
 
           <p className={styles.heroDescription}>
-            Personalized brand map from your Astrology & Human Design.
+            Your personalized money blueprint from your Astrology & Human Design.
             <br />
-            Instant clarity. No templates. Built from your unique energetic blueprint.
+            Instant clarity on your offers, pricing, and sales approach—no guesswork.
           </p>
 
           <div className={styles.heroMicrocopy}>
-            Get strategic guidance trained on the Quantum Business Framework—aligned with your cosmic design.
+            Get clear answers in 20 minutes using the Quantum Business Framework aligned with your cosmic design.
           </div>
 
           <a href="#purchase" className={styles.heroCta}>
@@ -70,9 +70,9 @@ export default function QuantumInitiationPage() {
           <div className={styles.featureGrid}>
             <div className={styles.featureCard}>
               <div className={styles.featureIcon}>🧠</div>
-              <h3 className={styles.featureTitle}>AI Trained on QBF</h3>
+              <h3 className={styles.featureTitle}>Quantum Business Framework</h3>
               <p className={styles.featureDescription}>
-                Custom ChatGPT trained on the complete Quantum Business Framework methodology.
+                Interactive blueprint powered by proven methodology that's generated millions in revenue.
               </p>
             </div>
 
@@ -80,39 +80,39 @@ export default function QuantumInitiationPage() {
               <div className={styles.featureIcon}>⚡</div>
               <h3 className={styles.featureTitle}>Astrology & Human Design Integration</h3>
               <p className={styles.featureDescription}>
-                Strategic guidance aligned with your unique energetic blueprint and cosmic design.
+                Your money-making strategy aligned with your unique energetic blueprint and cosmic design.
               </p>
             </div>
 
             <div className={styles.featureCard}>
               <div className={styles.featureIcon}>🎯</div>
-              <h3 className={styles.featureTitle}>Personalized Brand Map</h3>
+              <h3 className={styles.featureTitle}>Know What to Sell</h3>
               <p className={styles.featureDescription}>
-                Get a custom brand strategy built specifically for your business and energy.
+                Discover your ideal offers, products, and services based on your natural strengths and energy.
               </p>
             </div>
 
             <div className={styles.featureCard}>
               <div className={styles.featureIcon}>💬</div>
-              <h3 className={styles.featureTitle}>24/7 Strategic Guidance</h3>
+              <h3 className={styles.featureTitle}>Know How to Sell It</h3>
               <p className={styles.featureDescription}>
-                Access QBF methodology anytime through conversational AI that remembers your context.
+                Get your personalized sales approach that feels natural and authentic to your design.
               </p>
             </div>
 
             <div className={styles.featureCard}>
               <div className={styles.featureIcon}>🔐</div>
-              <h3 className={styles.featureTitle}>Private & Secure</h3>
+              <h3 className={styles.featureTitle}>Know Your Pricing Model</h3>
               <p className={styles.featureDescription}>
-                Your own instance with memory of your unique situation and goals.
+                Receive clear guidance on how to price your offers in alignment with your energetic frequency.
               </p>
             </div>
 
             <div className={styles.featureCard}>
               <div className={styles.featureIcon}>♾️</div>
-              <h3 className={styles.featureTitle}>Lifetime Access</h3>
+              <h3 className={styles.featureTitle}>Instant Results</h3>
               <p className={styles.featureDescription}>
-                One-time payment. Use it forever. No subscriptions or recurring fees.
+                Complete the interactive experience in 20 minutes and get your personalized blueprint immediately.
               </p>
             </div>
           </div>
@@ -133,12 +133,12 @@ export default function QuantumInitiationPage() {
             </div>
 
             <ul className={styles.purchaseFeatures}>
-              <li>✓ Custom GPT trained on QBF methodology</li>
-              <li>✓ Astrology & Human Design integration</li>
-              <li>✓ Personalized brand strategy map</li>
-              <li>✓ 24/7 access to strategic guidance</li>
-              <li>✓ Lifetime access, no recurring fees</li>
-              <li>✓ Private & secure AI instance</li>
+              <li>✓ Personalized money blueprint based on your chart</li>
+              <li>✓ Know exactly what to sell & how to sell it</li>
+              <li>✓ Your aligned pricing model revealed</li>
+              <li>✓ Quantum Business Framework methodology</li>
+              <li>✓ Instant access, complete in 20 minutes</li>
+              <li>✓ One-time payment, no recurring fees</li>
             </ul>
 
             {/* Stripe Checkout */}
@@ -164,35 +164,35 @@ export default function QuantumInitiationPage() {
             <div className={styles.faqItem}>
               <h3 className={styles.faqQuestion}>What is the Quantum Initiation Protocol?</h3>
               <p className={styles.faqAnswer}>
-                It's a custom ChatGPT trained on our Quantum Business Framework, personalized with your Astrology and Human Design. Think of it as your AI brand strategist that speaks your energetic language.
+                It's an interactive blueprint experience that analyzes your Astrology and Human Design to give you a personalized money-making strategy. You'll discover exactly what to sell, how to sell it, and how to price your offers—all aligned with your unique energetic design.
               </p>
             </div>
 
             <div className={styles.faqItem}>
-              <h3 className={styles.faqQuestion}>How do I access it?</h3>
+              <h3 className={styles.faqQuestion}>How does it work?</h3>
               <p className={styles.faqAnswer}>
-                After purchase, you'll receive an email with a private link to your custom GPT. Click the link and it opens in ChatGPT. Requires a ChatGPT Plus subscription ($20/month from OpenAI).
+                After purchase, you'll receive instant access to an interactive experience. You'll upload your birth chart information, answer strategic questions, and receive a personalized blueprint in about 20 minutes. Everything is delivered immediately—no waiting.
               </p>
             </div>
 
             <div className={styles.faqItem}>
-              <h3 className={styles.faqQuestion}>Do I need ChatGPT Plus?</h3>
+              <h3 className={styles.faqQuestion}>What exactly will I learn?</h3>
               <p className={styles.faqAnswer}>
-                Yes, you need an active ChatGPT Plus subscription ($20/month from OpenAI) to use custom GPTs. This is separate from our $7 one-time fee for the Quantum Initiation Protocol.
+                You'll discover your ideal offers and products to sell, the sales approach that feels natural to your energy type, and your aligned pricing model. No more guessing or copying what others are doing—you'll have a personalized roadmap based on your cosmic design.
               </p>
             </div>
 
             <div className={styles.faqItem}>
               <h3 className={styles.faqQuestion}>How is this different from the full QBF course?</h3>
               <p className={styles.faqAnswer}>
-                The full Quantum Business Framework course offers deep transformation through modules, exercises, and comprehensive frameworks. This GPT provides on-demand strategic guidance using QBF methodology. They complement each other beautifully.
+                The full Quantum Business Framework course offers deep transformation through modules, exercises, and comprehensive frameworks. The Quantum Initiation Protocol gives you instant clarity on your money-making strategy in 20 minutes. They complement each other beautifully.
               </p>
             </div>
 
             <div className={styles.faqItem}>
-              <h3 className={styles.faqQuestion}>Can I share the GPT link?</h3>
+              <h3 className={styles.faqQuestion}>Do I need to know my birth time?</h3>
               <p className={styles.faqAnswer}>
-                The link is for personal use only. Each purchase grants one license for your individual use.
+                Yes, you'll need your birth date, time, and location to get the most accurate reading. If you don't have your exact birth time, you can still participate, but the insights may be less precise.
               </p>
             </div>
 

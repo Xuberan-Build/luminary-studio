@@ -72,7 +72,6 @@ const contentTypes: ContentType[] = [
         label: "Quantum Business Framework",
         articles: [
           { label: "Align Energy & Strategy for Sustainable Growth", href: "/courses/quantum-business-framework" },
-          { label: "Quantum Initiation Protocol →", href: "/products/quantum-initiation" },
           { label: "Coming Soon: Consciousness Meets Commerce", href: "/courses" },
         ],
       },

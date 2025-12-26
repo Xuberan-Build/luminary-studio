@@ -77,7 +77,7 @@ export const navigationConfig = {
         {
           label: "Quantum Initiation Protocol",
           href: "/products/quantum-initiation",
-          description: "Your AI Brand Strategist - $7"
+          description: "Personalized Money Blueprint"
         },
       ],
     },
