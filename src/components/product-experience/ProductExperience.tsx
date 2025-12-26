@@ -199,13 +199,23 @@ const [hasGuarded, setHasGuarded] = useState(false);
   // Force confirmation gate on first load of step 1 to allow re-confirmation
   useEffect(() => {
     if (currentStep === 1 && !forcedConfirmOnce) {
-      setConfirmGate(true);
+      // Only show confirm gate if we already have uploads or confirmed placements
+      // Otherwise, let the user upload files first
+      const hasUploads = uploadedFiles.length > 0;
+      const hasConfirmedPlacements = placementsConfirmed && placements;
+
+      if (hasUploads || hasConfirmedPlacements) {
+        setConfirmGate(true);
+      } else {
+        setConfirmGate(false);
+      }
+
       if (placementsConfirmed) {
         setPlacementsConfirmed(false);
       }
       setForcedConfirmOnce(true);
     }
-  }, [currentStep, placementsConfirmed, forcedConfirmOnce]);
+  }, [currentStep, placementsConfirmed, forcedConfirmOnce, uploadedFiles.length, placements]);
 
   // If session was previously confirmed and current_step > 1, force reset to step 1 and reconfirm
   useEffect(() => {
@@ -601,21 +611,32 @@ const [hasGuarded, setHasGuarded] = useState(false);
     }
   };
 
-  // Require confirmation gate on step 1 upload step when placements not yet confirmed/empty or no files loaded
+  // Show confirmation gate on step 1 upload step ONLY after files are uploaded
   useEffect(() => {
     if (currentStep === 1 && currentStepData?.allow_file_upload) {
       const placementsReady = placementsConfirmed && !isPlacementsEmpty(placements);
       const hasFiles = uploadedFiles.length > 0;
-      // Only force gate if we are not already confirmed with files
-      if (!confirmGate && !(placementsReady && hasFiles && uploadsLoaded)) {
-        console.log('[PX] forcing confirm gate on step1 upload', {
-          confirmGate,
-          placementsConfirmed,
-          placementsEmpty: isPlacementsEmpty(placements),
-          hasFiles,
-          uploadsLoaded,
-        });
-        setConfirmGate(true);
+
+      // Show confirm gate ONLY if:
+      // 1. User has uploaded files, OR
+      // 2. Placements are already confirmed and ready
+      if (hasFiles || placementsReady) {
+        if (!confirmGate) {
+          console.log('[PX] showing confirm gate after files uploaded', {
+            confirmGate,
+            placementsConfirmed,
+            placementsEmpty: isPlacementsEmpty(placements),
+            hasFiles,
+            uploadsLoaded,
+          });
+          setConfirmGate(true);
+        }
+      } else {
+        // No files yet - show upload interface
+        if (confirmGate) {
+          console.log('[PX] hiding confirm gate - no files uploaded yet');
+          setConfirmGate(false);
+        }
       }
     }
   }, [
@@ -635,7 +656,8 @@ const [hasGuarded, setHasGuarded] = useState(false);
       if (currentStep !== 1) {
         setCurrentStep(1);
       }
-      setConfirmGate(true);
+      // Don't force confirmGate here - let the upload logic handle it
+      // setConfirmGate(true);
       if (!hasGuarded) {
         setHasGuarded(true);
         console.log('[PX] guard effect resetting session to step 1');
