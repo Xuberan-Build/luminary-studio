@@ -6,6 +6,18 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
+interface AffiliateStats {
+  referral_code: string;
+  referral_link: string;
+  current_track: string;
+  total_earnings_cents: number;
+  available_balance_cents: number;
+  total_referrals: number;
+  active_referrals: number;
+  dinner_party_credits_cents: number;
+  stripe_connect_onboarding_complete: boolean;
+}
+
 export async function GET(req: NextRequest) {
   try {
     const cookieStore = await cookies();
@@ -42,7 +54,7 @@ export async function GET(req: NextRequest) {
     // Get affiliate stats using database function
     const { data: stats, error: statsError } = await supabase
       .rpc('get_affiliate_stats', { p_affiliate_id: userId })
-      .single();
+      .single() as { data: AffiliateStats | null; error: any };
 
     if (statsError) {
       console.error('Error fetching affiliate stats:', statsError);
