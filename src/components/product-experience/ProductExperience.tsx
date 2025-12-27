@@ -584,27 +584,58 @@ const [hasGuarded, setHasGuarded] = useState(false);
       setUploadError('Please attach at least one file to continue.');
       return;
     }
+    console.log('=== CLIENT: EXTRACTION STARTED ===');
     console.log('[PX] extract placements trigger', {
       uploadedFiles,
       placementsConfirmed,
       currentStep,
     });
+    console.log('Calling extraction API with:', {
+      sessionId: session.id,
+      storagePaths: uploadedFiles,
+      fileCount: uploadedFiles.length
+    });
+
     setPlacementsError(null);
     setIsExtracting(true);
+
     try {
+      const startTime = Date.now();
+      console.log('Fetching /api/products/extract-placements...');
+
       const response = await fetch('/api/products/extract-placements', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ sessionId: session.id, storagePaths: uploadedFiles }),
       });
+
+      const elapsed = Date.now() - startTime;
+      console.log(`API response received after ${elapsed}ms, status: ${response.status}`);
+
       if (!response.ok) {
         const text = await response.text();
+        console.error('API error response:', {
+          status: response.status,
+          statusText: response.statusText,
+          body: text
+        });
         throw new Error(text || 'Extraction failed');
       }
-      const { placements: extracted } = await response.json();
+
+      const responseData = await response.json();
+      console.log('API success response:', responseData);
+      console.log('Extracted placements:', JSON.stringify(responseData.placements, null, 2));
+
+      const { placements: extracted } = responseData;
       setPlacements(extracted);
+      console.log('=== CLIENT: EXTRACTION COMPLETED ===');
     } catch (err: any) {
-      console.error('Extraction error', err);
+      console.error('=== CLIENT: EXTRACTION FAILED ===');
+      console.error('Error details:', {
+        message: err?.message,
+        name: err?.name,
+        stack: err?.stack
+      });
       setPlacementsError(err?.message || 'Failed to extract placements. Please try again.');
     } finally {
       setIsExtracting(false);
