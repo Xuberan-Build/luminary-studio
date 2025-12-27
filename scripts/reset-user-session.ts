@@ -45,12 +45,12 @@ async function resetSession(email: string, productSlug: string) {
 
   // Delete uploaded files from storage
   const { data: files } = await supabase.storage
-    .from('product-uploads')
+    .from('user-uploads')
     .list(`${user.id}/${productSlug}`);
 
   if (files && files.length > 0) {
     const filePaths = files.map(f => `${user.id}/${productSlug}/${f.name}`);
-    await supabase.storage.from('product-uploads').remove(filePaths);
+    await supabase.storage.from('user-uploads').remove(filePaths);
     console.log(`✅ Deleted ${files.length} uploaded files`);
   }
 
