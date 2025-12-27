@@ -21,7 +21,8 @@ export async function POST(req: Request) {
     // Separate astro vs HD inputs, sign URLs for images, extract text from PDFs
     const astroImages: string[] = [];
     const hdImages: string[] = [];
-    const pdfTexts: string[] = [];
+    const astroPdfTexts: string[] = [];
+    const hdPdfTexts: string[] = [];
 
     const isAstro = (path: string) =>
       path.toLowerCase().includes('astro') ||
@@ -52,7 +53,15 @@ export async function POST(req: Request) {
         const parsed = await pdfParse(buffer);
         if (parsed?.text) {
           console.log(`PDF text extracted: ${parsed.text.length} characters`);
-          pdfTexts.push(parsed.text.slice(0, 8000));
+          const textSlice = parsed.text.slice(0, 8000);
+          // Categorize PDF text based on filename
+          if (isHD(path)) {
+            console.log('  -> Categorized PDF text as Human Design');
+            hdPdfTexts.push(textSlice);
+          } else {
+            console.log('  -> Categorized PDF text as Astrology');
+            astroPdfTexts.push(textSlice);
+          }
         }
       } else {
         console.log(`Creating signed URL for image: ${path}`);
@@ -74,10 +83,10 @@ export async function POST(req: Request) {
       }
     }
 
-    console.log(`File processing complete. Astro images: ${astroImages.length}, HD images: ${hdImages.length}, PDF texts: ${pdfTexts.length}`);
+    console.log(`File processing complete. Astro images: ${astroImages.length}, HD images: ${hdImages.length}, Astro PDF texts: ${astroPdfTexts.length}, HD PDF texts: ${hdPdfTexts.length}`);
 
 const astroPrompt = `
-You are an expert astrologer. You will receive up to 3 birth chart images (signed URLs). Extract ONLY visible placements from the chart wheel and any planet/house tables. Ignore narrative text. If unclear, set "UNKNOWN". Never guess.
+You are an expert astrologer. You will receive birth chart data either as images (signed URLs) or as extracted PDF text. Extract ONLY visible placements from the chart wheel, planet/house tables, or text data. Ignore narrative descriptions. If unclear, set "UNKNOWN". Never guess.
 
 Return JSON ONLY, in this exact shape:
 {
@@ -105,7 +114,7 @@ Rules:
 `;
 
 const hdPrompt = `
-You are an expert Human Design analyst. You will receive up to 3 HD chart images (signed URLs) and optional PDF text. Extract ONLY visible fields. If unclear, set "UNKNOWN". Never guess. Ignore narrative text.
+You are an expert Human Design analyst. You will receive Human Design chart data either as images (signed URLs) or as extracted PDF text. Extract ONLY visible fields from charts or text data. If unclear, set "UNKNOWN". Never guess. Ignore narrative descriptions.
 Return JSON only:
 {
   "human_design": {
@@ -162,13 +171,13 @@ Return JSON only:
       }
     };
 
-    // Astro extraction
+    // Astro extraction with astrology PDF text
     console.log('\n--- Starting Astrology extraction ---');
-    const astroResult = await callExtraction('Astrology', astroPrompt, astroImages.slice(0, 3), null);
+    const astroResult = await callExtraction('Astrology', astroPrompt, astroImages.slice(0, 3), astroPdfTexts.join('\n\n---\n\n') || null);
 
-    // HD extraction with any PDF text
+    // HD extraction with HD PDF text
     console.log('\n--- Starting Human Design extraction ---');
-    const hdResult = await callExtraction('Human Design', hdPrompt, hdImages.slice(0, 3), pdfTexts.join('\n\n---\n\n') || null);
+    const hdResult = await callExtraction('Human Design', hdPrompt, hdImages.slice(0, 3), hdPdfTexts.join('\n\n---\n\n') || null);
 
     const merged = {
       astrology: astroResult?.astrology || {
