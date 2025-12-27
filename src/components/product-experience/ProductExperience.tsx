@@ -541,7 +541,7 @@ const [hasGuarded, setHasGuarded] = useState(false);
       const fileName = `${userId}/${session.id}/${Date.now()}_${file.name}`;
 
       const { data, error } = await supabase.storage
-        .from('user-uploads')
+        .from('product-uploads')
         .upload(fileName, file);
 
       if (!error && data) {
@@ -560,7 +560,7 @@ const [hasGuarded, setHasGuarded] = useState(false);
       } else if (error) {
         console.error('File upload error', error);
         const detail = (error as any)?.message || 'Unknown storage error';
-        setUploadError(`Upload failed: ${detail}. Ensure bucket "user-uploads" exists and storage policies allow inserts for authenticated users.`);
+        setUploadError(`Upload failed: ${detail}. Ensure bucket "product-uploads" exists and storage policies allow inserts for authenticated users.`);
         return;
       }
     }

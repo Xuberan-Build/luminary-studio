@@ -36,10 +36,44 @@ export default function AffiliateDashboard() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
   const [copied, setCopied] = useState(false);
+  const [checkingEnrollment, setCheckingEnrollment] = useState(true);
 
   useEffect(() => {
-    fetchStats();
+    checkEnrollmentStatus();
   }, []);
+
+  const checkEnrollmentStatus = async () => {
+    try {
+      const response = await fetch('/api/affiliate/check-enrollment');
+
+      if (!response.ok) {
+        throw new Error('Failed to check enrollment');
+      }
+
+      const data = await response.json();
+
+      if (!data.isEnrolled && !data.hasOptedOut) {
+        // First-time visitor who hasn't enrolled - redirect to welcome
+        router.push('/dashboard/affiliate/welcome');
+        return;
+      }
+
+      if (data.hasOptedOut) {
+        // User opted out - redirect to main dashboard
+        router.push('/dashboard');
+        return;
+      }
+
+      // User is enrolled - fetch stats
+      setCheckingEnrollment(false);
+      fetchStats();
+
+    } catch (error) {
+      console.error('Error checking enrollment:', error);
+      setCheckingEnrollment(false);
+      fetchStats();
+    }
+  };
 
   const fetchStats = async () => {
     try {
@@ -81,6 +115,14 @@ export default function AffiliateDashboard() {
     }
   };
 
+  if (checkingEnrollment) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.loading}>Checking affiliate status...</div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className={styles.container}>
@@ -110,13 +152,16 @@ export default function AffiliateDashboard() {
       {!stats.stripeConnectOnboardingComplete && (
         <div className={styles.warning}>
           <div className={styles.warningContent}>
-            <h3>Complete Payout Setup</h3>
-            <p>You need to complete your Stripe onboarding to receive commission payouts.</p>
+            <h3>Complete Payout Setup (Optional)</h3>
+            <p>
+              Your referral link is active! Set up Stripe Connect to receive commission payouts.
+              You can do this anytime - commissions are tracked even before setup.
+            </p>
             <button
               onClick={() => router.push('/dashboard/affiliate/onboarding')}
               className={styles.warningButton}
             >
-              Complete Setup
+              Set Up Payouts Now
             </button>
           </div>
         </div>

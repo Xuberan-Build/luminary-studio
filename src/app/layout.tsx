@@ -3,6 +3,7 @@ import { Inter } from "next/font/google";
 import Navbar from "@/components/navigation/Navbar";
 import Footer from "@/components/layout/Footer";
 import FlashOverlay from "@/components/layout/FlashOverlay";
+import CookieConsent from "@/components/legal/CookieConsent";
 import "./globals.css";
 
 export const viewport: Viewport = {
@@ -27,6 +28,7 @@ export default function RootLayout({
       <body className={inter.className}>
         <FlashOverlay active={false} />
         {children}
+        <CookieConsent />
       </body>
     </html>
   );

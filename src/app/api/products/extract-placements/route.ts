@@ -33,8 +33,9 @@ export async function POST(req: Request) {
       const isPdf = lower.endsWith('.pdf');
 
       if (isPdf) {
-        const { data, error } = await supabaseAdmin.storage.from('user-uploads').download(path);
+        const { data, error } = await supabaseAdmin.storage.from('product-uploads').download(path);
         if (error || !data) {
+          console.error('PDF download error:', error);
           throw new Error(`Could not download PDF: ${path}`);
         }
         const buffer = Buffer.from(await data.arrayBuffer());
@@ -44,9 +45,10 @@ export async function POST(req: Request) {
         }
       } else {
         const { data, error } = await supabaseAdmin.storage
-          .from('user-uploads')
+          .from('product-uploads')
           .createSignedUrl(path, 60 * 10); // 10 minutes
         if (error || !data?.signedUrl) {
+          console.error('File signing error:', error);
           throw new Error(`Could not sign file: ${path}`);
         }
         if (isHD(path)) {
@@ -150,6 +152,7 @@ Return JSON only:
 
     return NextResponse.json({ placements: merged });
   } catch (err: any) {
+    console.error('Extraction API error:', err);
     return NextResponse.json({ error: err?.message || 'Extraction failed' }, { status: 500 });
   }
 }
