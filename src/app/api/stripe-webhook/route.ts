@@ -491,30 +491,31 @@ export async function POST(request: NextRequest) {
     }
 
     // Create Stripe Connect account for new affiliate (auto-enrollment happens via DB trigger)
-    try {
-      console.log('Creating Stripe Connect account for affiliate');
+    if (userId) {
+      try {
+        console.log('Creating Stripe Connect account for affiliate');
 
-      await createConnectAccount(userId, customerEmail);
+        await createConnectAccount(userId, customerEmail);
 
-      console.log('Stripe Connect account created successfully');
-    } catch (connectError: any) {
-      console.error('Failed to create Stripe Connect account:', connectError);
-      // Don't fail the webhook if Connect account creation fails
-    }
+        console.log('Stripe Connect account created successfully');
+      } catch (connectError: any) {
+        console.error('Failed to create Stripe Connect account:', connectError);
+        // Don't fail the webhook if Connect account creation fails
+      }
 
-    // Process referral commission if referral code exists in session metadata
-    try {
-      const referralCode = session.metadata?.referral_code;
+      // Process referral commission if referral code exists in session metadata
+      try {
+        const referralCode = session.metadata?.referral_code;
 
-      if (referralCode && referralCode !== '') {
-        console.log('Processing referral commission for code:', referralCode);
+        if (referralCode && referralCode !== '') {
+          console.log('Processing referral commission for code:', referralCode);
 
-        // Link purchaser to referrer (sets referred_by_id)
-        await linkPurchaserToReferrer(userId, referralCode);
+          // Link purchaser to referrer (sets referred_by_id)
+          await linkPurchaserToReferrer(userId, referralCode);
 
-        // Process commission splits and payouts
-        await processReferralCommission({
-          purchaserId: userId,
+          // Process commission splits and payouts
+          await processReferralCommission({
+            purchaserId: userId,
           purchaserEmail: customerEmail,
           referralCode,
           sessionId: session.id,
@@ -524,12 +525,13 @@ export async function POST(request: NextRequest) {
         });
 
         console.log('Referral commission processed successfully');
-      } else {
-        console.log('No referral code in session metadata');
+        } else {
+          console.log('No referral code in session metadata');
+        }
+      } catch (referralError: any) {
+        console.error('Failed to process referral commission:', referralError);
+        // Don't fail the webhook if referral processing fails
       }
-    } catch (referralError: any) {
-      console.error('Failed to process referral commission:', referralError);
-      // Don't fail the webhook if referral processing fails
     }
 
     // Log to Google Sheets
