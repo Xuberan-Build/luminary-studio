@@ -10,11 +10,14 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-12-15.clover',
 });
 
-const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!,
-  { auth: { autoRefreshToken: false, persistSession: false } }
-);
+// Helper function to create Supabase client (avoids module-level initialization)
+function getSupabaseClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { autoRefreshToken: false, persistSession: false } }
+  );
+}
 
 const BASE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://quantumstrategies.online';
 
@@ -33,6 +36,8 @@ export async function createConnectAccount(
   userId: string,
   email: string
 ): Promise<ConnectAccountInfo> {
+  const supabase = getSupabaseClient();
+
   try {
     // Check if account already exists
     const { data: existing } = await supabase
@@ -107,6 +112,8 @@ export async function createAccountLink(
   accountId: string,
   userId: string
 ): Promise<string> {
+  const supabase = getSupabaseClient();
+
   try {
     const accountLink = await stripe.accountLinks.create({
       account: accountId,
@@ -141,6 +148,8 @@ export async function createAccountLink(
 export async function getAccountStatus(
   accountId: string
 ): Promise<ConnectAccountInfo> {
+  const supabase = getSupabaseClient();
+
   try {
     const account = await stripe.accounts.retrieve(accountId);
 
@@ -219,8 +228,10 @@ export async function createTransfer(
  * Get account by user ID
  */
 export async function getAccountByUserId(userId: string): Promise<string | null> {
+  const supabase = getSupabaseClient();
+
   try {
-    const { data } = await supabase
+    const { data} = await supabase
       .from('referral_hierarchy')
       .select('stripe_connect_account_id')
       .eq('affiliate_id', userId)
@@ -237,6 +248,8 @@ export async function getAccountByUserId(userId: string): Promise<string | null>
  * Check if user can receive payouts
  */
 export async function canReceivePayouts(userId: string): Promise<boolean> {
+  const supabase = getSupabaseClient();
+
   try {
     const { data } = await supabase
       .from('referral_hierarchy')
