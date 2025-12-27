@@ -437,6 +437,8 @@ export async function POST(request: NextRequest) {
     }
 
     // Grant product access in Supabase
+    let userId: string | undefined;
+
     try {
       console.log('Granting product access in Supabase');
 
@@ -447,7 +449,7 @@ export async function POST(request: NextRequest) {
         .eq('email', customerEmail)
         .single();
 
-      let userId = existingUser?.id;
+      userId = existingUser?.id;
 
       if (!userId) {
         // Create user account
