@@ -98,7 +98,7 @@ Placements: ${placementSummary}
           ...previousMessages,
           { role: 'user', content: sanitizedQuestion },
         ],
-        max_completion_tokens: 2000, // Increased from 500 to handle longer responses
+        max_completion_tokens: 10000, // High limit for GPT-5 reasoning models (includes thinking + output tokens)
       });
       aiResponse = completion.choices[0].message.content || '';
     } catch (err: any) {

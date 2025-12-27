@@ -107,7 +107,7 @@ Product: ${productName || 'Quantum Initiation'}
           { role: 'system', content: `${systemPrompt || ''}\n\n${context}` },
           ...messages,
         ],
-        max_completion_tokens: 2000, // Increased from 500 to handle longer responses
+        max_completion_tokens: 10000, // High limit for GPT-5 reasoning models (includes thinking + output tokens)
       });
 
       console.log('[step-insight] OpenAI response received');
