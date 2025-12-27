@@ -184,7 +184,7 @@ Generate the blueprint now.`;
           { role: 'user', content: instructionMessage },
         ],
         max_completion_tokens: 15000, // High limit for GPT-5 reasoning models generating full briefing
-        temperature: 0.7, // Balanced between creativity and instruction-following
+        // Note: GPT-5 only supports temperature=1 (default), custom values not allowed
       });
       briefing = completion.choices[0].message.content || '';
     } catch (err: any) {
