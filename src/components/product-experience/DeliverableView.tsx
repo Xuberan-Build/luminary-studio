@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import jsPDF from 'jspdf';
 
 interface DeliverableViewProps {
   deliverable: string;
@@ -58,15 +59,70 @@ export function DeliverableView({ deliverable, productName }: DeliverableViewPro
   };
 
   const handleDownload = () => {
-    const blob = new Blob([deliverable], { type: 'text/markdown' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `${productName.replace(/\s+/g, '-').toLowerCase()}-deliverable.md`;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    const pdf = new jsPDF();
+    const pageWidth = pdf.internal.pageSize.getWidth();
+    const margin = 20;
+    const maxWidth = pageWidth - (margin * 2);
+    let y = 20;
+
+    // Title
+    pdf.setFontSize(20);
+    pdf.setFont('helvetica', 'bold');
+    pdf.text(productName, margin, y);
+    y += 15;
+
+    // Process deliverable content
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'normal');
+
+    const lines = deliverable.split('\n');
+    for (const line of lines) {
+      const trimmedLine = line.trim();
+      if (!trimmedLine) {
+        y += 4;
+        continue;
+      }
+
+      // Check for headers (##, **, or numbered)
+      if (trimmedLine.match(/^#{1,3}\s+/) || trimmedLine.match(/^\*\*\d+\./)) {
+        y += 6;
+        pdf.setFont('helvetica', 'bold');
+        pdf.setFontSize(14);
+        const cleanHeader = trimmedLine.replace(/^#{1,3}\s+|\*\*/g, '');
+        const headerLines = pdf.splitTextToSize(cleanHeader, maxWidth);
+        pdf.text(headerLines, margin, y);
+        y += headerLines.length * 7;
+        pdf.setFont('helvetica', 'normal');
+        pdf.setFontSize(10);
+        continue;
+      }
+
+      // Check for bold text
+      let text = trimmedLine;
+      let isBold = false;
+      if (text.includes('**')) {
+        text = text.replace(/\*\*/g, '');
+        isBold = true;
+      }
+
+      // Set font based on formatting
+      pdf.setFont('helvetica', isBold ? 'bold' : 'normal');
+
+      // Split long lines
+      const wrappedLines = pdf.splitTextToSize(text, maxWidth);
+
+      // Add new page if needed
+      if (y + (wrappedLines.length * 6) > pdf.internal.pageSize.getHeight() - 20) {
+        pdf.addPage();
+        y = 20;
+      }
+
+      pdf.text(wrappedLines, margin, y);
+      y += wrappedLines.length * 6;
+    }
+
+    // Save PDF
+    pdf.save(`${productName.replace(/\s+/g, '-').toLowerCase()}-blueprint.pdf`);
   };
 
   return (

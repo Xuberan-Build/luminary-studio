@@ -20,11 +20,23 @@ export async function POST(req: Request) {
       throw new Error(error.message);
     }
 
-    const convoText = (conversations || [])
+    // Extract user responses
+    const userResponses = (conversations || [])
       .flatMap((c: any) =>
-        ((c.messages as any[]) || []).map((m: any) => `Step ${c.step_number} · ${m.role}: ${m.content}`)
+        ((c.messages as any[]) || [])
+          .filter((m: any) => m.role === 'user')
+          .map((m: any) => `Step ${c.step_number}: ${m.content}`)
       )
-      .join('\n');
+      .join('\n\n');
+
+    // Extract Wizard's actionable nudges/insights
+    const wizardNudges = (conversations || [])
+      .flatMap((c: any) =>
+        ((c.messages as any[]) || [])
+          .filter((m: any) => m.role === 'assistant' && m.type === 'step_insight')
+          .map((m: any) => `Step ${c.step_number} Insight: ${m.content}`)
+      )
+      .join('\n\n');
 
     const astro = placements?.astrology || {};
     const hd = placements?.human_design || {};
@@ -120,11 +132,13 @@ ${placementSummary ? 'Use this chart data to inform your analysis.' : 'Limited c
 
     const conversationMessage = `MY COMPLETE RESPONSES ACROSS ALL STEPS:
 
-${convoText || 'No detailed responses provided.'}
+${userResponses || 'No detailed responses provided.'}
 
-${moneyNotes ? `\nMONEY/REVENUE GOALS MENTIONED:\n${moneyNotes}` : ''}
+${wizardNudges ? `\n\nQBF WIZARD'S ACTIONABLE NUDGES (synthesize these into the roadmap):\n\n${wizardNudges}` : ''}
 
-Reference specific details I shared about my business, challenges, goals, and plans.`;
+${moneyNotes ? `\n\nMONEY/REVENUE GOALS MENTIONED:\n${moneyNotes}` : ''}
+
+Reference specific details I shared about my business, challenges, and goals. IMPORTANT: Synthesize the QBF Wizard's actionable nudges into concrete next steps in the roadmap.`;
 
     const instructionMessage = `Generate my Quantum Brand Blueprint with these 7 sections:
 
