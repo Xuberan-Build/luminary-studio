@@ -9,16 +9,33 @@
 ## 🚀 Deployment Status
 
 ### ✅ Recently Deployed Features
-- Product experience upload fix (starts at upload stage, not confirmation gate)
-- Extraction API with detailed logging
-- Affiliate onboarding opt-in system (4 new API routes)
-- Database security fixes (RLS policies, function search_path)
+- ✅ **Chart extraction fixes** - PDF text now correctly categorized (astrology vs HD)
+- ✅ **GPT response generation fixes** - Increased token limits for GPT-5 reasoning models
+- ✅ **Wizard personality** - QBF Wizard introduction on first response
+- ✅ **High school clarity** - All prompts updated for simple, accessible language
+- ✅ **Wizard nudges synthesis** - Step insights now integrated into final blueprint
+- ✅ **PDF downloads** - Deliverable downloads as formatted PDF (was .md file)
+- ✅ **Step 2 question updated** - Now asks current alignment (1-10) + desired state
+- ✅ Product experience upload fix (starts at upload stage, not confirmation gate)
+- ✅ Extraction API with detailed logging
+- ✅ Affiliate onboarding opt-in system (4 new API routes)
+- ✅ Database security fixes (RLS policies, function search_path)
+
+### 🆕 Just Implemented (Not Yet Deployed)
+- ✅ **Affiliate email sequence system** - Automated email 30 min after deliverable completion
+- ✅ **EmailSequenceService** - Database-driven email scheduling and management
+- ✅ **EmailTemplateService** - Personalized email templates with opt-out links
+- ✅ **Cron job for email processing** - Runs every 5 minutes via Vercel Cron
+- ✅ **One-click email opt-out** - Unsubscribe endpoint with no auth required
+- ✅ **TypeScript database types** - Complete type safety for all tables
 
 ### ⚠️ Pending Tasks
-- [ ] Run 3 database migrations (006, 007, 008) in Supabase
-- [ ] Debug GPT extraction issue (logs now in place)
+- [ ] Run 5 database migrations (006, 007, 008, 009, update-prompts) in Supabase
 - [ ] Test affiliate onboarding flow
+- [ ] Test affiliate email sequence flow
 - [ ] Enable leaked password protection in Supabase Auth settings
+- [ ] Clean up hardcoded "Quantum Brand Architect" language in API routes
+- [ ] Consolidate multi-source prompting architecture
 
 ---
 
@@ -52,12 +69,17 @@ luminary-studio-nextjs/
 │   │   ├── product-experience/ # Product flow components
 │   │   ├── portal/             # Dashboard navigation
 │   │   └── legal/              # NEW: Cookie consent, etc.
-│   └── lib/
-│       ├── ai/                 # OpenAI integration
-│       ├── stripe/             # Stripe & Connect
-│       ├── supabase/           # Database client
-│       ├── email/              # Gmail API
-│       └── affiliate/          # Commission processing
+│   ├── lib/
+│   │   ├── ai/                 # OpenAI integration
+│   │   ├── stripe/             # Stripe & Connect
+│   │   ├── supabase/           # Database client
+│   │   ├── email/              # Gmail API
+│   │   ├── affiliate/          # Commission processing
+│   │   └── services/           # NEW: Business logic services
+│   │       ├── EmailSequenceService.ts
+│   │       └── EmailTemplateService.ts
+│   └── types/
+│       └── database.ts         # NEW: TypeScript types for all tables
 ├── database/
 │   └── migrations/             # SQL migrations
 └── scripts/                    # Utility scripts
@@ -113,6 +135,14 @@ luminary-studio-nextjs/
 **track_changes**
 - Audit log for affiliate track changes
 
+**email_sequences** (NEW)
+- Automated email scheduling and delivery tracking
+- Fields: user_id, sequence_type, trigger_event, scheduled_send_at, email_status
+- Email content stored as JSONB (product_name, deliverable_preview, etc.)
+- Statuses: scheduled, sent, failed, cancelled
+- Unique constraint: one active sequence per user per type
+- Auto-cancels when user enrolls or opts out
+
 ---
 
 ## 📦 Storage Buckets
@@ -141,26 +171,46 @@ luminary-studio-nextjs/
 ### Product APIs
 
 **POST /api/products/extract-placements**
-- Extracts chart placements using GPT-5.2 Vision
+- Extracts chart placements using GPT-4o Vision (was gpt-5.2)
 - Input: `{ storagePaths: string[] }` (paths in user-uploads bucket)
 - Process:
-  1. Downloads PDFs, extracts text
-  2. Creates signed URLs for images
-  3. Categorizes as Astrology or Human Design
-  4. Calls OpenAI GPT-5.2 with images
+  1. Downloads PDFs, extracts text with pdf-parse
+  2. **Categorizes PDF text separately** for astrology vs HD
+  3. Creates signed URLs for images (categorized by filename)
+  4. Calls OpenAI GPT-4o Vision with images + PDF text
   5. Returns structured placements JSON
-- **Status:** ✅ Has detailed logging for debugging
-- **Known Issue:** Not extracting in production (investigating with logs)
+- **Status:** ✅ Working - PDF text categorization fixed
+- **Recent Fix:** PDF text was going to single array (only HD got text, astrology got null)
 
 **POST /api/products/step-insight**
 - Generates AI response for each product step
-- Uses GPT model with placements context
+- Uses GPT-5 reasoning model with placements context
+- **Token Limit:** 10,000 (increased from 2,000 for GPT-5 thinking tokens)
+- **Prompts:** Loads from database `prompts` table (scope='step_insight') with fallback
+- **Recent Changes:**
+  - First response (Step 2) introduces "QBF Wizard"
+  - All responses written at high school reading level
+  - Explains astrology/HD terms in plain English
+  - Ends with one powerful next step
+- New idea: Add token budget data based on users.
+-Allow users to deep dive with their  for clarity after the chart has 
 
 **POST /api/products/followup-response**
 - Handles follow-up questions in product experience
+- **Token Limit:** 10,000 (increased from 2,000)
+- **Prompts:** Loads from database (scope='followup')
+- Simple, clear language for accessibility
 
 **POST /api/products/final-briefing**
 - Generates final deliverable/blueprint
+- **Token Limit:** 15,000 (increased from 3,000)
+- **Temperature:** Uses default (1) - GPT-5 doesn't support custom values
+- **Recent Changes:**
+  - Extracts user responses + wizard's actionable nudges separately
+  - Synthesizes nudges into execution spine
+  - 7-section structure with high school clarity
+  - References money/revenue goals from conversation
+- **Prompts:** Loads from database (scope='final_briefing')
 
 ### Affiliate APIs (NEW)
 
@@ -186,6 +236,22 @@ luminary-studio-nextjs/
 **POST /api/affiliate/onboarding**
 - Creates Stripe Connect account link
 - Returns onboarding URL
+
+**GET /api/affiliate/opt-out-email** (NEW)
+- One-click email unsubscribe (no auth required)
+- Sets affiliate_opted_out = true
+- Cancels pending email sequences
+- Returns HTML success/error page
+
+### Cron Jobs
+
+**GET /api/cron/send-affiliate-emails** (NEW)
+- Runs every 5 minutes via Vercel Cron
+- Fetches up to 50 scheduled emails ready to send
+- Validates emails still eligible (user hasn't enrolled/opted out)
+- Sends via Gmail API using EmailTemplateService
+- Updates email_status (sent, failed, cancelled)
+- Requires CRON_SECRET authorization header
 
 ### Webhook
 
@@ -218,9 +284,15 @@ luminary-studio-nextjs/
 **Google APIs:**
 - `GOOGLE_DRIVE_PRIVATE_KEY`
 - `GOOGLE_GMAIL_PRIVATE_KEY`
+- `GOOGLE_GMAIL_CLIENT_EMAIL`
+- `GMAIL_FROM_EMAIL` (e.g., hello@quantumstrategies.online)
+- `GMAIL_FROM_NAME` (e.g., Quantum Strategies)
 
 **Site:**
 - `NEXT_PUBLIC_SITE_URL` = `https://quantumstrategies.online`
+
+**Cron:**
+- `CRON_SECRET` - Secret token for authenticating cron job requests
 
 ---
 
@@ -236,11 +308,12 @@ luminary-studio-nextjs/
 **Product Experience:**
 - ✅ 5-step questionnaire flow
 - ✅ File upload to user-uploads bucket
-- ✅ Upload interface starts correctly (fixed 2025-12-27)
-- ⚠️ Chart extraction (investigating - logs added)
-- ✅ AI-powered step insights
-- ✅ Follow-up chat system
-- ✅ Final blueprint generation
+- ✅ Upload interface starts correctly
+- ✅ Chart extraction from PDFs and images (GPT-4o Vision)
+- ✅ AI-powered step insights with QBF Wizard personality
+- ✅ Follow-up chat system with high school clarity
+- ✅ Final blueprint generation (synthesizes wizard nudges)
+- ✅ PDF download with formatting (headers, bold, wrapping, multi-page)
 
 **Stripe Integration:**
 - ✅ Checkout with payment links
@@ -255,19 +328,14 @@ luminary-studio-nextjs/
 - ✅ Dinner party pool contributions
 - ✅ Affiliate dashboard with stats
 - ✅ Auto-enrollment on first purchase
-- ✅ NEW: Opt-in onboarding flow
-
-### ⚠️ Issues Being Investigated
-
-**GPT Extraction Not Working:**
-- **Symptom:** Tiona uploaded charts successfully but no placements extracted
-- **Status:** Detailed logging added to production
-- **Next Step:** Have user test and check Vercel function logs
-- **Possible Causes:**
-  - OpenAI API key issue
-  - GPT-5.2 access/permissions
-  - Signed URL CORS issue
-  - API response parsing
+- ✅ Opt-in onboarding flow
+- 🆕 **Automated email sequences** (implemented, not yet deployed):
+  - Sends affiliate invitation 30 min after deliverable completion
+  - Personalized with user name, product name, deliverable preview
+  - One-click opt-out with no authentication required
+  - Auto-cancels if user enrolls or opts out
+  - Cron-based processing every 5 minutes
+  - Full email tracking (scheduled, sent, failed, cancelled)
 
 ---
 
@@ -279,12 +347,12 @@ luminary-studio-nextjs/
 2. **Purchase Product** → Stripe checkout
 3. **Webhook Processes:**
    - Grants product access
-   - Auto-enrolls as affiliate (if not opted out)
-   - Creates Stripe Connect account
    - Sends welcome email
 4. **Dashboard** → See purchased products
-5. **First Affiliate Tab Click** → Redirect to welcome page (opt-in)
-6. **Product Experience** → Upload → Extract → Steps → Deliverable
+5. **Product Experience** → Upload → Extract → Steps → Deliverable
+6. **Deliverable Completion** → 🆕 Schedules affiliate invitation email (30 min delay)
+7. **Email Sent** → 🆕 User receives personalized affiliate invitation with opt-out link
+8. **First Affiliate Tab Click** → Redirect to welcome page (opt-in) OR dashboard (if opted out)
 
 ### Affiliate Onboarding
 
@@ -330,15 +398,21 @@ luminary-studio-nextjs/
 - `grant_product_access(email, product_slug, ...)` - Manual access grant
 - `update_session_progress(session_id, step, total)` - Progress tracking
 
+### Email Sequence Functions (NEW)
+- `cancel_user_pending_emails(user_id)` - Cancel all scheduled emails for user
+- `cleanup_old_email_sequences(days_to_keep)` - Delete old emails (retention policy)
+- `update_email_sequences_updated_at()` - Auto-update timestamp trigger
+
 ---
 
 ## 🛡️ Security
 
 ### Row Level Security (RLS)
 - ✅ Enabled on: users, product_access, product_sessions, conversations
-- ✅ NEW: Enabled on prompts, product_steps (migration 007)
+- ✅ Enabled on: prompts, product_steps (migration 007)
+- 🆕 Enabled on: email_sequences (migration 009)
 - Users can only access their own data
-- Service role bypasses RLS for webhooks/admin
+- Service role bypasses RLS for webhooks/admin/cron
 
 ### Function Security
 - ✅ NEW: All functions have `search_path = public` (migration 008)
@@ -369,26 +443,61 @@ luminary-studio-nextjs/
 - Prevents search path attacks
 - Verification check included
 
-**To run:** Copy SQL to Supabase SQL Editor and execute in order
+### 009_email_sequences.sql (NEW - EMAIL AUTOMATION)
+- Creates `email_sequences` table for automated email scheduling
+- Fields: user_id, sequence_type, trigger_event, scheduled_send_at, email_status, email_content (JSONB)
+- Indexes: scheduled emails, user lookup, analytics
+- RLS policies: users view own, service role full access
+- Helper functions: `cancel_user_pending_emails()`, `cleanup_old_email_sequences()`
+- **Required for:** Affiliate invitation email automation
+
+### update-prompts-quantum-initiation.sql (CRITICAL FOR NEW FEATURES)
+- Updates Step 2 question to ask current alignment (1-10) + desired state
+- Updates system prompt for QBF Wizard
+- Updates step_insight prompt (introduces wizard on first response, high school clarity)
+- Updates followup prompt (simple language, explain terms)
+- Updates final_briefing prompt (7-section structure, synthesize nudges)
+- **Required for:** Wizard personality, high school clarity, nudge synthesis
+
+**To run:** Copy SQL to Supabase SQL Editor and execute in order (006, 007, 008, 009, then update-prompts)
 
 ---
 
 ## 🐛 Known Issues & Debugging
 
-### Chart Extraction Issue
-**Problem:** GPT not extracting placements in production
-**Debugging Steps:**
-1. Check Vercel function logs for `/api/products/extract-placements`
-2. Look for console logs starting with `=== EXTRACTION API CALLED ===`
-3. Check for OpenAI API errors with status codes
-4. Verify `OPENAI_API_KEY` is set in Vercel
+### ✅ Recently Fixed Issues
 
-**Logs will show:**
-- Storage paths received
-- File processing (PDFs, images)
-- Signed URL creation
-- OpenAI model and request details
-- Response or error
+**Chart Extraction (FIXED 2025-12-27):**
+- **Problem:** PDF text wasn't being categorized correctly
+- **Solution:** Split into separate arrays for astrology vs HD
+- **Root Cause:** All PDF text was going to single array, only sent to HD extraction
+
+**Empty GPT Responses (FIXED 2025-12-27):**
+- **Problem:** GPT-5 returning empty content with finish_reason: "length"
+- **Solution:** Increased max_completion_tokens (10k-15k) to account for thinking tokens
+- **Root Cause:** GPT-5 reasoning models use tokens for both thinking and output
+
+**Temperature Parameter Error (FIXED 2025-12-27):**
+- **Problem:** 400 error on temperature parameter
+- **Solution:** Removed temperature parameter (GPT-5 only supports default=1)
+
+### Debugging Steps for Future Issues
+
+1. **Check Vercel Function Logs:**
+   - Dashboard → Deployments → Functions tab
+   - Filter by API route
+   - Look for console logs starting with `===`
+
+2. **Check OpenAI API Errors:**
+   - Look for status codes (400, 401, 429, 500)
+   - Check model names and parameters
+   - Verify `OPENAI_API_KEY` in Vercel
+
+3. **Check Extraction Logs:**
+   - Storage paths received
+   - File processing (PDFs, images)
+   - Signed URL creation
+   - Model and request details
 
 ---
 
@@ -399,7 +508,11 @@ luminary-studio-nextjs/
 - **Auth:** Supabase Auth
 - **Storage:** Supabase Storage
 - **Payments:** Stripe + Stripe Connect
-- **AI:** OpenAI GPT-5.2
+- **AI Models:**
+  - GPT-4o (chart extraction with vision)
+  - GPT-4o-mini (lightweight conversations)
+  - GPT-5 (reasoning model for step insights, followups, final briefing)
+- **PDF Processing:** pdf-parse (text extraction), jsPDF (client-side generation)
 - **Email:** Gmail API
 - **CRM:** Google Sheets
 - **Deployment:** Vercel
@@ -432,10 +545,23 @@ luminary-studio-nextjs/
 
 ## 🔮 Next Steps
 
-1. ✅ Deploy extraction logging to production (DONE)
-2. ⏳ Have Tiona test extraction again
-3. ⏳ Check Vercel logs for exact error
-4. ⏳ Run pending database migrations
-5. ⏳ Test affiliate onboarding flow
-6. ⏳ Enable leaked password protection in Supabase Auth
-7. ⏳ Update React to latest secure version
+### Immediate (Production Ready)
+1. ✅ Chart extraction fixes - DEPLOYED
+2. ✅ GPT response generation fixes - DEPLOYED
+3. ✅ Wizard personality improvements - DEPLOYED
+4. ✅ PDF download functionality - DEPLOYED
+5. ⏳ **Run pending database migrations** (006, 007, 008, update-prompts)
+6. ⏳ Test complete product experience flow with new wizard personality
+7. ⏳ Test affiliate onboarding flow
+
+### Architecture Improvements (Planned)
+1. ⏳ Consolidate multi-source prompting (database-first with clear fallbacks)
+2. ⏳ Remove hardcoded "Quantum Brand Architect" language
+3. ⏳ Create PromptService class for centralized prompt loading
+4. ⏳ Extract PDF generation into reusable service
+5. ⏳ Add comprehensive TypeScript types for all database schemas
+
+### Security & Maintenance
+1. ⏳ Enable leaked password protection in Supabase Auth
+2. ⏳ Update React to latest secure version
+3. ⏳ Review and optimize AI token usage costs
