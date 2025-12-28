@@ -27,72 +27,16 @@ export default function DeliverableViewer({ deliverable, productName }: Delivera
   const handleDownload = async () => {
     setIsDownloading(true);
     try {
-      // Import jsPDF dynamically
-      const { jsPDF } = await import('jspdf');
-      const doc = new jsPDF();
+      // Use PDFService for clean, reusable PDF generation
+      const { PDFService } = await import('@/lib/services/PDFService');
 
-      // Format and add content
-      const pageWidth = doc.internal.pageSize.getWidth();
-      const margin = 20;
-      const maxWidth = pageWidth - 2 * margin;
-      let yPosition = 20;
-
-      // Title
-      doc.setFontSize(18);
-      doc.setFont('helvetica', 'bold');
-      doc.text(productName, margin, yPosition);
-      yPosition += 10;
-
-      // Content
-      doc.setFontSize(10);
-      doc.setFont('helvetica', 'normal');
-
-      const lines = deliverable.split('\n');
-      for (const line of lines) {
-        if (yPosition > doc.internal.pageSize.getHeight() - 20) {
-          doc.addPage();
-          yPosition = 20;
-        }
-
-        // Handle headers (lines starting with **)
-        if (line.startsWith('**') && line.endsWith('**')) {
-          doc.setFont('helvetica', 'bold');
-          const headerText = line.replace(/\*\*/g, '');
-          const wrappedHeader = doc.splitTextToSize(headerText, maxWidth);
-          doc.text(wrappedHeader, margin, yPosition);
-          yPosition += wrappedHeader.length * 6 + 2;
-          doc.setFont('helvetica', 'normal');
-        }
-        // Handle section headers (##)
-        else if (line.startsWith('##')) {
-          doc.setFontSize(14);
-          doc.setFont('helvetica', 'bold');
-          const headerText = line.replace(/^#+\s*/, '');
-          const wrappedHeader = doc.splitTextToSize(headerText, maxWidth);
-          doc.text(wrappedHeader, margin, yPosition);
-          yPosition += wrappedHeader.length * 8 + 4;
-          doc.setFontSize(10);
-          doc.setFont('helvetica', 'normal');
-        }
-        // Handle bullet points
-        else if (line.trim().startsWith('-') || line.trim().startsWith('•')) {
-          const bulletText = line.replace(/^[\s-•]+/, '');
-          const wrappedBullet = doc.splitTextToSize(`• ${bulletText}`, maxWidth - 5);
-          doc.text(wrappedBullet, margin + 5, yPosition);
-          yPosition += wrappedBullet.length * 5 + 1;
-        }
-        // Regular text
-        else if (line.trim()) {
-          const wrappedText = doc.splitTextToSize(line, maxWidth);
-          doc.text(wrappedText, margin, yPosition);
-          yPosition += wrappedText.length * 5 + 2;
-        } else {
-          yPosition += 4;
-        }
-      }
-
-      // Download
-      doc.save(`${productName.replace(/\s+/g, '-')}-Blueprint.pdf`);
+      await PDFService.generatePDF({
+        title: productName,
+        content: deliverable,
+        fileName: `${productName.replace(/\s+/g, '-')}-Blueprint.pdf`,
+        author: 'Quantum Strategies',
+        includeDate: true,
+      });
     } catch (error) {
       console.error('PDF generation error:', error);
       alert('Failed to generate PDF. Please try again.');
