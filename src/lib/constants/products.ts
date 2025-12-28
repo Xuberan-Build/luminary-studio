@@ -47,6 +47,22 @@ export const PRODUCTS: Record<string, ProductConfig> = {
     fromEmail: 'austin@xuberandigital.com',
     fromName: 'Quantum Strategies',
   },
+
+  'personal-alignment': {
+    slug: 'personal-alignment',
+    name: 'Personal Alignment Orientation',
+    price: 7,
+    interactTitle: 'Discover Your Personal Alignment',
+    interactInstructions: 'Complete the guided experience to uncover your core values, purpose, and Life\'s Task.',
+    estimatedDuration: '15-20 minutes',
+    gptIframeUrl: '',
+    ...(process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK_PERSONAL_ALIGNMENT && {
+      stripePaymentLink: process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK_PERSONAL_ALIGNMENT,
+    }),
+    sheetId: '1EhC-MCjlqG_4otRZjxefEpttR98s5rXqr98vj2TnLTE',
+    fromEmail: 'austin@xuberandigital.com',
+    fromName: 'Quantum Strategies',
+  },
 };
 
 export function getProductBySlug(slug: string): ProductConfig | null {

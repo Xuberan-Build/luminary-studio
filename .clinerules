@@ -1,0 +1,92 @@
+# Claude Code Development Rules
+# Luminary Studio / Quantum Strategies Project
+
+## Core Principles
+1. Simplicity over complexity - choose the simplest solution that works
+2. Type safety first - always use TypeScript interfaces
+3. Local-first - prefer files in repo over external dependencies
+4. Progressive enhancement - ship fast, iterate based on feedback
+
+## Product Development
+
+### Creating Products
+- ALWAYS use TypeScript product definitions (src/lib/product-definitions/)
+- NEVER use Google Docs (service account restrictions discovered)
+- Copy template.ts → edit → generate SQL → test locally
+- Reference QUANTUM_INITIATION_REFERENCE.md for quality standards
+
+### Quality Standards
+- Write like talking to smart high schooler (short sentences, explain jargon)
+- Be decisive not wishy-washy ("Do this" not "consider")
+- Always give ONE specific next step with numbers
+- Final deliverables: 7 sections, ~300 words, $700 perceived value
+- Chart-grounded (reference Sun/Moon/Rising, money houses, HD type)
+
+### Product Structure
+- Step 1: Always chart upload (standardized)
+- Steps 2-7: Product-specific questions
+- Total 5-7 steps, 15-30 minutes duration
+- Price: $7 foundation products, $7-14 deep-dives
+
+## Code Style
+
+### TypeScript
+- Define interfaces before implementation
+- No `any` types
+- Strict null checks
+- Validate at boundaries
+
+### Naming
+- Files: PascalCase components, kebab-case configs
+- Variables: camelCase in TS, snake_case in SQL
+- Products: quantum-[topic]-[subtopic]
+
+### React/Next.js
+- Server components by default
+- Use 'use client' only when needed
+- Proper error handling in API routes
+- Environment variables for secrets
+
+## Database
+- Always use migrations for schema changes
+- Use ON CONFLICT for idempotent inserts
+- JSONB for flexible/evolving data structures
+- snake_case for tables and columns
+
+## Product Ecosystem
+- Foundation products introduce framework
+- Deep-dive products build on foundation
+- Cross-reference products in deliverables
+- Create natural upsell path
+
+## What to Avoid
+- Over-engineering / premature abstractions
+- External dependencies when native solution exists
+- Clever code over readable code
+- Deep nesting (use early returns)
+- Vague advice (be specific with numbers)
+
+## Communication
+- Use TodoWrite tool for multi-step tasks
+- Ask questions when requirements ambiguous
+- Present options with pros/cons when multiple valid approaches
+- Reference existing patterns (QUANTUM_INITIATION_REFERENCE.md)
+
+## Key Files
+- QUANTUM_INITIATION_REFERENCE.md - Product quality template
+- PRODUCT_CREATION_GUIDE.md - Workflow guide
+- src/lib/product-definitions/template.ts - TypeScript template
+- database/schema.sql - Database schema
+
+## Git Commits
+- Use conventional commit format: "type: description"
+- Types: feat, fix, docs, refactor, test, chore
+- Keep messages concise and clear
+- DO NOT add "Generated with Claude Code" footer
+- DO NOT add "Co-Authored-By: Claude" footer
+- Clean commit messages only
+
+## Quick Commands
+- npm run generate-product-sql [slug] - Generate SQL from TypeScript
+- npm run dev - Start development server
+- npm run build - Build for production

@@ -6,7 +6,16 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "generate-product-sql": "tsx scripts/generate-product-sql.ts",
+    "create-stripe-product": "tsx scripts/create-stripe-product.ts",
+    "create-folders": "tsx scripts/create-folders-only.ts",
+    "cleanup-folders": "tsx scripts/cleanup-test-folders.ts",
+    "cleanup-all": "tsx scripts/cleanup-all-service-account-files.ts",
+    "check-storage": "tsx scripts/check-storage-usage.ts",
+    "test-doc-parse": "tsx scripts/test-doc-parser.ts",
+    "test-doc-creation": "tsx scripts/test-doc-creation.ts",
+    "sync-product": "tsx scripts/sync-product.ts"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.1",
@@ -43,6 +52,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.0.1",
     "tailwindcss": "^4",
+    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }

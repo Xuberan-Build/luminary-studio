@@ -8,7 +8,13 @@ import MobileMenu from "./MobileMenu";
 import StackedMegaMenu from "./StackedMegaMenu";
 import styles from "./navbar.module.css";
 
-export default function Navbar() {
+interface NavbarProps {
+  showProductCTA?: boolean;
+  productCTAText?: string;
+  productCTAHref?: string;
+}
+
+export default function Navbar({ showProductCTA = false, productCTAText = "Get Your Blueprint", productCTAHref = "#purchase" }: NavbarProps) {
   const pathname = usePathname();
 
   const [activeDropdown, setActiveDropdown] = useState<string | null>(null);
@@ -154,7 +160,7 @@ export default function Navbar() {
                     {activeDropdown === item.label && (
                       <DropdownPortal>
                         <div
-                          style={{ position: "fixed", top: `${dropdownPosition.top}px`, left: "50%", transform: "translateX(-50%)" }}
+                          style={{ position: "fixed", top: `${dropdownPosition.top}px`, left: "50%", transform: "translateX(-50%)", zIndex: 999999 }}
                           onMouseEnter={handleDropdownEnter}
                           role="menu"
                         >
@@ -169,6 +175,22 @@ export default function Navbar() {
                 );
               }
 
+              // Portal button with special CTA styling (hide on product pages)
+              if (item.label === "Portal" && !showProductCTA) {
+                return (
+                  <li key={item.label} className={styles.navItem}>
+                    <Link href={item.href!} className={styles.portalButton}>
+                      {item.label}
+                    </Link>
+                  </li>
+                );
+              }
+
+              // Skip Portal entirely on product pages
+              if (item.label === "Portal" && showProductCTA) {
+                return null;
+              }
+
               return (
                 <li key={item.label} className={styles.navItem}>
                   <Link href={item.href!} className={`${styles.navLink} ${isActive(item.href!) ? styles.active : ""}`}>
@@ -178,6 +200,13 @@ export default function Navbar() {
               );
             })}
           </ul>
+        )}
+
+        {/* Product CTA Button (optional, for product pages) */}
+        {showProductCTA && isDesktop && (
+          <a href={productCTAHref} className={styles.productCTA}>
+            <span className={styles.ctaText}>{productCTAText}</span>
+          </a>
         )}
 
         {/* Mobile Navigation: render only on mobile */}

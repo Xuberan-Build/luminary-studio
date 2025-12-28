@@ -50,38 +50,168 @@
 }
 
 /* Desktop Navigation */
-.nav {
+.navList {
   display: flex;
-  gap: 2rem;
+  gap: 0.5rem;
+  list-style: none;
+  margin: 0;
+  padding: 0;
   align-items: center;
 }
 
+.navItem {
+  position: relative;
+  z-index: 10001;
+}
+
 .navLink {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1.25rem;
   color: rgba(248, 245, 255, 0.7);
   text-decoration: none;
   font-size: 0.95rem;
   font-weight: 500;
-  transition: all 0.2s ease;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-family: inherit;
   position: relative;
+}
+
+.navLink::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
+  padding: 1px;
+  background: linear-gradient(135deg, transparent, rgba(192, 132, 252, 0.3));
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.3s ease;
 }
 
 .navLink:hover {
   color: #F8F5FF;
+  background: rgba(147, 51, 234, 0.15);
+  box-shadow: 0 0 20px rgba(147, 51, 234, 0.2);
+}
+
+.navLink:hover::before {
+  opacity: 1;
 }
 
 .navLink.active {
   color: #F8F5FF;
+  background: rgba(147, 51, 234, 0.25);
+  box-shadow: 0 0 25px rgba(147, 51, 234, 0.3);
 }
 
-.navLink.active::after {
+/* Dropdown Styles */
+.dropdown {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  min-width: 280px;
+  background: rgba(9, 0, 24, 0.98);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(192, 132, 252, 0.2);
+  border-radius: 12px;
+  padding: 0.5rem;
+  box-shadow: 0 8px 40px rgba(147, 51, 234, 0.3);
+  z-index: 10002;
+  animation: fadeInDropdown 0.2s ease;
+}
+
+.dropdownLink {
+  display: block;
+  padding: 0.75rem 1rem;
+  color: rgba(248, 245, 255, 0.8);
+  text-decoration: none;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+}
+
+.dropdownLink:hover {
+  background: rgba(147, 51, 234, 0.2);
+  color: #F8F5FF;
+}
+
+.dropdownLink.active {
+  background: rgba(147, 51, 234, 0.3);
+  color: #F8F5FF;
+}
+
+.dropdownLabel {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 0.25rem;
+  color: inherit;
+}
+
+.dropdownDescription {
+  font-size: 0.85rem;
+  color: #E9D5FF;
+  opacity: 0.8;
+}
+
+/* Portal Button - Prominent CTA styling */
+.portalButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem 1.75rem;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #090018 0%, #1a0033 100%);
+  border: 1px solid rgba(192, 132, 252, 0.3);
+  box-shadow:
+    0 0 20px rgba(147, 51, 234, 0.15),
+    0 4px 12px rgba(0, 0, 0, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.portalButton::before {
   content: "";
   position: absolute;
-  bottom: -4px;
-  left: 0;
-  right: 0;
-  height: 2px;
-  background: linear-gradient(90deg, #9333EA, #C084FC);
-  border-radius: 2px;
+  inset: 0;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(192, 132, 252, 0.1) 100%);
+  opacity: 0;
+  transition: opacity 0.25s ease;
+}
+
+.portalButton:hover {
+  transform: scale(1.02);
+  box-shadow:
+    0 0 30px rgba(147, 51, 234, 0.25),
+    0 6px 16px rgba(0, 0, 0, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  border-color: rgba(192, 132, 252, 0.5);
+}
+
+.portalButton:hover::before {
+  opacity: 1;
+}
+
+/* Animations */
+@keyframes fadeInDropdown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 /* CTA Button - Matching Results Cards */
@@ -255,8 +385,12 @@
 }
 
 /* Responsive */
-@media (max-width: 768px) {
-  .nav {
+@media (max-width: 1024px) {
+  .container {
+    padding: 1rem;
+  }
+
+  .navList {
     display: none;
   }
 
@@ -264,12 +398,13 @@
     display: none;
   }
 
-  .mobileToggle {
-    display: block;
+  .dropdown,
+  .megaMenu {
+    display: none !important;
   }
 
-  .mobileMenu {
-    display: block;
+  .logo {
+    font-size: 1.25rem;
   }
 
   .header {
@@ -278,23 +413,5 @@
 
   .header.scrolled {
     height: 56px;
-  }
-
-  .mobileMenu {
-    top: 64px;
-  }
-
-  .header.scrolled + .mobileMenu {
-    top: 56px;
-  }
-}
-
-@media (max-width: 1024px) {
-  .container {
-    padding: 0 1.5rem;
-  }
-
-  .nav {
-    gap: 1.5rem;
   }
 }

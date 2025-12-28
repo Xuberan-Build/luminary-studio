@@ -75,6 +75,11 @@ export const navigationConfig = {
       label: "Products",
       dropdown: [
         {
+          label: "Personal Alignment Orientation",
+          href: "/products/personal-alignment",
+          description: "Discover Your Life Purpose"
+        },
+        {
           label: "Quantum Initiation Protocol",
           href: "/products/quantum-initiation",
           description: "Personalized Money Blueprint"
