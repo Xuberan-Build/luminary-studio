@@ -40,13 +40,27 @@ export default function StripeCheckout({ paymentLink, productName, price, produc
   };
 
   // Show error state if keys are missing
-  if (!publishableKey || !paymentLink) {
+  if (!publishableKey) {
     return (
       <div className={styles.checkoutContainer}>
         <div className={styles.placeholder}>
           <p className={styles.placeholderTitle}>⚠️ Stripe Not Configured</p>
           <p className={styles.placeholderText}>
             Add your Stripe keys to the <code>.env</code> file to enable payments.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error if neither payment method is configured
+  if (!productSlug && !paymentLink) {
+    return (
+      <div className={styles.checkoutContainer}>
+        <div className={styles.placeholder}>
+          <p className={styles.placeholderTitle}>⚠️ Payment Not Configured</p>
+          <p className={styles.placeholderText}>
+            Product requires either a productSlug or paymentLink prop.
           </p>
         </div>
       </div>

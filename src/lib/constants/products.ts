@@ -2,7 +2,7 @@ export interface ProductConfig {
   slug: string;
   name: string;
   price: number;
-  stripePaymentLink: string;
+  stripePaymentLink?: string; // Optional: legacy payment links
   interactTitle?: string;
   interactInstructions?: string;
   estimatedDuration?: string;
@@ -24,7 +24,9 @@ export const PRODUCTS: Record<string, ProductConfig> = {
     interactInstructions: 'Complete the guided intake to personalize your blueprint.',
     estimatedDuration: '15-30 minutes',
     gptIframeUrl: '',
-    stripePaymentLink: process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK_QUANTUM || '',
+    ...(process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK_QUANTUM && {
+      stripePaymentLink: process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK_QUANTUM,
+    }),
     sheetId: '1EhC-MCjlqG_4otRZjxefEpttR98s5rXqr98vj2TnLTE',
     fromEmail: 'austin@xuberandigital.com',
     fromName: 'Quantum Strategies',
@@ -38,7 +40,9 @@ export const PRODUCTS: Record<string, ProductConfig> = {
     interactInstructions: 'Walk through the strategic intake to map your profit plan.',
     estimatedDuration: '25-35 minutes',
     gptIframeUrl: '',
-    stripePaymentLink: process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK_STRUCTURE || '',
+    ...(process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK_STRUCTURE && {
+      stripePaymentLink: process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK_STRUCTURE,
+    }),
     sheetId: '1EhC-MCjlqG_4otRZjxefEpttR98s5rXqr98vj2TnLTE',
     fromEmail: 'austin@xuberandigital.com',
     fromName: 'Quantum Strategies',
