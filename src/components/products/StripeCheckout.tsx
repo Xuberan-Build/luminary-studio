@@ -23,15 +23,13 @@ export default function StripeCheckout({ paymentLink, productName, price, produc
     setIsProcessing(true);
 
     try {
-      if (productSlug) {
-        // Use new checkout API with referral tracking
-        await redirectToCheckout(productSlug);
-      } else if (paymentLink) {
-        // Fallback to payment link (legacy)
+      // Use direct payment link (simple and works immediately)
+      if (paymentLink) {
         window.location.href = paymentLink;
       } else {
         console.error("No payment method configured");
         alert("Payment not configured. Please contact support.");
+        setIsProcessing(false);
       }
     } catch (error) {
       console.error("Checkout error:", error);
