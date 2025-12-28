@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
-import { openai, DEFAULT_MODEL } from '@/lib/openai/client';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { checkRateLimit } from '@/lib/security/rate-limit';
 import { validateUserInput, validateSessionOwnership } from '@/lib/security/input-validation';
+import { PromptService } from '@/lib/services/PromptService';
+import { AIRequestService } from '@/lib/services/AIRequestService';
 
 export async function POST(req: Request) {
   try {
@@ -58,26 +59,15 @@ Astrology: Sun ${astro.sun || 'UNKNOWN'}, Moon ${astro.moon || 'UNKNOWN'}, Risin
 Human Design: Type ${hd.type || 'UNKNOWN'}, Strategy ${hd.strategy || 'UNKNOWN'}, Authority ${hd.authority || 'UNKNOWN'}, Profile ${hd.profile || 'UNKNOWN'}, Centers ${hd.centers || 'UNKNOWN'}, Gifts ${hd.gifts || 'UNKNOWN'}
 `.trim();
 
-    // Try to load a DB prompt override
-    let dbPrompt = '';
-    try {
-      const { data } = await supabaseAdmin
-        .from('prompts')
-        .select('prompt')
-        .eq('product_slug', productSlug || 'quantum-initiation')
-        .eq('scope', 'step_insight')
-        .maybeSingle();
-      if (data?.prompt) dbPrompt = data.prompt;
-    } catch (e) {
-      // ignore and fall back
-    }
-
-    const basePrompt =
-      dbPrompt ||
-      `Respond after the user answers a step. Keep it to 1–3 short paragraphs. Ground in placements (money/identity houses 2/8/10/11, Sun/Moon/Rising, Mars/Venus/Mercury/Saturn/Pluto, HD type/strategy/authority/centers/gifts). If 2nd-house ruler/location is unknown, ask for it and still give the best next move. Include one actionable nudge relevant to the step. If the user hinted at revenue goals, acknowledge and align the nudge to that goal.`;
+    // Load prompt from database with fallback
+    const basePrompt = await PromptService.getPrompt({
+      productSlug: productSlug || 'quantum-initiation',
+      scope: 'step_insight',
+      fallback: `Respond after the user answers a step. Keep it to 1–3 short paragraphs. Ground in placements (money/identity houses 2/8/10/11, Sun/Moon/Rising, Mars/Venus/Mercury/Saturn/Pluto, HD type/strategy/authority/centers/gifts). If 2nd-house ruler/location is unknown, ask for it and still give the best next move. Include one actionable nudge relevant to the step. If the user hinted at revenue goals, acknowledge and align the nudge to that goal.`,
+    });
 
     const context = `
-You are the Quantum Brand Architect AI (Sage–Magician). ${basePrompt}
+${basePrompt}
 
 Step ${stepNumber}: ${stepData?.title || ''}
 Question: ${stepData?.question || 'N/A'}
@@ -87,45 +77,34 @@ ${placementSummary}
 Product: ${productName || 'Quantum Initiation'}
 `.trim();
 
-    // Build conversation history (optional)
+    // Build conversation history
     const messages = [
       ...priorMessages,
       { role: 'user', content: sanitizedResponse || '' },
     ];
 
+    // Use AIRequestService for cleaner, more reliable AI requests
     let content = '';
     try {
-      console.log('[step-insight] Using model:', DEFAULT_MODEL);
-      console.log('[step-insight] System prompt length:', (systemPrompt || '').length);
-      console.log('[step-insight] Context preview:', context.slice(0, 200));
-      console.log('[step-insight] Messages count:', messages.length);
-      console.log('[step-insight] User message content:', sanitizedResponse?.slice(0, 100));
-
-      const aiResponse = await openai.chat.completions.create({
-        model: DEFAULT_MODEL,
-        messages: [
-          { role: 'system', content: `${systemPrompt || ''}\n\n${context}` },
-          ...messages,
-        ],
-        max_completion_tokens: 10000, // High limit for GPT-5 reasoning models (includes thinking + output tokens)
+      const response = await AIRequestService.request({
+        model: process.env.OPENAI_MODEL || 'gpt-4o',
+        systemPrompt: `${systemPrompt || ''}\n\n${context}`,
+        messages: messages as any[],
+        maxTokens: 10000,
+        context: 'step-insight',
+        retries: 2,
       });
 
-      console.log('[step-insight] OpenAI response received');
-      console.log('[step-insight] Choices:', aiResponse.choices?.length);
-      console.log('[step-insight] Finish reason:', aiResponse.choices[0]?.finish_reason);
-      console.log('[step-insight] Refusal:', aiResponse.choices[0]?.message?.refusal);
-      console.log('[step-insight] Content:', aiResponse.choices[0]?.message?.content?.slice(0, 100));
+      content = response.content;
 
-      content = aiResponse.choices[0].message.content || '';
-
-      if (!content) {
-        console.error('[step-insight] WARNING: Empty content from OpenAI!');
-        console.error('[step-insight] Full response:', JSON.stringify(aiResponse.choices[0], null, 2));
-      }
+      console.log('[step-insight] AI response successful');
+      console.log(`[step-insight] Tokens used: ${response.tokensUsed.total} (${response.tokensUsed.prompt} prompt, ${response.tokensUsed.completion} completion)`);
     } catch (err: any) {
-      console.error('[step-insight] OpenAI error:', err?.message || err);
-      console.error('[step-insight] Error details:', JSON.stringify(err, null, 2));
-      return NextResponse.json({ error: 'AI generation failed', detail: err?.message || err }, { status: 500 });
+      console.error('[step-insight] AI request failed:', err?.message || err);
+      return NextResponse.json(
+        { error: 'AI generation failed', detail: err?.message || 'Unknown error' },
+        { status: 500 }
+      );
     }
 
     // Log AI response to conversations (append to messages array)

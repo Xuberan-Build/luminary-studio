@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { openai, DEFAULT_MODEL } from '@/lib/openai/client';
 import { supabaseAdmin } from '@/lib/supabase/server';
 import { checkRateLimit } from '@/lib/security/rate-limit';
 import { validateUserInput, validateSessionOwnership } from '@/lib/security/input-validation';
+import { PromptService } from '@/lib/services/PromptService';
+import { AIRequestService } from '@/lib/services/AIRequestService';
 
 export async function POST(request: NextRequest) {
   try {
@@ -51,22 +52,12 @@ Astrology: Sun ${astro.sun || 'UNKNOWN'}, Moon ${astro.moon || 'UNKNOWN'}, Risin
 Human Design: Type ${hd.type || 'UNKNOWN'}, Strategy ${hd.strategy || 'UNKNOWN'}, Authority ${hd.authority || 'UNKNOWN'}, Profile ${hd.profile || 'UNKNOWN'}, Centers ${hd.centers || 'UNKNOWN'}, Gifts ${hd.gifts || 'UNKNOWN'}
 `.trim();
 
-    let dbPrompt = '';
-    try {
-      const { data } = await supabaseAdmin
-        .from('prompts')
-        .select('prompt')
-        .eq('product_slug', (productSlug || stepData?.product_slug || 'quantum-initiation'))
-        .eq('scope', 'followup')
-        .maybeSingle();
-      if (data?.prompt) dbPrompt = data.prompt;
-    } catch (e) {
-      // ignore db errors
-    }
-
-    const basePrompt =
-      dbPrompt ||
-      'Answer follow-ups concisely (2–3 paragraphs max). Use placements (money/identity houses 2/8/10/11, Sun/Moon/Rising, Mars/Venus/Mercury/Saturn/Pluto, HD type/strategy/authority/centers/gifts). If key data is missing (e.g., 2nd-house ruler/location), ask briefly and give one micro-action anyway. If the user mentions revenue/price goals, align your micro-action to that target.';
+    // Load prompt from database with fallback
+    const basePrompt = await PromptService.getPrompt({
+      productSlug: (productSlug || stepData?.product_slug || 'quantum-initiation'),
+      scope: 'followup',
+      fallback: 'Answer follow-ups concisely (2–3 paragraphs max). Use placements (money/identity houses 2/8/10/11, Sun/Moon/Rising, Mars/Venus/Mercury/Saturn/Pluto, HD type/strategy/authority/centers/gifts). If key data is missing (e.g., 2nd-house ruler/location), ask briefly and give one micro-action anyway. If the user mentions revenue/price goals, align your micro-action to that target.',
+    });
 
     // Build context for AI
     const contextPrompt = `
@@ -88,22 +79,25 @@ Placements: ${placementSummary}
         content: msg.content,
       }));
 
-    // Generate AI response
+    // Generate AI response using AIRequestService
     let aiResponse = '';
     try {
-      const completion = await openai.chat.completions.create({
-        model: DEFAULT_MODEL,
-        messages: [
-          { role: 'system', content: `${systemPrompt}\n\n${contextPrompt}` },
-          ...previousMessages,
-          { role: 'user', content: sanitizedQuestion },
-        ],
-        max_completion_tokens: 10000, // High limit for GPT-5 reasoning models (includes thinking + output tokens)
+      const response = await AIRequestService.request({
+        model: process.env.OPENAI_MODEL || 'gpt-4o',
+        systemPrompt: `${systemPrompt}\n\n${contextPrompt}`,
+        messages: [...previousMessages, { role: 'user', content: sanitizedQuestion }],
+        maxTokens: 10000,
+        context: 'followup-response',
+        retries: 2,
       });
-      aiResponse = completion.choices[0].message.content || '';
+
+      aiResponse = response.content;
+
+      console.log('[followup-response] AI response successful');
+      console.log(`[followup-response] Tokens used: ${response.tokensUsed.total} (${response.tokensUsed.prompt} prompt, ${response.tokensUsed.completion} completion)`);
     } catch (err: any) {
-      console.error('followup openai error', err?.message || err);
-      return NextResponse.json({ error: 'AI generation failed', detail: err?.message || err }, { status: 500 });
+      console.error('[followup-response] AI request failed:', err?.message || err);
+      return NextResponse.json({ error: 'AI generation failed', detail: err?.message || 'Unknown error' }, { status: 500 });
     }
 
     // Log follow-up exchange to conversations (messages array)

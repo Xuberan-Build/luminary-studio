@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { supabaseAdmin } from '@/lib/supabase/server';
-import { openai, DEFAULT_MODEL } from '@/lib/openai/client';
+import { PromptService } from '@/lib/services/PromptService';
+import { AIRequestService } from '@/lib/services/AIRequestService';
+import { EmailSequenceService, type EmailContent } from '@/lib/services/EmailSequenceService';
+import { EmailTemplateService } from '@/lib/services/EmailTemplateService';
 
 export async function POST(req: Request) {
   try {
@@ -93,23 +96,11 @@ export async function POST(req: Request) {
       .slice(-5)
       .join('\n');
 
-    let dbPrompt = '';
-    try {
-      const { data } = await supabaseAdmin
-        .from('prompts')
-        .select('prompt')
-        .eq('product_slug', productSlug || 'quantum-initiation')
-        .eq('scope', 'final_briefing')
-        .maybeSingle();
-      if (data?.prompt) dbPrompt = data.prompt;
-    } catch (e) {
-      // ignore db errors
-    }
-
-    // Build structured messages for GPT
-    const systemPrompt =
-      dbPrompt ||
-      `You are the Quantum Brand Architect AI (Sage–Magician). You produce premium-grade blueprints worth $700 of clarity.
+    // Load system prompt from database with fallback
+    const systemPrompt = await PromptService.getPrompt({
+      productSlug: productSlug || 'quantum-initiation',
+      scope: 'final_briefing',
+      fallback: `You are the Quantum Brand Architect AI (Sage–Magician). You produce premium-grade blueprints worth $700 of clarity.
 
 YOUR ROLE:
 - Synthesize astrology, Human Design, and business strategy into actionable guidance
@@ -122,7 +113,8 @@ CRITICAL RULES:
 ⚠️ DO NOT say anything is missing or unknown
 ⚠️ USE whatever data is provided to create insights
 ⚠️ If a piece of data is unavailable, work around it creatively or skip it
-⚠️ Your job is to DELIVER the blueprint, not request more input`;
+⚠️ Your job is to DELIVER the blueprint, not request more input`,
+    });
 
     const chartDataMessage = `MY CHART DATA:
 
@@ -187,23 +179,29 @@ REQUIREMENTS:
 
 Generate the blueprint now.`;
 
+    // Generate final briefing using AIRequestService
     let briefing = '';
     try {
-      const completion = await openai.chat.completions.create({
-        model: DEFAULT_MODEL,
+      const response = await AIRequestService.request({
+        model: process.env.OPENAI_MODEL || 'gpt-4o',
+        systemPrompt,
         messages: [
-          { role: 'system', content: systemPrompt },
           { role: 'user', content: chartDataMessage },
           { role: 'user', content: conversationMessage },
           { role: 'user', content: instructionMessage },
         ],
-        max_completion_tokens: 15000, // High limit for GPT-5 reasoning models generating full briefing
-        // Note: GPT-5 only supports temperature=1 (default), custom values not allowed
+        maxTokens: 15000,
+        context: 'final-briefing',
+        retries: 2,
       });
-      briefing = completion.choices[0].message.content || '';
+
+      briefing = response.content;
+
+      console.log('[final-briefing] AI response successful');
+      console.log(`[final-briefing] Tokens used: ${response.tokensUsed.total} (${response.tokensUsed.prompt} prompt, ${response.tokensUsed.completion} completion)`);
     } catch (err: any) {
-      console.error('final-briefing openai error', err?.message || err);
-      return NextResponse.json({ error: 'AI generation failed', detail: err?.message || err }, { status: 500 });
+      console.error('[final-briefing] AI request failed:', err?.message || err);
+      return NextResponse.json({ error: 'AI generation failed', detail: err?.message || 'Unknown error' }, { status: 500 });
     }
 
     // Log briefing to conversations
@@ -224,6 +222,70 @@ Generate the blueprint now.`;
         );
     } catch (e) {
       // ignore logging errors
+    }
+
+    // Save deliverable to product_sessions and schedule affiliate email
+    try {
+      // Get session and user info
+      const { data: session } = await supabaseAdmin
+        .from('product_sessions')
+        .select('user_id, product_slug')
+        .eq('id', sessionId)
+        .single();
+
+      if (session) {
+        // Update product_sessions with deliverable
+        await supabaseAdmin
+          .from('product_sessions')
+          .update({
+            deliverable: briefing,
+            completed_at: new Date().toISOString(),
+          })
+          .eq('id', sessionId);
+
+        console.log('[final-briefing] Saved deliverable to product_sessions');
+
+        // Get user info for email
+        const { data: user } = await supabaseAdmin
+          .from('users')
+          .select('id, email, name, is_affiliate, affiliate_opted_out')
+          .eq('id', session.user_id)
+          .single();
+
+        if (user) {
+          // Only schedule email if user hasn't enrolled and hasn't opted out
+          if (!user.is_affiliate && !user.affiliate_opted_out) {
+            const emailContent: EmailContent = {
+              product_name: productName || 'Quantum Initiation',
+              product_slug: session.product_slug || productSlug || 'quantum-initiation',
+              deliverable_preview: EmailTemplateService.getDeliverablePreview(briefing),
+              user_first_name: EmailTemplateService.getFirstName(user.name),
+              user_email: user.email,
+            };
+
+            const scheduledEmail = await EmailSequenceService.scheduleEmail(
+              user.id,
+              'affiliate_invitation',
+              'deliverable_completed',
+              emailContent,
+              30 // 30 minutes delay
+            );
+
+            if (scheduledEmail) {
+              console.log('[final-briefing] Scheduled affiliate invitation email for 30 minutes');
+            } else {
+              console.log('[final-briefing] Failed to schedule affiliate invitation email');
+            }
+          } else {
+            console.log(
+              `[final-briefing] Skipping email (is_affiliate: ${user.is_affiliate}, opted_out: ${user.affiliate_opted_out})`
+            );
+          }
+        }
+      }
+    } catch (e) {
+      // Don't fail the request if email scheduling fails
+      console.error('[final-briefing] Error scheduling email:', e);
     }
 
     return NextResponse.json({ briefing });

@@ -13,6 +13,9 @@ import type {
   TriggerEvent,
 } from '@/types/database';
 
+// Re-export types for convenience
+export type { EmailContent, SequenceType, TriggerEvent };
+
 export class EmailSequenceService {
   /**
    * Schedule an email to be sent after a delay
