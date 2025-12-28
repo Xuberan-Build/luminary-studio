@@ -9,7 +9,7 @@ import { cookies } from 'next/headers';
 import { getProductBySlug } from '@/lib/constants/products';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2025-12-15.clover',
+  apiVersion: '2024-12-18.acacia',
 });
 
 export async function POST(req: NextRequest) {
@@ -50,7 +50,7 @@ export async function POST(req: NextRequest) {
           quantity: 1,
         },
       ],
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://quantumstrategies.online'}/products/${productSlug}/interact?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://quantumstrategies.online'}/products/${productSlug}/experience?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://quantumstrategies.online'}/products/${productSlug}`,
       metadata: {
         product_slug: productSlug,
