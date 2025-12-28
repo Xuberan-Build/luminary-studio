@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, ReactElement } from 'react';
 
 interface DeliverableViewerProps {
   deliverable: string | null;
@@ -104,7 +104,7 @@ export default function DeliverableViewer({ deliverable, productName }: Delivera
   // Format the deliverable text for display
   const formatContent = (text: string) => {
     const lines = text.split('\n');
-    const elements: JSX.Element[] = [];
+    const elements: ReactElement[] = [];
     let key = 0;
 
     for (let i = 0; i < lines.length; i++) {
