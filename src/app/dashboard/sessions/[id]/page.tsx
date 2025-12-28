@@ -79,7 +79,7 @@ export default async function SessionDetailPage({
 
         {/* Main Briefing */}
         <DeliverableViewer
-          deliverable={session.deliverable}
+          deliverable={session.deliverable_content || session.deliverable}
           productName={session.product_slug === 'quantum-initiation' ? 'Quantum Initiation Protocol' : 'Product'}
         />
 
