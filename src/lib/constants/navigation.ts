@@ -39,7 +39,7 @@ export const navigationConfig = {
                   {
                     label: "Customer Acquisition",
                     submenu: [
-                      { label: "Complete Guide", href: "/articles/customer-acquisition" },
+                      { label: "Customer Acquisition Hub", href: "/articles/customer-acquisition" },
                       { label: "B2B Digital Marketing", href: "/articles/b2b-digital-marketing-strategy" },
                       { label: "SEO Lead Generation", href: "/articles/seo-lead-generation" },
                       { label: "Content Marketing", href: "/articles/content-marketing" },
@@ -48,6 +48,7 @@ export const navigationConfig = {
                   {
                     label: "Operations",
                     submenu: [
+                      { label: "Operations Hub", href: "/articles/operations" },
                       { label: "Automation Tools", href: "/articles/automation-tools" },
                       { label: "CRM Implementation", href: "/articles/crm-implementation" },
                       { label: "Marketing Operations", href: "/articles/marketing-operations" },
@@ -56,6 +57,7 @@ export const navigationConfig = {
                   {
                     label: "Product Development",
                     submenu: [
+                      { label: "Product Development Hub", href: "/articles/product-development" },
                       { label: "MVP Strategy", href: "/articles/mvp-strategy" },
                       { label: "Product Market Fit", href: "/articles/product-market-fit" },
                       { label: "User Research", href: "/articles/user-research" },

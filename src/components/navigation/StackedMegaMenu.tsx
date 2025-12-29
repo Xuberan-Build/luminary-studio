@@ -32,7 +32,7 @@ const contentTypes: ContentType[] = [
       {
         label: "Customer Acquisition",
         articles: [
-          { label: "Complete Guide", href: "/articles/customer-acquisition" },
+          { label: "Customer Acquisition Hub", href: "/articles/customer-acquisition" },
           { label: "B2B Digital Marketing", href: "/articles/b2b-digital-marketing-strategy" },
           { label: "SEO Lead Generation", href: "/articles/seo-lead-generation" },
           { label: "Content Marketing", href: "/articles/content-marketing" },
@@ -41,6 +41,7 @@ const contentTypes: ContentType[] = [
       {
         label: "Operations",
         articles: [
+          { label: "Operations Hub", href: "/articles/operations" },
           { label: "Automation Tools", href: "/articles/automation-tools" },
           { label: "CRM Implementation", href: "/articles/crm-implementation" },
           { label: "Marketing Operations", href: "/articles/marketing-operations" },
@@ -49,6 +50,7 @@ const contentTypes: ContentType[] = [
       {
         label: "Product Development",
         articles: [
+          { label: "Product Development Hub", href: "/articles/product-development" },
           { label: "MVP Strategy", href: "/articles/mvp-strategy" },
           { label: "Product Market Fit", href: "/articles/product-market-fit" },
           { label: "User Research", href: "/articles/user-research" },
