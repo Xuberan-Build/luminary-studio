@@ -65,7 +65,7 @@ export const navigationConfig = {
               },
               { label: "Courses", href: "/courses" },
               { label: "White Papers", href: "/whitepapers" },
-              { label: "Blog", href: "/blog" },
+              { label: "Case Studies", href: "/portfolio" },
             ],
           },
         ],
@@ -80,7 +80,7 @@ export const navigationConfig = {
           description: "Discover Your Life Purpose"
         },
         {
-          label: "Quantum Initiation Protocol",
+          label: "Business Alignment Orientation",
           href: "/products/quantum-initiation",
           description: "Personalized Money Blueprint"
         },
@@ -98,7 +98,7 @@ export const navigationConfig = {
       { label: "Articles", href: "/articles" },
       { label: "Courses", href: "/courses" },
       { label: "White Papers", href: "/whitepapers" },
-      { label: "Blog", href: "/blog" },
+      { label: "Case Studies", href: "/portfolio" },
     ],
     work: [
       { label: "Portfolio", href: "/portfolio" },

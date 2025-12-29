@@ -13,7 +13,7 @@ interface Article {
 
 function getAllArticles(): Article[] {
   const articlesDir = path.join(process.cwd(), "src/content/articles");
-  const categories = ["customer-acquisition", "operations", "product-development"];
+  const categories = ["customer-acquisition", "operations", "product-development", "waveforms"];
 
   const articles: Article[] = [];
 
@@ -52,7 +52,8 @@ export default function ArticlesPage() {
   const categorizedArticles = {
     "customer acquisition": articles.filter(a => a.category === "customer acquisition"),
     "operations": articles.filter(a => a.category === "operations"),
-    "product development": articles.filter(a => a.category === "product development")
+    "product development": articles.filter(a => a.category === "product development"),
+    "waveforms series": articles.filter(a => a.category === "waveforms")
   };
 
   return (
@@ -108,11 +109,7 @@ export default function ArticlesPage() {
                   </p>
                   {article.date && (
                     <time style={{ display: "block", marginTop: "1rem", color: "var(--accent)", fontSize: "0.875rem" }}>
-                      {new Date(article.date).toLocaleDateString("en-US", {
-                        year: "numeric",
-                        month: "long",
-                        day: "numeric"
-                      })}
+                      {new Date(article.date).getFullYear()}
                     </time>
                   )}
                 </Link>

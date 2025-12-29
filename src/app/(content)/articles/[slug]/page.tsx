@@ -3,6 +3,7 @@ import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
 import { MDXRemote } from "next-mdx-remote/rsc";
+import styles from "./article.module.css";
 
 type PageProps = {
   params: Promise<{ slug: string }>;
@@ -11,7 +12,7 @@ type PageProps = {
 // Get all articles from all categories
 function getAllArticles() {
   const articlesDir = path.join(process.cwd(), "src/content/articles");
-  const categories = ["customer-acquisition", "operations", "product-development"];
+  const categories = ["customer-acquisition", "operations", "product-development", "waveforms"];
 
   const articles: { slug: string; category: string; filePath: string }[] = [];
 
@@ -74,40 +75,17 @@ export default async function ArticlePage({ params }: PageProps) {
   const { data, content } = matter(fileContent);
 
   return (
-    <article className="container" style={{ maxWidth: "800px", margin: "0 auto", padding: "2rem 1rem" }}>
-      <header style={{ marginBottom: "2rem" }}>
-        {data.category && (
-          <div style={{
-            color: "var(--accent)",
-            fontSize: "0.875rem",
-            fontWeight: "600",
-            textTransform: "uppercase",
-            letterSpacing: "0.05em",
-            marginBottom: "0.5rem"
-          }}>
-            {data.category}
-          </div>
-        )}
-        <h1 style={{ fontSize: "2.5rem", marginBottom: "0.5rem", color: "#fff" }}>
-          {data.title}
-        </h1>
-        {data.description && (
-          <p style={{ fontSize: "1.25rem", color: "var(--ink-soft)", marginBottom: "1rem" }}>
-            {data.description}
-          </p>
-        )}
+    <article className={styles.article}>
+      <header className={styles.header}>
+        {data.category && <div className={styles.category}>{data.category}</div>}
+        <h1 className={styles.title}>{data.title}</h1>
+        {data.description && <p className={styles.description}>{data.description}</p>}
         {data.date && (
-          <time style={{ color: "var(--ink-soft)", fontSize: "0.9rem" }}>
-            {new Date(data.date).toLocaleDateString("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            })}
-          </time>
+          <time className={styles.date}>{new Date(data.date).getFullYear()}</time>
         )}
       </header>
 
-      <div className="prose" style={{ color: "var(--ink-soft)", lineHeight: "1.8" }}>
+      <div className={`article-prose ${styles.prose}`}>
         <MDXRemote source={content} />
       </div>
     </article>

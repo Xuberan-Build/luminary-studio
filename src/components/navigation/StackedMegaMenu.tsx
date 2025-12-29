@@ -68,39 +68,13 @@ const contentTypes: ContentType[] = [
           { label: "Preview Module 1 Free →", href: "/courses/vcap" },
         ],
       },
-      {
-        label: "Quantum Business Framework",
-        articles: [
-          { label: "Align Energy & Strategy for Sustainable Growth", href: "/courses/quantum-business-framework" },
-          { label: "Coming Soon: Consciousness Meets Commerce", href: "/courses" },
-        ],
-      },
     ],
   },
   {
     label: "White Papers",
     href: "/whitepapers",
-    categories: [
-      {
-        label: "Energy & Business",
-        articles: [
-          { label: "Strategic Alignment: Bridging Consciousness & Commerce", href: "/whitepapers/strategic-alignment" },
-          { label: "Conscious Leadership in Modern Business", href: "/whitepapers/conscious-leadership" },
-          { label: "Energy Work as Competitive Advantage", href: "/whitepapers/energy-advantage" },
-        ],
-      },
-      {
-        label: "Transformation",
-        articles: [
-          { label: "From Hustle to Flow: Sustainable Growth", href: "/whitepapers/hustle-to-flow" },
-          { label: "Quantum Leaps in Business Development", href: "/whitepapers/quantum-leaps" },
-          { label: "The Awakened Entrepreneur Framework", href: "/whitepapers/awakened-entrepreneur" },
-        ],
-      },
-    ],
   },
   { label: "Case Studies", href: "/portfolio" },
-  { label: "Blog", href: "/blog" },
 ];
 
 export default function StackedMegaMenu({ isActive, onMouseLeave }: StackedMegaMenuProps) {
