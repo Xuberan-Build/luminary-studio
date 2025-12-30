@@ -45,7 +45,6 @@ export default function OperationsHub() {
     <div className={styles.page}>
       <header className={styles.hero}>
         <div className={`${styles.heroContent} container`}>
-          <p className={styles.eyebrow}>Pillar</p>
           <h1 className={styles.title}>Operations</h1>
           <p className={styles.subtitle}>
             Build the infrastructure that keeps growth stable: automation, CRM, and repeatable

@@ -15,9 +15,9 @@ const KEY_FILE_PATH = process.env.GOOGLE_DRIVE_SERVICE_ACCOUNT_KEY_PATH || '.sec
 const PRODUCT_FOLDER_ID = process.env.GOOGLE_PRODUCT_FOLDER_ID!;
 
 async function cleanupAll() {
-  console.log('🧹 Cleaning up ALL files created by service account...\n');
+  console.log('🧹 Cleaning up ALL files owned by service account...\n');
   console.log(`   Service Account: ${SERVICE_ACCOUNT_EMAIL}`);
-  console.log(`   Product Folder: ${PRODUCT_FOLDER_ID}\n`);
+  console.log(`   This will free up the service account's storage quota\n`);
 
   try {
     // Load private key
@@ -34,12 +34,13 @@ async function cleanupAll() {
 
     const drive = google.drive({ version: 'v3', auth });
 
-    // List ALL files in the parent folder (including subfolders)
-    console.log('📋 Fetching all files...');
+    // List ALL files owned by the service account (not just in product folder)
+    // This is needed to free up the service account's storage quota
+    console.log('📋 Fetching ALL files owned by service account...');
 
     const response = await drive.files.list({
-      q: `'${PRODUCT_FOLDER_ID}' in parents and trashed=false`,
-      fields: 'files(id, name, mimeType, createdTime, owners)',
+      q: `'me' in owners and trashed=false`,
+      fields: 'files(id, name, mimeType, createdTime, owners, parents)',
       orderBy: 'createdTime desc',
       pageSize: 1000, // Get up to 1000 files
     });

@@ -122,17 +122,28 @@ ${placementSummary}
 
 ${placementSummary ? 'Use this chart data to inform your analysis.' : 'Limited chart data available - focus on conversation insights.'}`;
 
+    // Load product-specific deliverable prompt
+    const { data: product } = await supabaseAdmin
+      .from('product_definitions')
+      .select('final_deliverable_prompt, name')
+      .eq('product_slug', productSlug)
+      .single();
+
+    const isPersonalAlignment = productSlug === 'personal-alignment';
+    const wizardLabel = isPersonalAlignment ? 'PERSONAL ALIGNMENT GUIDE' : 'QBF WIZARD';
+
     const conversationMessage = `MY COMPLETE RESPONSES ACROSS ALL STEPS:
 
 ${userResponses || 'No detailed responses provided.'}
 
-${wizardNudges ? `\n\nQBF WIZARD'S ACTIONABLE NUDGES (synthesize these into the roadmap):\n\n${wizardNudges}` : ''}
+${wizardNudges ? `\n\n${wizardLabel}'S ACTIONABLE NUDGES (synthesize these into the final deliverable):\n\n${wizardNudges}` : ''}
 
-${moneyNotes ? `\n\nMONEY/REVENUE GOALS MENTIONED:\n${moneyNotes}` : ''}
+${!isPersonalAlignment && moneyNotes ? `\n\nMONEY/REVENUE GOALS MENTIONED:\n${moneyNotes}` : ''}
 
-Reference specific details I shared about my business, challenges, and goals. IMPORTANT: Synthesize the QBF Wizard's actionable nudges into concrete next steps in the roadmap.`;
+Reference specific details I shared in my responses. IMPORTANT: Synthesize the ${wizardLabel}'s actionable nudges into concrete next steps.`;
 
-    const instructionMessage = `Generate my Quantum Brand Blueprint with these 7 sections:
+    // Use product-specific deliverable prompt or fallback to hardcoded Quantum Blueprint
+    const instructionMessage = product?.final_deliverable_prompt || `Generate my Quantum Brand Blueprint with these 7 sections:
 
 1. **Brand Essence** (1-2 sentences)
    - Ground in Sun/Moon/Rising + money houses (2/8/10/11)

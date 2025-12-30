@@ -2,10 +2,12 @@
 
 import { useState, useMemo } from 'react';
 import jsPDF from 'jspdf';
+import { ProductInstructions } from '@/lib/product-definitions/types';
 
 interface DeliverableViewProps {
   deliverable: string;
   productName: string;
+  instructions?: ProductInstructions;
 }
 
 interface Section {
@@ -14,7 +16,7 @@ interface Section {
   content: string;
 }
 
-export function DeliverableView({ deliverable, productName }: DeliverableViewProps) {
+export function DeliverableView({ deliverable, productName, instructions }: DeliverableViewProps) {
   const [copied, setCopied] = useState(false);
 
   // Parse deliverable into sections
@@ -146,12 +148,27 @@ export function DeliverableView({ deliverable, productName }: DeliverableViewPro
             </svg>
           </div>
 
-          <h1 className="text-4xl font-bold text-[#F8F5FF] mb-4">
-            Your Blueprint is Ready!
-          </h1>
-          <p className="text-[#F8F5FF]/70 text-lg">
-            Congratulations on completing {productName}
-          </p>
+          {instructions?.deliverable ? (
+            <>
+              <h1 className="text-4xl font-bold text-[#F8F5FF] mb-4">
+                {instructions.deliverable.title}
+              </h1>
+              <div className="text-[#F8F5FF]/70 text-lg space-y-2">
+                {instructions.deliverable.description.split('\n').map((line, idx) => (
+                  <p key={idx}>{line}</p>
+                ))}
+              </div>
+            </>
+          ) : (
+            <>
+              <h1 className="text-4xl font-bold text-[#F8F5FF] mb-4">
+                Your Blueprint is Ready!
+              </h1>
+              <p className="text-[#F8F5FF]/70 text-lg">
+                Congratulations on completing {productName}
+              </p>
+            </>
+          )}
         </div>
 
         {/* Deliverable Card */}
@@ -159,7 +176,7 @@ export function DeliverableView({ deliverable, productName }: DeliverableViewPro
           {/* Action Buttons */}
           <div className="bg-white/5 border-b border-[#F8F5FF]/10 px-6 py-4 flex items-center justify-between">
             <h2 className="text-xl font-semibold text-[#F8F5FF]">
-              Your Quantum Blueprint
+              {productName === 'Personal Alignment Orientation' ? 'Your Personal Alignment Blueprint' : 'Your Quantum Blueprint'}
             </h2>
             <div className="flex space-x-3">
               <button
@@ -237,20 +254,20 @@ export function DeliverableView({ deliverable, productName }: DeliverableViewPro
                   </div>
 
                   {/* Section Title */}
-                  <h3 className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-[#F8F5FF] to-[#E8DEFF] mb-4 pl-10">
+                  <h3 className="text-2xl font-bold text-[#F8F5FF] mb-4 pl-10">
                     {section.title}
                   </h3>
 
                   {/* Section Content */}
-                  <div className="text-[#F8F5FF]/90 leading-relaxed space-y-3">
+                  <div className="text-[#F8F5FF]/90 leading-relaxed space-y-4">
                     {section.content.split('\n').map((line, lineIndex) => {
                       const trimmedLine = line.trim();
                       if (!trimmedLine) return null;
 
-                      // Bold text: **text**
+                      // Bold text: **text** - make it purple
                       const boldFormatted = trimmedLine.replace(
                         /\*\*([^*]+)\*\*/g,
-                        '<strong class="text-[#F8F5FF] font-semibold">$1</strong>'
+                        '<strong class="text-[#A29BFE] font-bold">$1</strong>'
                       );
 
                       // Bullet points: - or •
@@ -270,7 +287,7 @@ export function DeliverableView({ deliverable, productName }: DeliverableViewPro
                       return (
                         <p
                           key={lineIndex}
-                          className="text-[#F8F5FF]/90"
+                          className="text-[#F8F5FF]/90 leading-relaxed"
                           dangerouslySetInnerHTML={{ __html: boldFormatted }}
                         />
                       );

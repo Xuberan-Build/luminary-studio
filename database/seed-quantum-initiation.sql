@@ -1,5 +1,5 @@
 -- =====================================================
--- Quantum Initiation Protocol - Product Definition
+-- Business Alignment Orientation - Product Definition
 -- =====================================================
 
 INSERT INTO product_definitions (
@@ -14,7 +14,7 @@ INSERT INTO product_definitions (
   steps
 ) VALUES (
   'quantum-initiation',
-  'Quantum Initiation Protocol',
+  'Business Alignment Orientation',
   'Build your personalized brand blueprint based on your Astrology and Human Design.',
   7.00,
   5,
@@ -97,5 +97,5 @@ Make it practical, actionable, and inspiring. Use their specific language and re
 -- Success message
 DO $$
 BEGIN
-  RAISE NOTICE '✅ Quantum Initiation product seeded successfully!';
+  RAISE NOTICE '✅ Business Alignment Orientation product seeded successfully!';
 END $$;

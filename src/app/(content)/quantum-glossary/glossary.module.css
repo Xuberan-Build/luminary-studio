@@ -1,0 +1,98 @@
+.page {
+  min-height: 100vh;
+  padding-bottom: 4rem;
+}
+
+.hero {
+  padding: 4.5rem 0 3rem;
+  background:
+    radial-gradient(900px 320px at 20% 0%, rgba(93, 63, 211, 0.35), transparent 60%),
+    radial-gradient(700px 280px at 80% 10%, rgba(206, 190, 255, 0.25), transparent 60%);
+}
+
+.heroContent {
+  display: grid;
+  gap: 0.9rem;
+}
+
+.eyebrow {
+  font-size: 0.85rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0;
+}
+
+.title {
+  font-size: clamp(2.4rem, 4vw, 3.4rem);
+  color: #fff;
+  margin: 0;
+}
+
+.subtitle {
+  max-width: 720px;
+  color: var(--ink-soft);
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.section {
+  padding: 2rem 0 0;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1.5rem;
+}
+
+.card {
+  display: grid;
+  gap: 0.6rem;
+  padding: 1.5rem;
+  border-radius: 16px;
+  background: rgba(12, 2, 19, 0.7);
+  border: 1px solid rgba(206, 190, 255, 0.18);
+  text-decoration: none;
+  transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+}
+
+.card:hover {
+  transform: translateY(-3px);
+  border-color: rgba(206, 190, 255, 0.45);
+  background: rgba(93, 63, 211, 0.18);
+}
+
+.cardTitle {
+  color: #fff;
+  margin: 0;
+  font-size: 1.25rem;
+}
+
+.cardDescription {
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+.cardLink {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.emptyState {
+  padding: 2.5rem;
+  border-radius: 18px;
+  border: 1px dashed rgba(206, 190, 255, 0.35);
+  text-align: center;
+  background: rgba(12, 2, 19, 0.6);
+}
+
+.emptyState h2 {
+  color: #fff;
+  margin: 0 0 0.75rem;
+}
+
+.emptyState p {
+  margin: 0;
+  color: var(--ink-soft);
+}

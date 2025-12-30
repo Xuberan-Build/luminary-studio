@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@plugin "@tailwindcss/typography";
 
 /* ===== Design tokens (mobile-first) ===== */
 :root{
@@ -146,6 +147,77 @@ p,li{ font-size:var(--step-0); color:var(--ink-soft) }
 .modal__body strong{ color:var(--accent); }
 .modal__body a{ color:var(--ink); text-decoration:underline; text-underline-offset:3px; }
 .modal__body section + section { margin-top:1rem; padding-top:1rem; border-top:1px solid rgba(206,190,255,.15); }
+
+/* ===== Article prose ===== */
+.article-prose{
+  color:var(--ink-soft);
+  font-size:var(--step-0);
+  line-height:1.85;
+}
+.article-prose h2,
+.article-prose h3,
+.article-prose h4{
+  color:#fff;
+  margin-top:2.25rem;
+  margin-bottom:.75rem;
+}
+.article-prose h2{ font-size:var(--step-2); }
+.article-prose h3{ font-size:var(--step-1); }
+.article-prose h4{ font-size:1.1rem; }
+.article-prose p{ margin:0 0 1.25rem; }
+.article-prose ul,
+.article-prose ol{
+  margin:0 0 1.5rem;
+  padding-left:1.25rem;
+}
+.article-prose li{ margin-bottom:.5rem; }
+.article-prose li::marker{ color:var(--accent); }
+.article-prose a{
+  color:var(--accent);
+  text-decoration:none;
+  border-bottom:1px solid rgba(206,190,255,.4);
+  transition:color .2s ease, border-color .2s ease;
+}
+.article-prose a:hover{
+  color:#fff;
+  border-color:rgba(206,190,255,.8);
+}
+.article-prose blockquote{
+  margin:1.5rem 0;
+  padding:1rem 1.25rem;
+  border-left:3px solid rgba(206,190,255,.4);
+  background:rgba(12,2,19,.6);
+  border-radius:12px;
+}
+.article-prose code{
+  font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;
+  font-size:.95em;
+  background:rgba(206,190,255,.12);
+  padding:.15rem .35rem;
+  border-radius:6px;
+}
+.article-prose pre{
+  background:rgba(12,2,19,.8);
+  border:1px solid rgba(206,190,255,.2);
+  border-radius:14px;
+  padding:1.25rem;
+  overflow:auto;
+}
+.article-prose pre code{
+  background:none;
+  padding:0;
+}
+.article-prose hr{
+  border:0;
+  height:1px;
+  background:rgba(206,190,255,.2);
+  margin:2.5rem 0;
+}
+.article-prose img{
+  border-radius:16px;
+  border:1px solid rgba(206,190,255,.2);
+  box-shadow:0 14px 32px rgba(0,0,0,.35);
+}
 
 /* Animations */
 @keyframes fadeIn { from { opacity:0 } to { opacity:1 } }

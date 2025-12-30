@@ -105,7 +105,7 @@ open https://dashboard.stripe.com/test/webhooks
 
 **C. Email Inbox:**
 - Check your email (including spam folder)
-- Should receive: "🎉 Your Quantum Initiation Protocol is Ready!"
+- Should receive: "🎉 Your Business Alignment Orientation is Ready!"
 
 **D. Supabase Database:**
 ```bash
@@ -125,7 +125,7 @@ Should see:
 **E. Test User Experience:**
 1. Open: `https://quantumstrategies.online/login`
 2. Log in with your test email
-3. Should see "Quantum Initiation Protocol" in dashboard
+3. Should see "Business Alignment Orientation" in dashboard
 4. Click "Start"
 5. Upload chart images
 6. Go through experience

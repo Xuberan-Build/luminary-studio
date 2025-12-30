@@ -7,7 +7,7 @@ import { notFound } from "next/navigation";
 import styles from "./interact.module.css";
 
 export const metadata: Metadata = {
-  title: "Build Your Quantum Blueprint - Quantum Initiation Protocol",
+  title: "Build Your Business Alignment Blueprint - Business Alignment Orientation",
   description: "Interactive GPT session to create your personalized brand strategy",
   robots: "noindex, nofollow",
 };

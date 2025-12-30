@@ -1,0 +1,142 @@
+.page {
+  min-height: 100vh;
+  padding-bottom: 4rem;
+}
+
+.hero {
+  padding: 5rem 0 3rem;
+  background:
+    radial-gradient(900px 320px at 80% 0%, rgba(93, 63, 211, 0.35), transparent 60%),
+    radial-gradient(700px 240px at 10% 20%, rgba(206, 190, 255, 0.2), transparent 55%);
+}
+
+.heroContent {
+  display: grid;
+  gap: 1rem;
+}
+
+.eyebrow {
+  font-size: 0.85rem;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin: 0;
+}
+
+.title {
+  font-size: clamp(2.5rem, 4vw, 3.6rem);
+  color: #fff;
+  margin: 0;
+}
+
+.subtitle {
+  max-width: 720px;
+  font-size: 1.15rem;
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+.gridSection {
+  padding-top: 2rem;
+}
+
+.grid {
+  display: grid;
+  gap: 1.75rem;
+}
+
+.card {
+  padding: 1.75rem 2rem;
+  border-radius: 20px;
+  background: rgba(12, 2, 19, 0.7);
+  border: 1px solid rgba(206, 190, 255, 0.2);
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.4);
+  display: grid;
+  gap: 1rem;
+}
+
+.cardHeader {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.cardTitle {
+  color: #fff;
+  font-size: 1.4rem;
+  margin: 0;
+}
+
+.cardSummary {
+  color: var(--ink-soft);
+  margin: 0;
+}
+
+.cardList {
+  margin: 0;
+  padding-left: 1.2rem;
+  color: var(--ink-soft);
+}
+
+.cardList li {
+  margin-bottom: 0.35rem;
+}
+
+.cardQuote {
+  margin: 0;
+  padding-left: 1rem;
+  border-left: 3px solid rgba(206, 190, 255, 0.35);
+  color: var(--ink-soft);
+}
+
+.cardQuote footer {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--accent);
+}
+
+.cta {
+  margin-top: 4rem;
+  padding: 3.5rem 0 4rem;
+  background: rgba(93, 63, 211, 0.12);
+  border-top: 1px solid rgba(206, 190, 255, 0.15);
+  border-bottom: 1px solid rgba(206, 190, 255, 0.15);
+}
+
+.ctaInner {
+  display: grid;
+  gap: 0.8rem;
+  text-align: center;
+}
+
+.ctaInner h2 {
+  color: #fff;
+  margin: 0;
+}
+
+.ctaInner p {
+  margin: 0;
+  color: var(--ink-soft);
+}
+
+.ctaButton {
+  justify-self: center;
+  margin-top: 1rem;
+  padding: 0.75rem 1.6rem;
+  border-radius: 999px;
+  background: rgba(93, 63, 211, 0.6);
+  color: #fff;
+  text-decoration: none;
+  border: 1px solid rgba(206, 190, 255, 0.4);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+.ctaButton:hover {
+  transform: translateY(-2px);
+  background: rgba(93, 63, 211, 0.75);
+}
+
+@media (min-width: 900px) {
+  .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

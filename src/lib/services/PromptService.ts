@@ -88,7 +88,7 @@ export class PromptService {
    */
   private static getProductName(productSlug: string): string {
     const productNames: Record<string, string> = {
-      'quantum-initiation': 'Quantum Initiation Protocol',
+      'quantum-initiation': 'Business Alignment Orientation',
       'quantum-structure-profit-scale': 'Quantum Structure, Profit & Scale',
     };
 

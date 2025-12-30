@@ -2,7 +2,7 @@
 
 **Date:** December 24, 2025
 **Target:** Go live within 24 hours
-**Product:** Quantum Initiation Protocol ($7)
+**Product:** Business Alignment Orientation ($7)
 
 ---
 

@@ -26,21 +26,6 @@ const courses = [
       "Create predictable results through systems",
     ],
   },
-  {
-    id: "qbf",
-    title: "Quantum Business Framework",
-    tagline: "Align Energy & Strategy for Sustainable Growth",
-    icon: "⚡",
-    modules: 4,
-    duration: "10 hours",
-    status: "locked" as const,
-    href: "/courses/quantum-business-framework",
-    outcomes: [
-      "Master energy alignment for entrepreneurship",
-      "Build conscious business strategies",
-      "Execute with manifestation principles",
-    ],
-  },
 ];
 
 export default function CoursesPage() {

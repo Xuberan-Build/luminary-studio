@@ -5,7 +5,7 @@ import { PRODUCTS } from "@/lib/constants/products";
 import styles from "./quantum-initiation.module.css";
 
 export const metadata: Metadata = {
-  title: "Quantum Initiation Protocol - Know Exactly How to Earn",
+  title: "Business Alignment Orientation - Know Exactly How to Earn",
   description:
     "Get a personalized money blueprint based on your Astrology & Human Design. Know what to sell, how to sell it, and your aligned pricing model in 20 minutes.",
 };
@@ -24,7 +24,7 @@ export default function QuantumInitiationPage() {
         </div>
 
         <div className={styles.heroContent}>
-          <div className={styles.badge}>Quantum Initiation Protocol</div>
+          <div className={styles.badge}>Business Alignment Orientation</div>
 
           <h1 className={styles.heroTitle}>
             Know Exactly What to Sell
@@ -38,7 +38,7 @@ export default function QuantumInitiationPage() {
           </p>
 
           <div className={styles.heroMicrocopy}>
-            Get clear answers in 20 minutes using the Quantum Business Framework aligned with your cosmic design.
+            Get clear answers in 20 minutes using a proven alignment framework tailored to your cosmic design.
           </div>
 
           <a href="#purchase" className={styles.heroCta}>
@@ -70,7 +70,7 @@ export default function QuantumInitiationPage() {
           <div className={styles.featureGrid}>
             <div className={styles.featureCard}>
               <div className={styles.featureIcon}>🧠</div>
-              <h3 className={styles.featureTitle}>Quantum Business Framework</h3>
+              <h3 className={styles.featureTitle}>Business Alignment Framework</h3>
               <p className={styles.featureDescription}>
                 Interactive blueprint powered by proven methodology that's generated millions in revenue.
               </p>
@@ -136,7 +136,7 @@ export default function QuantumInitiationPage() {
               <li>✓ Personalized money blueprint based on your chart</li>
               <li>✓ Know exactly what to sell & how to sell it</li>
               <li>✓ Your aligned pricing model revealed</li>
-              <li>✓ Quantum Business Framework methodology</li>
+              <li>✓ Business alignment methodology</li>
               <li>✓ Instant access, complete in 20 minutes</li>
               <li>✓ One-time payment, no recurring fees</li>
             </ul>
@@ -163,7 +163,7 @@ export default function QuantumInitiationPage() {
 
           <div className={styles.faqGrid}>
             <div className={styles.faqItem}>
-              <h3 className={styles.faqQuestion}>What is the Quantum Initiation Protocol?</h3>
+              <h3 className={styles.faqQuestion}>What is the Business Alignment Orientation?</h3>
               <p className={styles.faqAnswer}>
                 It's an interactive blueprint experience that analyzes your Astrology and Human Design to give you a personalized money-making strategy. You'll discover exactly what to sell, how to sell it, and how to price your offers—all aligned with your unique energetic design.
               </p>
@@ -184,9 +184,9 @@ export default function QuantumInitiationPage() {
             </div>
 
             <div className={styles.faqItem}>
-              <h3 className={styles.faqQuestion}>How is this different from the full QBF course?</h3>
+              <h3 className={styles.faqQuestion}>How does this compare to a full course?</h3>
               <p className={styles.faqAnswer}>
-                The full Quantum Business Framework course offers deep transformation through modules, exercises, and comprehensive frameworks. The Quantum Initiation Protocol gives you instant clarity on your money-making strategy in 20 minutes. They complement each other beautifully.
+                A full course goes deeper across multiple modules and exercises. The Business Alignment Orientation delivers instant clarity on your money-making strategy in 20 minutes, so you can act immediately.
               </p>
             </div>
 

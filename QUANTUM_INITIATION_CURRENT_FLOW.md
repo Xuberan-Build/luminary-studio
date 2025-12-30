@@ -1,4 +1,4 @@
-# Quantum Initiation Protocol - Current User Flow
+# Business Alignment Orientation - Current User Flow
 
 **Complete step-by-step breakdown of the current product experience**
 
@@ -6,7 +6,7 @@
 
 ## Overview
 
-**Product**: Quantum Initiation Protocol
+**Product**: Business Alignment Orientation
 **Total Steps**: 5
 **Duration**: 15-20 minutes
 **Price**: $7

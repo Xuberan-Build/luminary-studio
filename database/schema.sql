@@ -333,7 +333,7 @@ $$ LANGUAGE plpgsql;
 
 -- =====================================================
 -- INITIAL DATA
--- Insert Quantum Initiation Protocol product definition
+-- Insert Business Alignment Orientation product definition
 -- =====================================================
 
 INSERT INTO product_definitions (
@@ -348,7 +348,7 @@ INSERT INTO product_definitions (
   steps
 ) VALUES (
   'quantum-initiation',
-  'Quantum Initiation Protocol',
+  'Business Alignment Orientation',
   'Build your personalized brand blueprint based on your Astrology and Human Design.',
   7.00,
   5,

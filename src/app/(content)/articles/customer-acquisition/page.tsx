@@ -45,7 +45,6 @@ export default function CustomerAcquisitionHub() {
     <div className={styles.page}>
       <header className={styles.hero}>
         <div className={`${styles.heroContent} container`}>
-          <p className={styles.eyebrow}>Pillar</p>
           <h1 className={styles.title}>Customer Acquisition</h1>
           <p className={styles.subtitle}>
             Build a predictable acquisition engine with clear positioning, aligned channels, and

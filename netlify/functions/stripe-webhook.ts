@@ -10,7 +10,7 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
 // Product configuration (hardcoded to reduce env var size)
 const PRODUCTS: Record<string, { name: string; gptLink: string; sheetId: string; fromEmail: string; fromName: string }> = {
   'quantum-initiation': {
-    name: 'Quantum Initiation Protocol',
+    name: 'Business Alignment Orientation',
     gptLink: 'https://chatgpt.com/g/g-693966abf2ec81918f1f5c99802f7962-quantum-activation-initiation',
     sheetId: '1EhC-MCjlqG_4otRZjxefEpttR98s5rXqr98vj2TnLTE',
     fromEmail: 'austin@xuberandigital.com',

@@ -366,7 +366,13 @@ export async function POST(request: NextRequest) {
   if (stripeEvent.type === 'checkout.session.completed') {
     const session = stripeEvent.data.object as Stripe.Checkout.Session;
 
-    console.log('Processing checkout session:', session.id);
+    console.log('=== CHECKOUT SESSION COMPLETED ===');
+    console.log('Session ID:', session.id);
+    console.log('Customer Email:', session.customer_details?.email);
+    console.log('Amount:', session.amount_total);
+    console.log('Metadata:', session.metadata);
+    console.log('Success URL:', session.success_url);
+    console.log('==================================');
 
     const customerEmail = session.customer_details?.email;
     const customerName = session.customer_details?.name || 'there';
@@ -386,15 +392,22 @@ export async function POST(request: NextRequest) {
     // Try 1: Get from session metadata (if configured in Stripe payment link)
     if (session.metadata?.product_slug) {
       productSlug = session.metadata.product_slug;
-      console.log('Product detected from metadata:', productSlug);
+      console.log('✅ Product detected from metadata:', productSlug);
     }
     // Try 2: Parse from success URL (e.g., /products/quantum-initiation/interact)
     else if (session.success_url) {
       const urlMatch = session.success_url.match(/\/products\/([^\/]+)\//);
       if (urlMatch && urlMatch[1]) {
         productSlug = urlMatch[1];
-        console.log('Product detected from success URL:', productSlug);
+        console.log('✅ Product detected from success URL:', productSlug);
+      } else {
+        console.warn('⚠️ Could not parse product from success URL:', session.success_url);
+        console.warn('⚠️ Using default fallback: quantum-initiation');
       }
+    } else {
+      console.warn('⚠️ No metadata or success URL found');
+      console.warn('⚠️ Using default fallback: quantum-initiation');
+      console.warn('⚠️ Session ID:', session.id);
     }
 
     // Get product configuration
@@ -468,7 +481,14 @@ export async function POST(request: NextRequest) {
       }
 
       // Grant product access
-      const { error: accessError } = await supabaseAdmin
+      console.log('📝 Inserting product_access record:', {
+        user_id: userId,
+        product_slug: productSlug,
+        stripe_session_id: session.id,
+        amount_paid: amount,
+      });
+
+      const { data: accessData, error: accessError } = await supabaseAdmin
         .from('product_access')
         .insert({
           user_id: userId,
@@ -477,14 +497,42 @@ export async function POST(request: NextRequest) {
           amount_paid: amount,
           access_granted: true,
           purchase_date: timestamp,
-        });
+        })
+        .select();
 
-      if (accessError && accessError.code !== '23505') {
-        // Ignore duplicate key errors (user already has access)
-        throw accessError;
+      if (accessError) {
+        if (accessError.code === '23505') {
+          // Duplicate key - user already has access
+          console.log('⚠️ User already has access (duplicate key), updating record');
+
+          const { error: updateError } = await supabaseAdmin
+            .from('product_access')
+            .update({
+              stripe_session_id: session.id,
+              amount_paid: amount,
+              access_granted: true,
+              purchase_date: timestamp,
+            })
+            .eq('user_id', userId)
+            .eq('product_slug', productSlug);
+
+          if (updateError) {
+            console.error('❌ Failed to update existing access:', updateError);
+            throw updateError;
+          }
+
+          console.log('✅ Updated existing access record');
+        } else {
+          console.error('❌ Failed to insert product_access:', accessError);
+          console.error('Error code:', accessError.code);
+          console.error('Error message:', accessError.message);
+          console.error('Error details:', accessError.details);
+          throw accessError;
+        }
+      } else {
+        console.log('✅ Product access granted successfully');
+        console.log('Access record:', accessData);
       }
-
-      console.log('Product access granted successfully');
     } catch (supabaseError: any) {
       console.error('Failed to grant Supabase access:', supabaseError);
       // Don't fail the webhook if Supabase fails

@@ -136,6 +136,10 @@ export default async function ProductExperiencePage({
         : productSession.placements,
       current_section: 1,
     };
+  } else if (productSession.current_step === 1 && productSession.placements_confirmed) {
+    // Placements are valid and confirmed - keep on step 1 to show confirmation gate
+    // The client will show a gate asking user to confirm or re-upload
+    console.log('[experience] Placements confirmed - keeping on step 1 to show confirmation gate');
   }
 
   return (

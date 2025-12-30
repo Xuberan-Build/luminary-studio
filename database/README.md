@@ -37,7 +37,7 @@
 #### `seed-*.sql` files
 - **Purpose**: Insert product definitions into database
 - **Files**:
-  - `seed-quantum-initiation.sql` - Quantum Initiation Protocol
+  - `seed-quantum-initiation.sql` - Business Alignment Orientation
   - `seed-personal-alignment.sql` - Personal Alignment Orientation
   - `seed-products.sql` - Quantum Structure, Profit & Scale
 - **When to use**: After creating a new product, run its seed file once

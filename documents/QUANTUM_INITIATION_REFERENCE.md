@@ -1,4 +1,4 @@
-# Quantum Initiation Protocol - Complete Reference
+# Business Alignment Orientation - Complete Reference
 
 **Use this as your template for creating cohesive products in the ecosystem**
 
@@ -6,7 +6,7 @@
 
 ## Product Overview
 
-**Product Name**: Quantum Initiation Protocol
+**Product Name**: Business Alignment Orientation
 **Slug**: `quantum-initiation`
 **Tagline**: Know Exactly What to Sell & How Much to Charge
 **Price**: $7.00
@@ -31,7 +31,7 @@
 
 ```sql
 product_slug: 'quantum-initiation'
-name: 'Quantum Initiation Protocol'
+name: 'Business Alignment Orientation'
 description: 'Build your personalized brand blueprint based on your Astrology and Human Design.'
 price: 7.00
 total_steps: 5

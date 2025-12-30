@@ -127,7 +127,7 @@ async function setupCustomerInsightsSheet() {
 
   const sampleInsight = [
     'sample@example.com',                           // Email
-    'Quantum Initiation Protocol',                  // Product
+    'Business Alignment Orientation',               // Product
     new Date().toISOString().split('T')[0],        // Completion Date
     'completed',                                     // Completion Status
     'Leo',                                          // Sun Sign

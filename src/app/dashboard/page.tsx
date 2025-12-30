@@ -3,13 +3,15 @@ import { createServerSupabaseClient, supabaseAdmin } from '@/lib/supabase/server
 import Link from 'next/link';
 import styles from './dashboard.module.css';
 import { revalidatePath } from 'next/cache';
+import SessionVersionManager from '@/components/dashboard/SessionVersionManager';
 
 export const dynamic = 'force-dynamic';
 
-async function resetSession(formData: FormData) {
+async function createNewVersion(formData: FormData) {
   'use server';
 
   const productSlug = formData.get('productSlug') as string;
+  const parentSessionId = formData.get('parentSessionId') as string;
   const supabase = await createServerSupabaseClient();
 
   const {
@@ -20,68 +22,74 @@ async function resetSession(formData: FormData) {
     return;
   }
 
-  await supabase
-    .from('product_sessions')
-    .update({
-      is_complete: false,
-      completed_at: null,
-      deliverable_content: null,
-      deliverable_generated_at: null,
-      current_step: 1,
-      current_section: 1,
-      placements_confirmed: false,
-    })
-    .eq('user_id', session.user.id)
-    .eq('product_slug', productSlug);
+  // Call database function to create new version
+  const { data: newSessionId, error } = await supabase.rpc(
+    'create_session_version',
+    {
+      p_user_id: session.user.id,
+      p_product_slug: productSlug,
+      p_parent_session_id: parentSessionId,
+    }
+  );
+
+  if (error) {
+    console.error('Error creating new version:', error);
+    return;
+  }
 
   revalidatePath('/dashboard');
   redirect(`/products/${productSlug}/experience`);
 }
 
-async function getUserProducts(userId: string) {
+async function getAllProductsWithAccess(userId: string) {
   const supabase = await createServerSupabaseClient();
 
+  // Get ALL product definitions
+  const { data: allProducts, error: productsError } = await supabase
+    .from('product_definitions')
+    .select('*')
+    .order('created_at', { ascending: true });
+
+  if (productsError) {
+    console.error('Error fetching products:', productsError);
+    return [];
+  }
+
+  if (!allProducts || allProducts.length === 0) {
+    return [];
+  }
+
   // Get user's product access
-  const { data: productAccess, error } = await supabase
+  const { data: productAccess } = await supabase
     .from('product_access')
     .select('*')
     .eq('user_id', userId)
     .eq('access_granted', true);
 
-  if (error) {
-    console.error('Error fetching product access:', error);
-    return [];
-  }
+  // Map products to include access status
+  const productsWithAccess = allProducts.map((product) => {
+    const access = productAccess?.find(
+      (a) => a.product_slug === product.product_slug
+    );
 
-  if (!productAccess || productAccess.length === 0) {
-    return [];
-  }
+    return {
+      product: product,
+      access: access || null,
+      hasAccess: !!access,
+    };
+  });
 
-  // Get product definitions for each access
-  const products = await Promise.all(
-    productAccess.map(async (access) => {
-      const { data: product } = await supabase
-        .from('product_definitions')
-        .select('*')
-        .eq('product_slug', access.product_slug)
-        .single();
-
-      return {
-        ...access,
-        product_definitions: product
-      };
-    })
-  );
-
-  return products;
+  return productsWithAccess;
 }
 
 async function getUserSessions(userId: string) {
   try {
+    // Get only latest versions of each product
     const { data, error } = await supabaseAdmin
       .from('product_sessions')
       .select('*')
       .eq('user_id', userId)
+      .eq('is_latest_version', true)
       .order('created_at', { ascending: false });
     if (error) {
       console.error('Error fetching sessions:', error?.message || error);
@@ -91,6 +99,31 @@ async function getUserSessions(userId: string) {
   } catch (e: any) {
     console.error('Error fetching sessions:', e?.message || e);
     return [];
+  }
+}
+
+async function getSessionAttempts(userId: string, productSlug: string) {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('product_access')
+      .select('free_attempts_used, free_attempts_limit')
+      .eq('user_id', userId)
+      .eq('product_slug', productSlug)
+      .single();
+
+    if (error) {
+      console.error('Error fetching attempts:', error?.message || error);
+      return { used: 0, limit: 2, remaining: 2 };
+    }
+
+    return {
+      used: data?.free_attempts_used || 0,
+      limit: data?.free_attempts_limit || 2,
+      remaining: (data?.free_attempts_limit || 2) - (data?.free_attempts_used || 0),
+    };
+  } catch (e: any) {
+    console.error('Error fetching attempts:', e?.message || e);
+    return { used: 0, limit: 2, remaining: 2 };
   }
 }
 
@@ -111,7 +144,7 @@ export default async function DashboardPage() {
     .eq('id', session.user.id)
     .single();
 
-  const products = await getUserProducts(session.user.id);
+  const products = await getAllProductsWithAccess(session.user.id);
   const sessions = await getUserSessions(session.user.id);
 
   return (
@@ -127,28 +160,32 @@ export default async function DashboardPage() {
 
           {products.length === 0 ? (
             <div className={styles.emptyState}>
-              <p>You don't have any products yet.</p>
-              <Link href="/" className={styles.browseButton}>
-                Browse Products
-              </Link>
+              <p>No products available yet.</p>
             </div>
           ) : (
             <div className={styles.productGrid}>
-              {products.map((access: any) => {
-                const product = access.product_definitions;
-                const isStarted = access.started_at !== null;
-                const isComplete = access.completed_at !== null;
+              {products.map((item: any) => {
+                const product = item.product;
+                const access = item.access;
+                const hasAccess = item.hasAccess;
+                const isStarted = access?.started_at !== null;
+                const isComplete = access?.completed_at !== null;
 
                 return (
-                  <div key={access.id} className={styles.productCard}>
+                  <div key={product.product_slug} className={styles.productCard}>
                     <div className={styles.productHeader}>
                       <h3>{product.name}</h3>
-                      {isComplete && (
+                      {hasAccess && isComplete && (
                         <span className={styles.badge}>Complete</span>
                       )}
-                      {!isComplete && isStarted && (
+                      {hasAccess && !isComplete && isStarted && (
                         <span className={styles.badgeInProgress}>
                           In Progress
+                        </span>
+                      )}
+                      {!hasAccess && (
+                        <span className={styles.badgeLocked}>
+                          ${product.price}
                         </span>
                       )}
                     </div>
@@ -162,12 +199,21 @@ export default async function DashboardPage() {
                       <span>{product.total_steps} steps</span>
                     </div>
 
-                    <Link
-                      href={`/products/${product.product_slug}/experience`}
-                      className={styles.productButton}
-                    >
-                      {isComplete ? 'View Results' : isStarted ? 'Continue' : 'Start'}
-                    </Link>
+                    {hasAccess ? (
+                      <Link
+                        href={`/products/${product.product_slug}/experience`}
+                        className={styles.productButton}
+                      >
+                        {isComplete ? 'View Results' : isStarted ? 'Continue' : 'Start'}
+                      </Link>
+                    ) : (
+                      <Link
+                        href={`/products/${product.product_slug}#purchase`}
+                        className={styles.purchaseButton}
+                      >
+                        Purchase for ${product.price}
+                      </Link>
+                    )}
                   </div>
                 );
               })}
@@ -186,17 +232,24 @@ export default async function DashboardPage() {
             </div>
           ) : (
             <div className={styles.productGrid}>
-              {sessions.map((s: any) => {
+              {sessions.map(async (s: any) => {
                 const completed = !!s.completed_at;
+                const attempts = await getSessionAttempts(session.user.id, s.product_slug);
+
                 return (
                   <div key={s.id} className={styles.productCard}>
                     <div className={styles.productHeader}>
                       <h3>{s.product_slug}</h3>
-                      {completed ? (
-                        <span className={styles.badge}>Complete</span>
-                      ) : (
-                        <span className={styles.badgeInProgress}>In Progress</span>
-                      )}
+                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                        {s.version > 1 && (
+                          <span className={styles.versionBadge}>v{s.version}</span>
+                        )}
+                        {completed ? (
+                          <span className={styles.badge}>Complete</span>
+                        ) : (
+                          <span className={styles.badgeInProgress}>In Progress</span>
+                        )}
+                      </div>
                     </div>
                     <p className={styles.productDescription}>
                       {completed
@@ -205,7 +258,7 @@ export default async function DashboardPage() {
                     </p>
                     <div className={styles.productMeta}>
                       <span>Started: {new Date(s.created_at).toLocaleDateString()}</span>
-                      <span>Status: {completed ? 'Completed' : 'Active'}</span>
+                      <span>Attempts: {attempts.used}/{attempts.limit}</span>
                     </div>
                     <div className={styles.productActions}>
                       <Link
@@ -220,19 +273,12 @@ export default async function DashboardPage() {
                       >
                         Go to Experience
                       </Link>
-                      <form action={resetSession} style={{ display: 'inline' }}>
-                        <input type="hidden" name="productSlug" value={s.product_slug} />
-                        <button
-                          type="submit"
-                          className={styles.secondaryButton}
-                          style={{
-                            border: '1px solid rgba(255, 255, 255, 0.2)',
-                            background: 'rgba(255, 255, 255, 0.1)',
-                          }}
-                        >
-                          Reset Session
-                        </button>
-                      </form>
+                      <SessionVersionManager
+                        sessionId={s.id}
+                        productSlug={s.product_slug}
+                        attemptsRemaining={attempts.remaining}
+                        createNewVersionAction={createNewVersion}
+                      />
                     </div>
                   </div>
                 );

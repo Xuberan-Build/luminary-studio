@@ -56,10 +56,10 @@ export async function POST(req: Request) {
           const textSlice = parsed.text.slice(0, 8000);
           // Categorize PDF text based on filename
           if (isHD(path)) {
-            console.log('  -> Categorized PDF text as Human Design');
+            console.log('  - Categorized PDF text as Human Design');
             hdPdfTexts.push(textSlice);
           } else {
-            console.log('  -> Categorized PDF text as Astrology');
+            console.log('  - Categorized PDF text as Astrology');
             astroPdfTexts.push(textSlice);
           }
         }
@@ -74,10 +74,10 @@ export async function POST(req: Request) {
         }
         console.log(`Signed URL created: ${data.signedUrl.substring(0, 50)}...`);
         if (isHD(path)) {
-          console.log('  -> Categorized as Human Design');
+          console.log('  - Categorized as Human Design');
           hdImages.push(data.signedUrl);
         } else {
-          console.log('  -> Categorized as Astrology');
+          console.log('  - Categorized as Astrology');
           astroImages.push(data.signedUrl);
         }
       }

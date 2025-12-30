@@ -14,6 +14,24 @@ export interface ProductStep {
   max_follow_ups: number;
 }
 
+export interface ProductInstructions {
+  welcome: {
+    title: string;
+    description: string;
+    estimatedTime: string;
+    ctaText: string;
+  };
+  processing: string[];
+  transitions: {
+    prefix: string;
+    suffix: string;
+  };
+  deliverable: {
+    title: string;
+    description: string;
+  };
+}
+
 export interface ProductDefinition {
   product_slug: string;
   name: string;
@@ -29,6 +47,9 @@ export interface ProductDefinition {
 
   // Steps configuration
   steps: ProductStep[];
+
+  // Instructional experience (optional)
+  instructions?: ProductInstructions;
 
   // CRM Configuration (for webhook)
   sheet_id: string;

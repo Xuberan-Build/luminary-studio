@@ -18,9 +18,9 @@ export interface ProductConfig {
 export const PRODUCTS: Record<string, ProductConfig> = {
   'quantum-initiation': {
     slug: 'quantum-initiation',
-    name: 'Quantum Initiation Protocol',
+    name: 'Business Alignment Orientation',
     price: 7,
-    interactTitle: 'Build Your Quantum Blueprint',
+    interactTitle: 'Build Your Business Alignment Blueprint',
     interactInstructions: 'Complete the guided intake to personalize your blueprint.',
     estimatedDuration: '15-30 minutes',
     gptIframeUrl: '',
@@ -32,16 +32,16 @@ export const PRODUCTS: Record<string, ProductConfig> = {
     fromName: 'Quantum Strategies',
   },
 
-  'quantum-structure-profit-scale': {
-    slug: 'quantum-structure-profit-scale',
-    name: 'Quantum Structure, Profit & Scale',
-    price: 14,
-    interactTitle: 'Structure, Profit & Scale',
-    interactInstructions: 'Walk through the strategic intake to map your profit plan.',
-    estimatedDuration: '25-35 minutes',
+  'brand-alignment': {
+    slug: 'brand-alignment',
+    name: 'Brand Alignment Orientation',
+    price: 7,
+    interactTitle: 'Brand Alignment Orientation',
+    interactInstructions: 'You\'ll answer 8 questions to unify who you are with how you show up.',
+    estimatedDuration: '25-30 minutes',
     gptIframeUrl: '',
-    ...(process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK_STRUCTURE && {
-      stripePaymentLink: process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK_STRUCTURE,
+    ...(process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK_BRAND_ALIGNMENT && {
+      stripePaymentLink: process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK_BRAND_ALIGNMENT,
     }),
     sheetId: '1EhC-MCjlqG_4otRZjxefEpttR98s5rXqr98vj2TnLTE',
     fromEmail: 'austin@xuberandigital.com',

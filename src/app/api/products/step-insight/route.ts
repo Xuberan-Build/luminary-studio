@@ -48,7 +48,6 @@ export async function POST(req: Request) {
 
     const astro = placements?.astrology || {};
     const hd = placements?.human_design || {};
-    const moneyHouses = ['2nd', '8th', '10th', '11th'];
 
     console.log('[step-insight] Placements from Supabase:', placements ? 'Present' : 'MISSING');
     console.log('[step-insight] Astrology data:', Object.keys(astro).length, 'fields');
@@ -61,9 +60,9 @@ Human Design: Type ${hd.type || 'UNKNOWN'}, Strategy ${hd.strategy || 'UNKNOWN'}
 
     // Load prompt from database with fallback
     const basePrompt = await PromptService.getPrompt({
-      productSlug: productSlug || 'quantum-initiation',
+      productSlug: productSlug,
       scope: 'step_insight',
-      fallback: `Respond after the user answers a step. Keep it to 1–3 short paragraphs. Ground in placements (money/identity houses 2/8/10/11, Sun/Moon/Rising, Mars/Venus/Mercury/Saturn/Pluto, HD type/strategy/authority/centers/gifts). If 2nd-house ruler/location is unknown, ask for it and still give the best next move. Include one actionable nudge relevant to the step. If the user hinted at revenue goals, acknowledge and align the nudge to that goal.`,
+      fallback: `Respond after the user answers a step. Keep it to 1–3 short paragraphs. Ground in placements (Sun/Moon/Rising, Venus/Mars/Mercury/Saturn/Pluto, HD type/strategy/authority/centers/gifts, relevant houses). Include one actionable nudge relevant to the step and product focus.`,
     });
 
     const context = `

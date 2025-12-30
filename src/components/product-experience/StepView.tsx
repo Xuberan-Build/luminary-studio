@@ -1,7 +1,9 @@
 'use client';
 
 import { ChatWindow } from './ChatWindow';
-import { useRef } from 'react';
+import { useRef, useState, useEffect } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 interface StepViewProps {
   step: any;
@@ -17,6 +19,7 @@ interface StepViewProps {
   assistantReply?: string;
   isSubmitting: boolean;
   onRemoveFile?: (path: string) => void;
+  processingMessages?: string[];
 }
 
 export function StepView({
@@ -33,14 +36,41 @@ export function StepView({
   assistantReply,
   isSubmitting,
   onRemoveFile,
+  processingMessages,
 }: StepViewProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [currentProcessingMessage, setCurrentProcessingMessage] = useState(0);
+
+  // Rotate through processing messages every 2.5 seconds
+  useEffect(() => {
+    if (!isSubmitting || !processingMessages || processingMessages.length === 0) {
+      return;
+    }
+
+    const interval = setInterval(() => {
+      setCurrentProcessingMessage((prev) => (prev + 1) % processingMessages.length);
+    }, 2500);
+
+    return () => clearInterval(interval);
+  }, [isSubmitting, processingMessages]);
+
+  // Reset to first message when submission starts
+  useEffect(() => {
+    if (isSubmitting) {
+      setCurrentProcessingMessage(0);
+    }
+  }, [isSubmitting]);
+
   const handleAttachClick = () => fileInputRef.current?.click();
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && e.metaKey) {
       onSubmit();
     }
   };
+
+  const processingText = processingMessages && processingMessages.length > 0
+    ? processingMessages[currentProcessingMessage]
+    : 'Thinking…';
 
   // If this is a file upload step, use ChatWindow (prefer the premium upload UI even if a question is present)
   if (step?.allow_file_upload && !step?.question) {
@@ -80,21 +110,27 @@ export function StepView({
         {/* Question Card */}
       <div className="bg-gray-800/40 backdrop-blur-md border border-gray-700/50 rounded-2xl p-8 shadow-2xl mb-6">
         {assistantReply && (
-            <div className="mb-6 rounded-2xl border border-white/10 bg-white/5 p-4 relative">
+            <div className="mb-6 rounded-2xl border border-gray-700/50 bg-gray-800/60 p-4 relative">
               {isSubmitting && (
                 <div className="absolute inset-0 rounded-2xl bg-black/40 flex items-center justify-center text-sm text-white">
-                  Thinking…
+                  {processingText}
                 </div>
               )}
-              <p className="text-xs uppercase tracking-[0.16em] text-teal-200/80 mb-2">Assistant</p>
-              <p className="text-sm text-slate-100 whitespace-pre-wrap">{assistantReply}</p>
+              <p className="text-xs uppercase tracking-[0.16em] text-gray-400 mb-2">Wizard</p>
+              <div className="prose prose-invert prose-sm max-w-none [&_strong]:text-purple-300 [&_strong]:font-semibold [&_p]:text-gray-300 [&_li]:text-gray-300 [&_h1]:text-gray-200 [&_h2]:text-gray-200 [&_h3]:text-gray-200">
+                <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                  {assistantReply}
+                </ReactMarkdown>
+              </div>
             </div>
           )}
 
           {step.question && step.title && (
-            <label className="text-gray-200 text-xl font-medium mb-6 block">
-              {step.question}
-            </label>
+            <div className="prose prose-invert prose-lg max-w-none [&_strong]:text-purple-400 [&_strong]:font-bold [&_p]:text-white [&_li]:text-white [&_h1]:text-white [&_h2]:text-white [&_h3]:text-white mb-6">
+              <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                {step.question}
+              </ReactMarkdown>
+            </div>
           )}
 
           <textarea

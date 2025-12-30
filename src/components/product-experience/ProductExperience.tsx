@@ -6,6 +6,7 @@ import { ProgressBar } from './ProgressBar';
 import { StepView } from './StepView';
 import { FollowUpChat } from './FollowUpChat';
 import { DeliverableView } from './DeliverableView';
+import { WelcomeBanner } from './WelcomeBanner';
 import { supabase } from '@/lib/supabase/client';
 import { chartAnalysisModel, conversationalModel } from '@/lib/ai/models';
 
@@ -51,6 +52,10 @@ const [hasGuarded, setHasGuarded] = useState(false);
   const [seedInsightShown, setSeedInsightShown] = useState(false);
   const [forcedConfirmOnce, setForcedConfirmOnce] = useState(false);
   const [forcedInitReset, setForcedInitReset] = useState(false);
+  const [showWelcome, setShowWelcome] = useState(
+    !!product.instructions && currentStep === 1 && !session.completed_at
+  );
+
   const appendConversation = async (stepNumber: number, newMessages: Array<{ role: string; content: string; type?: string }>) => {
     const { data } = await supabase
       .from('conversations')
@@ -217,27 +222,34 @@ const [hasGuarded, setHasGuarded] = useState(false);
     }
   }, [currentStep, placementsConfirmed, forcedConfirmOnce, uploadedFiles.length, placements]);
 
-  // If session was previously confirmed and current_step > 1, force reset to step 1 and reconfirm
+  // Only force reset if placements are actually empty (not if just on step > 1)
   useEffect(() => {
-    if (!forcedInitReset && session.placements_confirmed && session.current_step > 1) {
+    if (!forcedInitReset && session.placements_confirmed && isPlacementsEmpty(session.placements)) {
+      console.log('[PX] Session claims placements confirmed but they are empty - forcing reconfirmation');
       setPlacementsConfirmed(false);
       setConfirmGate(true);
       setCurrentStep(1);
       setForcedInitReset(true);
     }
-  }, [forcedInitReset, session.placements_confirmed, session.current_step]);
+  }, [forcedInitReset, session.placements_confirmed, session.placements]);
 
   // Auto intro reply after placements confirmed
   useEffect(() => {
     const sendIntro = async () => {
       if (placementsConfirmed && !assistantReply && currentStep === 1 && !showIntroReply) {
         try {
+          // Product-specific intro prompts
+          const isPersonalAlignment = product.product_slug === 'personal-alignment';
+          const introQuestion = isPersonalAlignment
+            ? 'Acknowledge placements and core identity/values themes using Sun/Moon/Rising, Venus, and HD type.'
+            : 'Acknowledge placements and money/creation themes.';
+
           const res = await fetch('/api/products/step-insight', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               stepNumber: 0,
-              stepData: { title: 'Chart Read', question: 'Acknowledge placements and money/creation themes.' },
+              stepData: { title: 'Chart Read', question: introQuestion },
               mainResponse: 'Confirmed chart placements.',
               placements,
               sessionId: session.id,
@@ -260,7 +272,7 @@ const [hasGuarded, setHasGuarded] = useState(false);
     sendIntro();
   }, [placementsConfirmed, assistantReply, currentStep, showIntroReply, placements, product.system_prompt, product.name]);
 
-  // Seed an initial chart/money insight when the user first lands on step 2
+  // Seed an initial chart insight when the user first lands on step 2
   useEffect(() => {
     console.log('[PX] seedInsight effect check:', {
       placementsConfirmed,
@@ -273,15 +285,23 @@ const [hasGuarded, setHasGuarded] = useState(false);
       if (placementsConfirmed && currentStep === 2 && !seedInsightShown) {
         console.log('[PX] Triggering seed insight for step 2');
         try {
+          // Product-specific seed prompts
+          const isPersonalAlignment = product.product_slug === 'personal-alignment';
+          const seedTitle = isPersonalAlignment
+            ? 'Initial chart + identity clarity'
+            : 'Initial chart + money clarity';
+          const seedQuestion = isPersonalAlignment
+            ? 'Give 2-3 sentences on their core identity, natural energy design, and value system using confirmed placements only. Reference Sun/Moon/Rising for core self, Venus for values, Mars for action style, and HD type/strategy/authority for energy design. Include one actionable alignment nudge. No speculation on unknowns.'
+            : 'Give 2-3 sentences on money/self-worth/creation using confirmed placements only. Include: 2nd house sign+ruler+its location; if 2nd is empty, say what that means; note key money houses (2/8/10/11) only when known; one actionable business/money takeaway. No speculation on unknowns.';
+
           const res = await fetch('/api/products/step-insight', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
               stepNumber: 0,
               stepData: {
-                title: 'Initial chart + money clarity',
-                question:
-                  'Give 2-3 sentences on money/self-worth/creation using confirmed placements only. Include: 2nd house sign+ruler+its location; if 2nd is empty, say what that means; note key money houses (2/8/10/11) only when known; one actionable business/money takeaway. No speculation on unknowns.',
+                title: seedTitle,
+                question: seedQuestion,
               },
               mainResponse: 'Use confirmed placements to orient the user before Q&A.',
               placements,
@@ -526,7 +546,7 @@ const [hasGuarded, setHasGuarded] = useState(false);
     const uploadedUrls: string[] = [];
     // If user uploads new files, force re-confirmation
     if (placementsConfirmed) {
-      console.log('[PX] new upload -> resetting placementsConfirmed false');
+      console.log('[PX] new upload - resetting placementsConfirmed false');
       setPlacementsConfirmed(false);
       setConfirmGate(true);
       await supabase
@@ -712,7 +732,98 @@ const [hasGuarded, setHasGuarded] = useState(false);
 
   // If deliverable is ready, show it
   if (deliverable) {
-    return <DeliverableView deliverable={deliverable} productName={product.name} />;
+    return (
+      <DeliverableView
+        deliverable={deliverable}
+        productName={product.name}
+        instructions={product.instructions}
+      />
+    );
+  }
+
+  // Auto-copied placements confirmation gate (when placements already exist)
+  if (currentStep === 1 && placementsConfirmed && !isPlacementsEmpty(placements) && uploadedFiles.length === 0) {
+    console.log('[PX] showing auto-copied placements confirmation gate');
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 via-gray-900 to-black p-6 md:p-10">
+        <div className="w-full max-w-3xl space-y-6 rounded-3xl border border-white/10 bg-white/5 p-6 md:p-8 backdrop-blur-xl shadow-[0_25px_120px_-40px_rgba(0,0,0,0.75)]">
+          <div className="space-y-2">
+            <p className="text-xs uppercase tracking-[0.18em] text-teal-200/80">Chart data found</p>
+            <h1 className="text-3xl font-semibold text-white">Use existing placements?</h1>
+            <p className="text-slate-200/85">
+              We found your chart data from a previous product. You can use the same placements or upload new charts if anything has changed.
+            </p>
+          </div>
+
+          <div className="space-y-3">
+            <p className="text-xs uppercase tracking-[0.16em] text-slate-300/80">Your placements</p>
+            <div className="grid gap-3 md:grid-cols-2">
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-3">
+                <p className="text-sm font-semibold text-white">Astrology</p>
+                <div className="space-y-2 text-sm text-slate-200">
+                  {['sun', 'moon', 'rising', 'venus', 'mars'].map((key) => {
+                    const val = placements?.astrology?.[key] || 'Unknown';
+                    return (
+                      <div key={key} className="flex justify-between">
+                        <span className="capitalize text-slate-400">{key}:</span>
+                        <span className="font-medium">{val}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-3">
+                <p className="text-sm font-semibold text-white">Human Design</p>
+                <div className="space-y-2 text-sm text-slate-200">
+                  {['type', 'strategy', 'authority', 'profile'].map((key) => {
+                    const val = placements?.human_design?.[key] || 'Unknown';
+                    return (
+                      <div key={key} className="flex justify-between">
+                        <span className="capitalize text-slate-400">{key}:</span>
+                        <span className="font-medium text-right ml-2">{val}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex gap-3">
+            <button
+              onClick={async () => {
+                // Use existing placements - advance to step 2
+                await supabase
+                  .from('product_sessions')
+                  .update({ current_step: 2, current_section: 1 })
+                  .eq('id', session.id)
+                  .eq('user_id', userId);
+                setCurrentStep(2);
+              }}
+              className="flex-1 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-6 py-3.5 font-semibold text-white shadow-lg shadow-teal-500/30 transition-all hover:shadow-xl hover:shadow-teal-500/40 hover:scale-[1.02]"
+            >
+              ✓ Use These Placements
+            </button>
+            <button
+              onClick={() => {
+                // Reset to allow new upload
+                setPlacementsConfirmed(false);
+                setPlacements(null);
+                supabase
+                  .from('product_sessions')
+                  .update({ placements_confirmed: false, placements: null })
+                  .eq('id', session.id)
+                  .eq('user_id', userId);
+              }}
+              className="flex-1 rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 font-semibold text-white transition-all hover:bg-white/10"
+            >
+              Upload New Charts
+            </button>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   // Placement confirmation gate after uploads
@@ -922,47 +1033,59 @@ const [hasGuarded, setHasGuarded] = useState(false);
     );
   }
 
-  return !showFollowUp ? (
-    <StepView
-      step={currentStepData}
-      stepNumber={currentStep}
-      totalSteps={steps.length}
-      response={stepResponse}
-      onResponseChange={setStepResponse}
-      onSubmit={handleStepSubmit}
-      onBack={() => {
-        if (currentStep > 1) {
-          const prev = currentStep - 1;
-          setCurrentStep(prev);
-          supabase
-            .from('product_sessions')
-            .update({
-              current_step: prev,
-            })
-            .eq('id', session.id)
-            .eq('user_id', userId);
-        }
-      }}
-      onFileUpload={handleFileUpload}
-      uploadedFiles={uploadedFiles}
-      uploadError={uploadError}
-      assistantReply={assistantReply}
-      isSubmitting={isSubmitting}
-      onRemoveFile={handleRemoveFile}
-    />
-  ) : (
-    <FollowUpChat
-      sessionId={session.id}
-      stepNumber={currentStep}
-        stepData={currentStepData}
-        systemPrompt={product.system_prompt}
-        mainResponse={stepResponse}
-        productSlug={product.product_slug}
-        followUpCount={followUpCount}
-        onFollowUpCountChange={setFollowUpCount}
-        onComplete={handleFollowUpComplete}
-        userId={userId}
-        placements={placements}
-      />
+  return (
+    <>
+      {showWelcome && product.instructions && (
+        <WelcomeBanner
+          instructions={product.instructions}
+          onBegin={() => setShowWelcome(false)}
+        />
+      )}
+
+      {!showFollowUp ? (
+        <StepView
+          step={currentStepData}
+          stepNumber={currentStep}
+          totalSteps={steps.length}
+          response={stepResponse}
+          onResponseChange={setStepResponse}
+          onSubmit={handleStepSubmit}
+          onBack={() => {
+            if (currentStep > 1) {
+              const prev = currentStep - 1;
+              setCurrentStep(prev);
+              supabase
+                .from('product_sessions')
+                .update({
+                  current_step: prev,
+                })
+                .eq('id', session.id)
+                .eq('user_id', userId);
+            }
+          }}
+          onFileUpload={handleFileUpload}
+          uploadedFiles={uploadedFiles}
+          uploadError={uploadError}
+          assistantReply={assistantReply}
+          isSubmitting={isSubmitting}
+          onRemoveFile={handleRemoveFile}
+          processingMessages={product.instructions?.processing}
+        />
+      ) : (
+        <FollowUpChat
+          sessionId={session.id}
+          stepNumber={currentStep}
+          stepData={currentStepData}
+          systemPrompt={product.system_prompt}
+          mainResponse={stepResponse}
+          productSlug={product.product_slug}
+          followUpCount={followUpCount}
+          onFollowUpCountChange={setFollowUpCount}
+          onComplete={handleFollowUpComplete}
+          userId={userId}
+          placements={placements}
+        />
+      )}
+    </>
   );
 }

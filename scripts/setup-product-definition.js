@@ -1,4 +1,4 @@
-// Setup product definition for Quantum Initiation
+// Setup product definition for Business Alignment Orientation
 require('dotenv').config({ path: '.env' });
 const { createClient } = require('@supabase/supabase-js');
 
@@ -8,7 +8,7 @@ const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const supabase = createClient(supabaseUrl, supabaseServiceKey);
 
 async function setupProduct() {
-  console.log('Setting up Quantum Initiation product...');
+  console.log('Setting up Business Alignment Orientation product...');
 
   // Check if product already exists
   const { data: existing } = await supabase
@@ -27,7 +27,7 @@ async function setupProduct() {
     .from('product_definitions')
     .insert({
       product_slug: 'quantum-initiation',
-      name: 'Quantum Initiation Protocol',
+      name: 'Business Alignment Orientation',
       description: 'A transformational journey to create your Quantum Brand Identity Blueprint using Astrology and Human Design.',
       total_steps: 5,
       estimated_duration: '15-20 minutes',

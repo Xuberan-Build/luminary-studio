@@ -45,7 +45,6 @@ export default function ProductDevelopmentHub() {
     <div className={styles.page}>
       <header className={styles.hero}>
         <div className={`${styles.heroContent} container`}>
-          <p className={styles.eyebrow}>Pillar</p>
           <h1 className={styles.title}>Product Development</h1>
           <p className={styles.subtitle}>
             Build products that align with the market through research, experimentation, and
