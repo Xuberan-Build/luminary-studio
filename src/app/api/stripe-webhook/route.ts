@@ -273,6 +273,126 @@ quantumstrategies.online
 }
 
 /**
+ * Send admin notification email about new purchase
+ */
+async function sendAdminNotification(params: {
+  customerEmail: string;
+  customerName: string;
+  productName: string;
+  amount: number;
+  sessionId: string;
+}) {
+  const credentials = {
+    client_email: process.env.GOOGLE_GMAIL_CLIENT_EMAIL,
+    private_key: process.env.GOOGLE_GMAIL_PRIVATE_KEY,
+  };
+
+  const auth = new google.auth.JWT({
+    email: credentials.client_email,
+    key: credentials.private_key,
+    scopes: ['https://www.googleapis.com/auth/gmail.send'],
+    subject: 'austin@xuberandigital.com', // Send from your business email
+  });
+
+  const gmail = google.gmail({ version: 'v1', auth });
+
+  const emailHtml = `
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; }
+    .container { max-width: 600px; margin: 20px; }
+    .header { background: #4caf50; color: white; padding: 20px; }
+    .content { padding: 20px; background: #f9f9f9; }
+    .detail { margin: 10px 0; padding: 10px; background: white; border-left: 4px solid #4caf50; }
+    .label { font-weight: bold; color: #666; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>💰 New Purchase!</h1>
+    </div>
+    <div class="content">
+      <div class="detail">
+        <div class="label">Product:</div>
+        <div>${params.productName}</div>
+      </div>
+      <div class="detail">
+        <div class="label">Amount:</div>
+        <div>$${params.amount.toFixed(2)}</div>
+      </div>
+      <div class="detail">
+        <div class="label">Customer:</div>
+        <div>${params.customerName}</div>
+      </div>
+      <div class="detail">
+        <div class="label">Email:</div>
+        <div>${params.customerEmail}</div>
+      </div>
+      <div class="detail">
+        <div class="label">Session ID:</div>
+        <div style="font-family: monospace; font-size: 12px;">${params.sessionId}</div>
+      </div>
+      <p style="margin-top: 20px; color: #666;">
+        <a href="https://dashboard.stripe.com/test/payments">View in Stripe Dashboard →</a>
+      </p>
+    </div>
+  </div>
+</body>
+</html>
+  `;
+
+  const emailText = `
+NEW PURCHASE NOTIFICATION
+
+Product: ${params.productName}
+Amount: $${params.amount.toFixed(2)}
+Customer: ${params.customerName}
+Email: ${params.customerEmail}
+Session: ${params.sessionId}
+
+View in Stripe Dashboard:
+https://dashboard.stripe.com/test/payments
+  `.trim();
+
+  const email = [
+    `From: "Quantum Strategies Notifications" <austin@xuberandigital.com>`,
+    `To: santos.93.aus@gmail.com`,
+    `Subject: 💰 New Purchase: ${params.productName} - $${params.amount.toFixed(2)}`,
+    'MIME-Version: 1.0',
+    'Content-Type: multipart/alternative; boundary="boundary456"',
+    '',
+    '--boundary456',
+    'Content-Type: text/plain; charset="UTF-8"',
+    '',
+    emailText,
+    '',
+    '--boundary456',
+    'Content-Type: text/html; charset="UTF-8"',
+    '',
+    emailHtml,
+    '',
+    '--boundary456--',
+  ].join('\n');
+
+  const encodedEmail = Buffer.from(email)
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+
+  await gmail.users.messages.send({
+    userId: 'me',
+    requestBody: {
+      raw: encodedEmail,
+    },
+  });
+}
+
+/**
  * Log purchase to Google Sheets CRM
  */
 async function logToGoogleSheets(data: {
@@ -443,6 +563,22 @@ export async function POST(request: NextRequest) {
       status = 'Complete';
 
       console.log('Email sent successfully');
+
+      // Send admin notification
+      try {
+        console.log('Sending admin notification to santos.93.aus@gmail.com');
+        await sendAdminNotification({
+          customerEmail,
+          customerName,
+          productName: product.name,
+          amount,
+          sessionId: session.id,
+        });
+        console.log('✅ Admin notification sent');
+      } catch (adminEmailError: any) {
+        console.error('⚠️ Admin notification failed (customer email still sent):', adminEmailError.message);
+        // Don't fail the whole webhook if admin notification fails
+      }
     } catch (emailError: any) {
       console.error('Failed to send email:', emailError);
       emailSent = `❌ Failed: ${emailError.message}`;

@@ -28,7 +28,9 @@
     "debug-placements": "tsx scripts/debug-placements.ts",
     "test-placements-logic": "tsx scripts/test-placements-logic.ts",
     "fix-session": "tsx scripts/fix-session-step.ts",
-    "check-session-loading": "tsx scripts/check-session-loading.ts"
+    "check-session-loading": "tsx scripts/check-session-loading.ts",
+    "show-access": "tsx scripts/show-product-access.ts",
+    "test-purchase-flow": "tsx scripts/test-product-purchase-flow.ts"
   },
   "dependencies": {
     "@mdx-js/loader": "^3.1.1",
