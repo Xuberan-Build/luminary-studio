@@ -262,17 +262,19 @@ export default async function DashboardPage() {
                     </div>
                     <div className={styles.productActions}>
                       <Link
-                        href={`/dashboard/sessions/${s.id}`}
+                        href={`/products/${s.product_slug}/experience`}
                         className={styles.productButton}
                       >
-                        {completed ? 'View Briefing & Chat' : 'Resume Session'}
+                        {completed ? 'View Results' : 'Continue Experience'}
                       </Link>
-                      <Link
-                        href={`/products/${s.product_slug}/experience`}
-                        className={styles.secondaryButton}
-                      >
-                        Go to Experience
-                      </Link>
+                      {completed && (
+                        <Link
+                          href={`/dashboard/sessions/${s.id}`}
+                          className={styles.secondaryButton}
+                        >
+                          View Briefing & Chat
+                        </Link>
+                      )}
                       <SessionVersionManager
                         sessionId={s.id}
                         productSlug={s.product_slug}
