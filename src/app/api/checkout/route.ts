@@ -9,7 +9,7 @@ import { cookies } from 'next/headers';
 import { getProductBySlug } from '@/lib/constants/products';
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18',
+  apiVersion: '2025-12-15.clover',
 });
 
 export async function POST(req: NextRequest) {
@@ -41,31 +41,42 @@ export async function POST(req: NextRequest) {
       : `${baseUrl}/products/${productSlug}/experience?session_id={CHECKOUT_SESSION_ID}`;
 
     // Create Stripe Checkout Session
-    const session = await stripe.checkout.sessions.create({
-      mode: 'payment',
-      line_items: [
-        {
-          price_data: {
-            currency: 'usd',
-            product_data: {
-              name: product.name,
-              description: `${product.estimatedDuration || '15-30 minutes'} guided experience`,
+    let session;
+    try {
+      session = await stripe.checkout.sessions.create({
+        mode: 'payment',
+        line_items: [
+          {
+            price_data: {
+              currency: 'usd',
+              product_data: {
+                name: product.name,
+                description: `${product.estimatedDuration || '15-30 minutes'} guided experience`,
+              },
+              unit_amount: product.price * 100, // Convert to cents
             },
-            unit_amount: product.price * 100, // Convert to cents
+            quantity: 1,
           },
-          quantity: 1,
+        ],
+        success_url: successUrl,
+        cancel_url: `${baseUrl}/products/${productSlug === 'orientation-bundle' ? 'orientation' : productSlug}`,
+        metadata: {
+          product_slug: productSlug,
+          referral_code: referralCode,
         },
-      ],
-      success_url: successUrl,
-      cancel_url: `${baseUrl}/products/${productSlug === 'orientation-bundle' ? 'orientation' : productSlug}`,
-      metadata: {
-        product_slug: productSlug,
-        referral_code: referralCode,
-      },
-      allow_promotion_codes: true,
-      billing_address_collection: 'auto',
-      customer_email: undefined, // Let user enter their email
-    });
+        allow_promotion_codes: true,
+        billing_address_collection: 'auto',
+        customer_email: undefined, // Let user enter their email
+      });
+    } catch (stripeError: any) {
+      console.error('Stripe session creation error:', {
+        message: stripeError.message,
+        type: stripeError.type,
+        code: stripeError.code,
+        raw: stripeError,
+      });
+      throw stripeError;
+    }
 
     return NextResponse.json({
       sessionId: session.id,
