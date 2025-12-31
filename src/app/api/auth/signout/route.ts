@@ -24,5 +24,5 @@ export async function POST(request: Request) {
 
   await supabase.auth.signOut();
 
-  return NextResponse.redirect(new URL('/login', request.url));
+  return NextResponse.json({ success: true }, { status: 200 });
 }

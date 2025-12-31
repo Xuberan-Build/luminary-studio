@@ -64,8 +64,8 @@ export default function SignupPage() {
 
           <div className={styles.warning}>
             <div>
-              <strong>Check your spam folder!</strong> Our confirmation emails sometimes end up there.
-              If you don't see it in your inbox, please check spam/junk.
+              <strong>Check your spam folder!</strong> The confirmation email often ends up there.<br />
+              Look for: <strong>"Confirm Your Signup"</strong> from <strong>Supabase Auth</strong> (noreply@mail.app.supabase.io)
             </div>
           </div>
 

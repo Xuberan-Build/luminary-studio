@@ -133,6 +133,12 @@ const [hasGuarded, setHasGuarded] = useState(false);
   const currentStepData = steps[currentStep - 1];
   const isLastStep = currentStep === steps.length;
   const completionPercentage = Math.round((currentStep / steps.length) * 100);
+  const hasPlacementData = !isPlacementsEmpty(placements);
+  const showAutoCopiedGate =
+    currentStep === 1 &&
+    hasPlacementData &&
+    !placementsConfirmed &&
+    uploadedFiles.length === 0;
 
   // Check if session is complete and load deliverable
   useEffect(() => {
@@ -194,8 +200,48 @@ const [hasGuarded, setHasGuarded] = useState(false);
         .eq('session_id', session.id);
       if (!error && data) {
         const paths = data.map((d: any) => d.storage_path).filter(Boolean);
-        if (paths.length) setUploadedFiles(paths);
+        if (paths.length) {
+          setUploadedFiles(paths);
+          setUploadsLoaded(true);
+          return;
+        }
       }
+
+      // Fallback: reuse latest confirmed session uploads for this user
+      const { data: sourceSession } = await supabase
+        .from('product_sessions')
+        .select('id')
+        .eq('user_id', userId)
+        .eq('placements_confirmed', true)
+        .not('placements', 'is', null)
+        .neq('id', session.id)
+        .order('created_at', { ascending: false })
+        .limit(1)
+        .maybeSingle();
+
+      if (sourceSession?.id) {
+        const { data: sourceDocs } = await supabase
+          .from('uploaded_documents')
+          .select('storage_path,file_name,file_type,file_size')
+          .eq('session_id', sourceSession.id)
+          .order('created_at', { ascending: false });
+
+        if (sourceDocs && sourceDocs.length > 0) {
+          const insertRows = sourceDocs.map((doc: any) => ({
+            user_id: userId,
+            session_id: session.id,
+            step_number: 1,
+            file_name: doc.file_name,
+            storage_path: doc.storage_path,
+            file_type: doc.file_type,
+            file_size: doc.file_size,
+          }));
+          await supabase.from('uploaded_documents').insert(insertRows);
+          const paths = sourceDocs.map((doc: any) => doc.storage_path).filter(Boolean);
+          if (paths.length) setUploadedFiles(paths);
+        }
+      }
+
       setUploadsLoaded(true);
     };
     loadUploads();
@@ -204,20 +250,9 @@ const [hasGuarded, setHasGuarded] = useState(false);
   // Force confirmation gate on first load of step 1 to allow re-confirmation
   useEffect(() => {
     if (currentStep === 1 && !forcedConfirmOnce) {
-      // Only show confirm gate if we already have uploads or confirmed placements
-      // Otherwise, let the user upload files first
       const hasUploads = uploadedFiles.length > 0;
-      const hasConfirmedPlacements = placementsConfirmed && placements;
+      setConfirmGate(hasUploads);
 
-      if (hasUploads || hasConfirmedPlacements) {
-        setConfirmGate(true);
-      } else {
-        setConfirmGate(false);
-      }
-
-      if (placementsConfirmed) {
-        setPlacementsConfirmed(false);
-      }
       setForcedConfirmOnce(true);
     }
   }, [currentStep, placementsConfirmed, forcedConfirmOnce, uploadedFiles.length, placements]);
@@ -479,8 +514,6 @@ const [hasGuarded, setHasGuarded] = useState(false);
         setAssistantReply(''); // Clear previous assistant reply for new step
         setSeedInsightShown(false); // Reset so GPT can respond at each step
         setShowIntroReply(false); // Reset intro reply flag
-        // clear uploads between steps so prior charts don't linger in later steps
-        setUploadedFiles([]);
       }
     } catch (error) {
       console.error('Error moving to next step:', error);
@@ -539,6 +572,20 @@ const [hasGuarded, setHasGuarded] = useState(false);
   const handleFollowUpComplete = () => {
     setShowFollowUp(false);
     moveToNextStep();
+  };
+
+  const handleReviewCharts = async () => {
+    setPlacementsConfirmed(false);
+    setConfirmGate(false);
+    setCurrentStep(1);
+    setStepResponse('');
+    setShowFollowUp(false);
+    await supabase
+      .from('product_sessions')
+      .update({ current_step: 1, placements_confirmed: false })
+      .eq('id', session.id)
+      .eq('user_id', userId)
+      .throwOnError();
   };
 
   const handleFileUpload = async (files: File[]) => {
@@ -665,18 +712,15 @@ const [hasGuarded, setHasGuarded] = useState(false);
   // Show confirmation gate on step 1 upload step ONLY after files are uploaded
   useEffect(() => {
     if (currentStep === 1 && currentStepData?.allow_file_upload) {
-      const placementsReady = placementsConfirmed && !isPlacementsEmpty(placements);
       const hasFiles = uploadedFiles.length > 0;
 
-      // Show confirm gate ONLY if:
-      // 1. User has uploaded files, OR
-      // 2. Placements are already confirmed and ready
-      if (hasFiles || placementsReady) {
+      // Show confirm gate ONLY if the user has uploaded files
+      if (hasFiles) {
         if (!confirmGate) {
           console.log('[PX] showing confirm gate after files uploaded', {
             confirmGate,
             placementsConfirmed,
-            placementsEmpty: isPlacementsEmpty(placements),
+            placementsEmpty: !hasPlacementData,
             hasFiles,
             uploadsLoaded,
           });
@@ -698,6 +742,33 @@ const [hasGuarded, setHasGuarded] = useState(false);
     placementsConfirmed,
     uploadedFiles.length,
     uploadsLoaded,
+  ]);
+
+  // If placements already confirmed, skip the upload gate and proceed
+  useEffect(() => {
+    if (
+      currentStep === 1 &&
+      placementsConfirmed &&
+      hasPlacementData &&
+      !confirmGate &&
+      !showWelcome
+    ) {
+      supabase
+        .from('product_sessions')
+        .update({ current_step: 2, current_section: 1 })
+        .eq('id', session.id)
+        .eq('user_id', userId)
+        .throwOnError();
+      setCurrentStep(2);
+    }
+  }, [
+    currentStep,
+    placementsConfirmed,
+    hasPlacementData,
+    confirmGate,
+    showWelcome,
+    session.id,
+    userId,
   ]);
 
   // Guard: if placements are missing/unconfirmed, normalize state once
@@ -741,8 +812,17 @@ const [hasGuarded, setHasGuarded] = useState(false);
     );
   }
 
+  if (showWelcome && product.instructions) {
+    return (
+      <WelcomeBanner
+        instructions={product.instructions}
+        onBegin={() => setShowWelcome(false)}
+      />
+    );
+  }
+
   // Auto-copied placements confirmation gate (when placements already exist)
-  if (currentStep === 1 && placementsConfirmed && !isPlacementsEmpty(placements) && uploadedFiles.length === 0) {
+  if (showAutoCopiedGate) {
     console.log('[PX] showing auto-copied placements confirmation gate');
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 via-gray-900 to-black p-6 md:p-10">
@@ -796,9 +876,10 @@ const [hasGuarded, setHasGuarded] = useState(false);
                 // Use existing placements - advance to step 2
                 await supabase
                   .from('product_sessions')
-                  .update({ current_step: 2, current_section: 1 })
+                  .update({ current_step: 2, current_section: 1, placements_confirmed: true })
                   .eq('id', session.id)
                   .eq('user_id', userId);
+                setPlacementsConfirmed(true);
                 setCurrentStep(2);
               }}
               className="flex-1 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-6 py-3.5 font-semibold text-white shadow-lg shadow-teal-500/30 transition-all hover:shadow-xl hover:shadow-teal-500/40 hover:scale-[1.02]"
@@ -827,9 +908,9 @@ const [hasGuarded, setHasGuarded] = useState(false);
   }
 
   // Placement confirmation gate after uploads
-  if (confirmGate && !placementsConfirmed) {
+  if (confirmGate && !placementsConfirmed && !showAutoCopiedGate) {
     console.log('[PX] showing confirmation gate', {
-      placementsEmpty: isPlacementsEmpty(placements),
+      placementsEmpty: !hasPlacementData,
       uploadedFiles: uploadedFiles.length,
     });
     return (
@@ -973,8 +1054,6 @@ const [hasGuarded, setHasGuarded] = useState(false);
                 if (!error) {
                   setPlacementsConfirmed(true);
                   setConfirmGate(false);
-                  // clear upload list now that charts are confirmed so later steps don't show them
-                  setUploadedFiles([]);
                   await moveToNextStep();
                 } else {
                   setPlacementsError('Could not save placements. Please try again.');
@@ -1035,13 +1114,6 @@ const [hasGuarded, setHasGuarded] = useState(false);
 
   return (
     <>
-      {showWelcome && product.instructions && (
-        <WelcomeBanner
-          instructions={product.instructions}
-          onBegin={() => setShowWelcome(false)}
-        />
-      )}
-
       {!showFollowUp ? (
         <StepView
           step={currentStepData}
@@ -1063,6 +1135,8 @@ const [hasGuarded, setHasGuarded] = useState(false);
                 .eq('user_id', userId);
             }
           }}
+          onReviewCharts={handleReviewCharts}
+          showReviewCharts={Boolean(steps[0]?.allow_file_upload && placementsConfirmed && currentStep > 1)}
           onFileUpload={handleFileUpload}
           uploadedFiles={uploadedFiles}
           uploadError={uploadError}

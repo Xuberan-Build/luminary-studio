@@ -82,6 +82,40 @@ export default async function ProductExperiencePage({
         .eq('id', access.id);
   }
 
+  // Auto-copy placements from user's latest confirmed session if missing
+  if (!productSession?.placements) {
+    const { data: placementSource } = await supabase
+      .from('product_sessions')
+      .select('placements')
+      .eq('user_id', session.user.id)
+      .eq('placements_confirmed', true)
+      .not('placements', 'is', null)
+      .neq('id', productSession.id)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (placementSource?.placements) {
+      await supabase
+        .from('product_sessions')
+        .update({
+          placements: placementSource.placements,
+          placements_confirmed: false,
+          current_step: 1,
+          current_section: 1,
+        })
+        .eq('id', productSession.id);
+
+      productSession = {
+        ...productSession,
+        placements: placementSource.placements,
+        placements_confirmed: false,
+        current_step: 1,
+        current_section: 1,
+      };
+    }
+  }
+
   // Treat missing/placeholder placements as not confirmed
   const placementsEmpty = (pl: any) => {
     if (!pl) return true;

@@ -26,10 +26,17 @@ export default function PortalNav({ userName }: PortalNavProps) {
   ];
 
   const handleSignOut = async () => {
-    const response = await fetch('/api/auth/signout', {
-      method: 'POST',
-    });
-    if (response.ok) {
+    try {
+      const response = await fetch('/api/auth/signout', {
+        method: 'POST',
+      });
+      if (response.ok) {
+        router.refresh();
+        router.push('/login');
+      }
+    } catch (error) {
+      console.error('Sign out error:', error);
+      // Still redirect even if there's an error
       router.push('/login');
     }
   };

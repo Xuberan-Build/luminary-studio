@@ -8,8 +8,13 @@ import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 import { createConnectAccount } from '@/lib/stripe/connect';
 import { supabaseAdmin } from '@/lib/supabase/server';
+import { startTimer, logAffiliate, logApiError, logSuccess } from '@/lib/logging/audit-logger';
 
 export async function POST(req: NextRequest) {
+  const startTime = startTimer();
+  let userId: string | undefined;
+  let userEmail: string | undefined;
+
   try {
     const cookieStore = await cookies();
 
@@ -34,14 +39,22 @@ export async function POST(req: NextRequest) {
     const { data: { session } } = await supabase.auth.getSession();
 
     if (!session) {
+      await logApiError({
+        req,
+        action: 'affiliate_enroll',
+        error: new Error('Unauthorized - no session'),
+        responseStatus: 401,
+        startTime,
+      });
+
       return NextResponse.json(
         { error: 'Unauthorized' },
         { status: 401 }
       );
     }
 
-    const userId = session.user.id;
-    const userEmail = session.user.email!;
+    userId = session.user.id;
+    userEmail = session.user.email!;
 
     // Check if already enrolled
     const { data: existingHierarchy } = await supabaseAdmin
@@ -51,6 +64,15 @@ export async function POST(req: NextRequest) {
       .single();
 
     if (existingHierarchy) {
+      await logAffiliate({
+        userId,
+        userEmail,
+        action: 'affiliate_enroll',
+        status: 'error',
+        errorMessage: 'Already enrolled',
+        metadata: { referralCode: existingHierarchy.referral_code },
+      });
+
       return NextResponse.json(
         { error: 'Already enrolled in affiliate program' },
         { status: 400 }
@@ -94,6 +116,16 @@ export async function POST(req: NextRequest) {
 
     if (codeError || !codeResult) {
       console.error('Error generating referral code:', codeError);
+
+      await logAffiliate({
+        userId,
+        userEmail,
+        action: 'affiliate_enroll',
+        status: 'error',
+        errorMessage: 'Failed to generate referral code',
+        metadata: { error: codeError },
+      });
+
       throw new Error('Failed to generate referral code');
     }
 
@@ -115,6 +147,19 @@ export async function POST(req: NextRequest) {
 
     if (hierarchyError) {
       console.error('Error creating referral hierarchy:', hierarchyError);
+
+      await logAffiliate({
+        userId,
+        userEmail,
+        action: 'affiliate_enroll',
+        status: 'error',
+        errorMessage: 'Failed to create referral hierarchy record',
+        metadata: {
+          error: hierarchyError,
+          referralCode: newReferralCode,
+        },
+      });
+
       throw new Error('Failed to create affiliate record');
     }
 
@@ -130,6 +175,16 @@ export async function POST(req: NextRequest) {
 
     if (userUpdateError) {
       console.error('Error updating user:', userUpdateError);
+
+      await logAffiliate({
+        userId,
+        userEmail,
+        action: 'affiliate_enroll',
+        status: 'error',
+        errorMessage: 'Failed to update user affiliate status',
+        metadata: { error: userUpdateError },
+      });
+
       throw new Error('Failed to update user status');
     }
 
@@ -142,11 +197,59 @@ export async function POST(req: NextRequest) {
       const accountInfo = await createConnectAccount(userId, userEmail);
       stripeAccountId = accountInfo.accountId;
       console.log('Stripe Connect account created:', stripeAccountId);
+
+      await logAffiliate({
+        userId,
+        userEmail,
+        action: 'stripe_connect_create',
+        status: 'success',
+        metadata: {
+          stripeAccountId,
+          referralCode: newReferralCode,
+        },
+      });
     } catch (error: any) {
       console.error('Stripe Connect account creation failed (non-critical):', error);
       stripeError = error.message;
+
+      await logAffiliate({
+        userId,
+        userEmail,
+        action: 'stripe_connect_create',
+        status: 'error',
+        errorMessage: error.message,
+        metadata: {
+          errorStack: error.stack,
+          referralCode: newReferralCode,
+        },
+      });
+
       // Continue anyway - user can set up Stripe later
     }
+
+    // Log successful enrollment
+    await logAffiliate({
+      userId,
+      userEmail,
+      action: 'affiliate_enroll',
+      status: 'success',
+      metadata: {
+        referralCode: newReferralCode,
+        referralLink,
+        currentTrack: 'community_builder',
+        stripeAccountId,
+        stripeError,
+      },
+    });
+
+    await logSuccess({
+      req,
+      userId,
+      userEmail,
+      action: 'affiliate_enroll',
+      metadata: { referralCode: newReferralCode },
+      startTime,
+    });
 
     return NextResponse.json({
       success: true,
@@ -158,6 +261,17 @@ export async function POST(req: NextRequest) {
 
   } catch (error: any) {
     console.error('Enrollment API error:', error);
+
+    await logApiError({
+      req,
+      userId,
+      userEmail,
+      action: 'affiliate_enroll',
+      error,
+      responseStatus: 500,
+      startTime,
+    });
+
     return NextResponse.json(
       { error: error.message || 'Failed to enroll in affiliate program' },
       { status: 500 }

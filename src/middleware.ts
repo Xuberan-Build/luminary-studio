@@ -52,10 +52,12 @@ export async function middleware(req: NextRequest) {
   }
 
   // Protected routes that require authentication
-  const protectedPaths = ['/dashboard', '/products'];
-  const isProtectedPath = protectedPaths.some(path =>
-    req.nextUrl.pathname.startsWith(path)
-  );
+  const protectedPaths = ['/dashboard', '/products/*/experience', '/products/*/interact'];
+  const isProtectedPath = protectedPaths.some(path => {
+    // Convert wildcard pattern to regex for matching
+    const pattern = path.replace(/\*/g, '[^/]+');
+    return new RegExp(`^${pattern}`).test(req.nextUrl.pathname);
+  });
 
   // Redirect to login if not authenticated
   if (isProtectedPath && !session) {

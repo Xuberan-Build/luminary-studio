@@ -13,6 +13,7 @@ interface StepViewProps {
   onResponseChange: (value: string) => void;
   onSubmit: () => void;
   onBack?: () => void;
+  onReviewCharts?: () => void;
   onFileUpload: (files: File[]) => void;
   uploadedFiles: string[];
   uploadError?: string | null;
@@ -20,6 +21,7 @@ interface StepViewProps {
   isSubmitting: boolean;
   onRemoveFile?: (path: string) => void;
   processingMessages?: string[];
+  showReviewCharts?: boolean;
 }
 
 export function StepView({
@@ -30,6 +32,7 @@ export function StepView({
   onResponseChange,
   onSubmit,
   onBack,
+  onReviewCharts,
   onFileUpload,
   uploadedFiles,
   uploadError,
@@ -37,6 +40,7 @@ export function StepView({
   isSubmitting,
   onRemoveFile,
   processingMessages,
+  showReviewCharts,
 }: StepViewProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [currentProcessingMessage, setCurrentProcessingMessage] = useState(0);
@@ -240,6 +244,15 @@ export function StepView({
               )}
             </button>
           </div>
+          {showReviewCharts && onReviewCharts && (
+            <button
+              type="button"
+              onClick={onReviewCharts}
+              className="w-full rounded-xl border border-white/15 bg-white/5 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/10"
+            >
+              Review chart data
+            </button>
+          )}
           <p className="text-center text-gray-500 text-sm">
             Press <kbd className="px-2 py-1 bg-gray-800 border border-gray-700 rounded text-xs">⌘</kbd> + <kbd className="px-2 py-1 bg-gray-800 border border-gray-700 rounded text-xs">Enter</kbd> to continue
           </p>
