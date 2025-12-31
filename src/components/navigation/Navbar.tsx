@@ -142,6 +142,23 @@ export default function Navbar({ showProductCTA = false, productCTAText = "Get Y
               }
 
               if ("megaMenu" in item && item.megaMenu) {
+                // Convert megaMenu data to StackedMegaMenu format
+                const menuData = item.megaMenu.sections.flatMap(section =>
+                  section.links.map(link => ({
+                    label: link.label,
+                    href: link.href,
+                    description: (link as any).description, // Pass through description (type-safe cast)
+                    categories: (link as any).submenu?.map((sub: any) => ({
+                      label: sub.label,
+                      href: sub.href, // Pass through href for clickable categories
+                      articles: sub.submenu?.map((subItem: any) => ({
+                        label: subItem.label,
+                        href: subItem.href
+                      })) || []
+                    }))
+                  }))
+                );
+
                 return (
                   <li
                     key={item.label}
@@ -167,6 +184,7 @@ export default function Navbar({ showProductCTA = false, productCTAText = "Get Y
                           <StackedMegaMenu
                             isActive={isActive}
                             onMouseLeave={handleDropdownLeave}
+                            menuData={menuData}
                           />
                         </div>
                       </DropdownPortal>

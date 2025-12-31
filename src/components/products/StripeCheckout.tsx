@@ -20,8 +20,24 @@ export default function StripeCheckout({ paymentLink, productName, price, produc
     setIsProcessing(true);
 
     try {
-      // Use direct payment link (simple and works immediately)
-      if (paymentLink) {
+      // Prefer API checkout for better tracking and metadata
+      if (productSlug) {
+        const response = await fetch('/api/checkout', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ productSlug }),
+        });
+
+        const data = await response.json();
+
+        if (data.url) {
+          window.location.href = data.url;
+        } else {
+          throw new Error(data.error || 'Checkout failed');
+        }
+      }
+      // Fallback to direct payment link
+      else if (paymentLink) {
         window.location.href = paymentLink;
       } else {
         console.error("No payment method configured");
@@ -30,6 +46,7 @@ export default function StripeCheckout({ paymentLink, productName, price, produc
       }
     } catch (error) {
       console.error("Checkout error:", error);
+      alert("Checkout failed. Please try again or contact support.");
       setIsProcessing(false);
     }
   };

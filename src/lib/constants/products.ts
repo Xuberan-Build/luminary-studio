@@ -63,6 +63,22 @@ export const PRODUCTS: Record<string, ProductConfig> = {
     fromEmail: 'austin@xuberandigital.com',
     fromName: 'Quantum Strategies',
   },
+
+  'orientation-bundle': {
+    slug: 'orientation-bundle',
+    name: 'Complete Orientation Bundle',
+    price: 17,
+    interactTitle: 'Complete Orientation Bundle',
+    interactInstructions: 'Get all three orientation products: Personal, Business, and Brand Alignment.',
+    estimatedDuration: '60 minutes total',
+    gptIframeUrl: '',
+    ...(process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK_ORIENTATION_BUNDLE && {
+      stripePaymentLink: process.env.NEXT_PUBLIC_STRIPE_PAYMENT_LINK_ORIENTATION_BUNDLE,
+    }),
+    sheetId: '1EhC-MCjlqG_4otRZjxefEpttR98s5rXqr98vj2TnLTE',
+    fromEmail: 'austin@xuberandigital.com',
+    fromName: 'Quantum Strategies',
+  },
 };
 
 export function getProductBySlug(slug: string): ProductConfig | null {

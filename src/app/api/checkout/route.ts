@@ -34,6 +34,12 @@ export async function POST(req: NextRequest) {
       referralCode: referralCode || 'none',
     });
 
+    // Determine success URL based on product type
+    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://quantumstrategies.online';
+    const successUrl = productSlug === 'orientation-bundle'
+      ? `${baseUrl}/dashboard?bundle=orientation&session_id={CHECKOUT_SESSION_ID}`
+      : `${baseUrl}/products/${productSlug}/experience?session_id={CHECKOUT_SESSION_ID}`;
+
     // Create Stripe Checkout Session
     const session = await stripe.checkout.sessions.create({
       mode: 'payment',
@@ -50,8 +56,8 @@ export async function POST(req: NextRequest) {
           quantity: 1,
         },
       ],
-      success_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://quantumstrategies.online'}/products/${productSlug}/experience?session_id={CHECKOUT_SESSION_ID}`,
-      cancel_url: `${process.env.NEXT_PUBLIC_SITE_URL || 'https://quantumstrategies.online'}/products/${productSlug}`,
+      success_url: successUrl,
+      cancel_url: `${baseUrl}/products/${productSlug === 'orientation-bundle' ? 'orientation' : productSlug}`,
       metadata: {
         product_slug: productSlug,
         referral_code: referralCode,

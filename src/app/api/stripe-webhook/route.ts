@@ -21,6 +21,7 @@ async function sendProductAccessEmail(params: {
   productName: string;
   fromEmail: string;
   fromName: string;
+  isBundle?: boolean;
 }) {
   // Load Gmail service account from minimal env vars (avoids AWS Lambda 4KB limit)
   const credentials = {
@@ -142,12 +143,24 @@ async function sendProductAccessEmail(params: {
 
       <p><strong>Thank you for your purchase!</strong> Your personalized product experience is ready.</p>
 
+      ${params.isBundle ? `
+      <div style="background: #f0f7ff; padding: 20px; border-radius: 8px; margin: 24px 0; border-left: 4px solid #2196f3;">
+        <h3 style="margin: 0 0 12px 0; color: #1976d2; font-size: 18px;">Your Complete Orientation Bundle Includes:</h3>
+        <ul style="margin: 0; padding-left: 20px;">
+          <li style="margin-bottom: 8px;"><strong>Personal Alignment Orientation</strong> - Discover your life purpose through Astrology & Human Design</li>
+          <li style="margin-bottom: 8px;"><strong>Business Alignment Orientation</strong> - Map your business model, offers, and pricing strategy</li>
+          <li style="margin-bottom: 8px;"><strong>Brand Alignment Orientation</strong> - Unify who you are with how you show up</li>
+        </ul>
+        <p style="margin: 12px 0 0 0; color: #1565c0;">All three orientations are now available in your dashboard!</p>
+      </div>
+      ` : ''}
+
       <div class="instructions">
         <h3>Getting Started (Simple 3-Step Process):</h3>
         <ol>
           <li><strong>Log in to your dashboard</strong> - Click the button below to access your account</li>
-          <li><strong>Start your experience</strong> - You'll see "${params.productName}" in your dashboard</li>
-          <li><strong>Complete the guided process</strong> - Answer questions and receive your deliverable</li>
+          <li><strong>Start your experience</strong> - You'll see ${params.isBundle ? 'all three orientation products' : `"${params.productName}"`} in your dashboard</li>
+          <li><strong>Complete the guided process</strong> - Answer questions and receive your ${params.isBundle ? 'deliverables' : 'deliverable'}</li>
         </ol>
       </div>
 
@@ -203,11 +216,21 @@ Hi ${params.name},
 
 Thank you for your purchase! Your personalized product experience is ready.
 
+${params.isBundle ? `
+YOUR COMPLETE ORIENTATION BUNDLE INCLUDES:
+
+• Personal Alignment Orientation - Discover your life purpose through Astrology & Human Design
+• Business Alignment Orientation - Map your business model, offers, and pricing strategy
+• Brand Alignment Orientation - Unify who you are with how you show up
+
+All three orientations are now available in your dashboard!
+` : ''}
+
 GETTING STARTED (Simple 3-Step Process):
 
 1. Log in to your dashboard - Visit: ${dashboardUrl}
-2. Start your experience - You'll see "${params.productName}" in your dashboard
-3. Complete the guided process - Answer questions and receive your deliverable
+2. Start your experience - You'll see ${params.isBundle ? 'all three orientation products' : `"${params.productName}"`} in your dashboard
+3. Complete the guided process - Answer questions and receive your ${params.isBundle ? 'deliverables' : 'deliverable'}
 
 ACCESS YOUR DASHBOARD:
 ${dashboardUrl}
@@ -557,6 +580,7 @@ export async function POST(request: NextRequest) {
         productName: product.name,
         fromEmail: product.fromEmail,
         fromName: product.fromName,
+        isBundle: productSlug === 'orientation-bundle',
       });
 
       emailSent = '✅ Sent';
@@ -616,58 +640,72 @@ export async function POST(request: NextRequest) {
         console.log('Created new user:', userId);
       }
 
-      // Grant product access
-      console.log('📝 Inserting product_access record:', {
-        user_id: userId,
-        product_slug: productSlug,
-        stripe_session_id: session.id,
-        amount_paid: amount,
-      });
+      // Determine which products to grant access to
+      let productsToGrant: string[];
 
-      const { data: accessData, error: accessError } = await supabaseAdmin
-        .from('product_access')
-        .insert({
+      if (productSlug === 'orientation-bundle') {
+        // Bundle grants access to all 3 orientation products
+        productsToGrant = ['personal-alignment', 'quantum-initiation', 'brand-alignment'];
+        console.log('🎁 Bundle purchase detected - granting access to all 3 products');
+      } else {
+        // Single product purchase
+        productsToGrant = [productSlug];
+      }
+
+      // Grant product access for each product
+      for (const slug of productsToGrant) {
+        console.log('📝 Inserting product_access record:', {
           user_id: userId,
-          product_slug: productSlug,
+          product_slug: slug,
           stripe_session_id: session.id,
           amount_paid: amount,
-          access_granted: true,
-          purchase_date: timestamp,
-        })
-        .select();
+        });
 
-      if (accessError) {
-        if (accessError.code === '23505') {
-          // Duplicate key - user already has access
-          console.log('⚠️ User already has access (duplicate key), updating record');
+        const { data: accessData, error: accessError } = await supabaseAdmin
+          .from('product_access')
+          .insert({
+            user_id: userId,
+            product_slug: slug,
+            stripe_session_id: session.id,
+            amount_paid: amount,
+            access_granted: true,
+            purchase_date: timestamp,
+          })
+          .select();
 
-          const { error: updateError } = await supabaseAdmin
-            .from('product_access')
-            .update({
-              stripe_session_id: session.id,
-              amount_paid: amount,
-              access_granted: true,
-              purchase_date: timestamp,
-            })
-            .eq('user_id', userId)
-            .eq('product_slug', productSlug);
+        if (accessError) {
+          if (accessError.code === '23505') {
+            // Duplicate key - user already has access
+            console.log(`⚠️ User already has access to ${slug} (duplicate key), updating record`);
 
-          if (updateError) {
-            console.error('❌ Failed to update existing access:', updateError);
-            throw updateError;
+            const { error: updateError } = await supabaseAdmin
+              .from('product_access')
+              .update({
+                stripe_session_id: session.id,
+                amount_paid: amount,
+                access_granted: true,
+                purchase_date: timestamp,
+              })
+              .eq('user_id', userId)
+              .eq('product_slug', slug);
+
+            if (updateError) {
+              console.error(`❌ Failed to update existing access for ${slug}:`, updateError);
+              throw updateError;
+            }
+
+            console.log(`✅ Updated existing access record for ${slug}`);
+          } else {
+            console.error(`❌ Failed to insert product_access for ${slug}:`, accessError);
+            console.error('Error code:', accessError.code);
+            console.error('Error message:', accessError.message);
+            console.error('Error details:', accessError.details);
+            throw accessError;
           }
-
-          console.log('✅ Updated existing access record');
         } else {
-          console.error('❌ Failed to insert product_access:', accessError);
-          console.error('Error code:', accessError.code);
-          console.error('Error message:', accessError.message);
-          console.error('Error details:', accessError.details);
-          throw accessError;
+          console.log(`✅ Product access granted successfully for ${slug}`);
+          console.log('Access record:', accessData);
         }
-      } else {
-        console.log('✅ Product access granted successfully');
-        console.log('Access record:', accessData);
       }
     } catch (supabaseError: any) {
       console.error('Failed to grant Supabase access:', supabaseError);

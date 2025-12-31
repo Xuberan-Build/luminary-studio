@@ -75,23 +75,43 @@ export const navigationConfig = {
     },
     {
       label: "Products",
-      dropdown: [
-        {
-          label: "Personal Alignment Orientation",
-          href: "/products/personal-alignment",
-          description: "Discover Your Life Purpose"
-        },
-        {
-          label: "Brand Alignment Orientation",
-          href: "/products/brand-alignment",
-          description: "Unify Who You Are with How You Show Up"
-        },
-        {
-          label: "Business Alignment Orientation",
-          href: "/products/quantum-initiation",
-          description: "Personalized Money Blueprint"
-        },
-      ],
+      megaMenu: {
+        sections: [
+          {
+            title: "",
+            links: [
+              {
+                label: "Rite I: Perception",
+                href: "/products/perception",
+                description: "coming soon"
+              },
+              {
+                label: "Rite II: Orientation",
+                href: "/products/orientation",
+                submenu: [
+                  {
+                    label: "Personal Alignment",
+                    href: "/products/personal-alignment",
+                  },
+                  {
+                    label: "Business Alignment",
+                    href: "/products/quantum-initiation",
+                  },
+                  {
+                    label: "Brand Alignment",
+                    href: "/products/brand-alignment",
+                  },
+                ],
+              },
+              {
+                label: "Rite III: Declaration",
+                href: "/products/declaration",
+                description: "coming soon"
+              },
+            ],
+          },
+        ],
+      },
     },
     { label: "Portal", href: "/dashboard" },
   ],

@@ -10,21 +10,24 @@ interface Article {
 
 interface Category {
   label: string;
+  href?: string; // Categories can now be clickable
   articles: Article[];
 }
 
 interface ContentType {
   label: string;
   href?: string;
+  description?: string;
   categories?: Category[];
 }
 
 interface StackedMegaMenuProps {
   isActive: (href: string) => boolean;
   onMouseLeave: () => void;
+  menuData?: ContentType[]; // Optional menu data
 }
 
-const contentTypes: ContentType[] = [
+const defaultContentTypes: ContentType[] = [
   {
     label: "Articles",
     href: "/articles",
@@ -79,9 +82,12 @@ const contentTypes: ContentType[] = [
   { label: "Case Studies", href: "/portfolio" },
 ];
 
-export default function StackedMegaMenu({ isActive, onMouseLeave }: StackedMegaMenuProps) {
+export default function StackedMegaMenu({ isActive, onMouseLeave, menuData }: StackedMegaMenuProps) {
   const [activeType, setActiveType] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<string | null>(null);
+
+  // Use provided menuData or fall back to default (Resources)
+  const contentTypes = menuData || defaultContentTypes;
 
   const handleTypeHover = (label: string) => {
     setActiveType(label);
@@ -107,12 +113,22 @@ export default function StackedMegaMenu({ isActive, onMouseLeave }: StackedMegaM
           >
             {type.href ? (
               <Link href={type.href} className={styles.typeLink}>
-                {type.label}
+                <span className={styles.typeLabelText}>
+                  {type.label}
+                  {type.description && (
+                    <span className={styles.typeDescription}>{type.description}</span>
+                  )}
+                </span>
                 {type.categories && <span className={styles.arrow}>▶</span>}
               </Link>
             ) : (
               <span className={styles.typeLabel}>
-                {type.label}
+                <span className={styles.typeLabelText}>
+                  {type.label}
+                  {type.description && (
+                    <span className={styles.typeDescription}>{type.description}</span>
+                  )}
+                </span>
                 {type.categories && <span className={styles.arrow}>▶</span>}
               </span>
             )}
@@ -131,10 +147,21 @@ export default function StackedMegaMenu({ isActive, onMouseLeave }: StackedMegaM
               }`}
               onMouseEnter={() => handleCategoryHover(category.label)}
             >
-              <span className={styles.categoryLabel}>
-                {category.label}
-                <span className={styles.arrow}>▶</span>
-              </span>
+              {category.href ? (
+                <Link href={category.href} className={styles.categoryLabel}>
+                  {category.label}
+                  {category.articles && category.articles.length > 0 && (
+                    <span className={styles.arrow}>▶</span>
+                  )}
+                </Link>
+              ) : (
+                <span className={styles.categoryLabel}>
+                  {category.label}
+                  {category.articles && category.articles.length > 0 && (
+                    <span className={styles.arrow}>▶</span>
+                  )}
+                </span>
+              )}
             </div>
           ))}
         </div>
