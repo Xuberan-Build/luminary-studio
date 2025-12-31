@@ -4,9 +4,9 @@ import Navbar from "@/components/navigation/Navbar";
 import styles from "./perception.module.css";
 
 export const metadata: Metadata = {
-  title: "Rite I: Perception - Learn to See the System (Coming Soon)",
+  title: "Rite I: Perception - Learn to See the System",
   description:
-    "Five perception scans to help you move from ignorance to awareness. Learn to recognize the patterns, signals, and structures governing your reality. Join the waitlist.",
+    "Five perception scans to help you move from ignorance to awareness. Learn to recognize the patterns, signals, and structures governing your reality.",
 };
 
 export default function RiteIPerceptionPage() {
@@ -22,7 +22,6 @@ export default function RiteIPerceptionPage() {
         </div>
 
         <div className={styles.heroContent}>
-          <div className={styles.comingSoonBadge}>COMING SOON</div>
           <div className={styles.riteBadge}>RITE I: PERCEPTION</div>
 
           <h1 className={styles.heroTitle}>
@@ -37,7 +36,7 @@ export default function RiteIPerceptionPage() {
           </p>
 
           <div className={styles.heroMicrocopy}>
-            Be first to access when Rite I launches. Waitlist members get early access and special pricing.
+            Get notified when Rite I launches. Be first to access the five perception scans.
           </div>
 
           <a href="#waitlist" className={styles.heroCta}>
@@ -46,13 +45,13 @@ export default function RiteIPerceptionPage() {
 
           <div className={styles.trustIndicators}>
             <div className={styles.indicator}>
-              <span className={styles.indicatorText}>5 Scans</span>
+              <span className={styles.indicatorText}>5 Perception Scans</span>
+            </div>
+            <div className={styles.indicator}>
+              <span className={styles.indicatorText}>Coming Soon</span>
             </div>
             <div className={styles.indicator}>
               <span className={styles.indicatorText}>Early Access</span>
-            </div>
-            <div className={styles.indicator}>
-              <span className={styles.indicatorText}>Special Pricing</span>
             </div>
           </div>
         </div>
@@ -67,7 +66,7 @@ export default function RiteIPerceptionPage() {
               <h3 className={styles.purposeTitle}>The Shift</h3>
               <p className={styles.purposeDescription}>
                 Perception moves you from <strong>ignorance</strong> to <strong>awareness</strong>.
-                You'll stop being blind to the patterns governing your reality and start seeing the signals, structures, and systems at play.
+                You'll stop being blind to the patterns and start seeing the system that governs your reality.
               </p>
             </div>
             <div className={styles.purposeCard}>
@@ -81,180 +80,167 @@ export default function RiteIPerceptionPage() {
         </div>
       </section>
 
-      {/* The 5 Scans */}
-      <section className={styles.scans}>
+      {/* The Five Perception Scans */}
+      <section className={styles.products}>
         <div className={styles.container}>
           <h2 className={styles.sectionTitle}>The Five Perception Scans</h2>
           <p className={styles.sectionSubtitle}>
-            Each scan reveals a different layer of the system you've been operating within blindly.
+            Each scan reveals a different layer of the system you're operating within.
           </p>
 
-          <div className={styles.scansGrid}>
-            {/* Signal Awareness Scan */}
-            <div className={styles.scanCard}>
-              <div className={styles.scanNumber}>1</div>
-              <h3 className={styles.scanTitle}>Signal Awareness Scan</h3>
-              <p className={styles.scanDescription}>
-                Learn to recognize the signals your reality is sending you—through timing, synchronicities, and patterns.
-                Stop missing the messages.
+          <div className={styles.productGrid}>
+            {/* Scan 1 */}
+            <div className={styles.productCard}>
+              <div className={styles.productBadge}>Scan 1</div>
+              <h3 className={styles.productTitle}>Market Perception Scan</h3>
+              <p className={styles.productDescription}>
+                See how the market actually works—beyond the surface narrative.
+                Understand demand signals, competitive dynamics, and opportunity gaps.
               </p>
-              <div className={styles.scanWhat}>
-                <h4>What you'll see:</h4>
-                <ul>
-                  <li>Recurring patterns in your environment</li>
-                  <li>Timing signals you've been missing</li>
-                  <li>Synchronicity recognition framework</li>
-                  <li>Signal vs. noise differentiation</li>
-                </ul>
-              </div>
+              <ul className={styles.productFeatures}>
+                <li>Market pattern recognition</li>
+                <li>Demand signal detection</li>
+                <li>Competitive landscape mapping</li>
+                <li>Opportunity identification</li>
+              </ul>
             </div>
 
-            {/* Value Pattern Decoder */}
-            <div className={styles.scanCard}>
-              <div className={styles.scanNumber}>2</div>
-              <h3 className={styles.scanTitle}>Value Pattern Decoder</h3>
-              <p className={styles.scanDescription}>
-                Identify the value systems driving your decisions—not what you think you value, but what your behavior reveals.
-                See the invisible architecture of your choices.
+            {/* Scan 2 */}
+            <div className={styles.productCard}>
+              <div className={styles.productBadge}>Scan 2</div>
+              <h3 className={styles.productTitle}>Value Perception Scan</h3>
+              <p className={styles.productDescription}>
+                Learn to see what people actually value—not what they say they value.
+                Recognize buying triggers and decision patterns.
               </p>
-              <div className={styles.scanWhat}>
-                <h4>What you'll see:</h4>
-                <ul>
-                  <li>Actual vs. stated values</li>
-                  <li>Hidden value hierarchies</li>
-                  <li>Value conflicts creating friction</li>
-                  <li>Inherited vs. chosen values</li>
-                </ul>
-              </div>
+              <ul className={styles.productFeatures}>
+                <li>Value signal detection</li>
+                <li>Buying trigger recognition</li>
+                <li>Decision pattern mapping</li>
+                <li>Price perception analysis</li>
+              </ul>
             </div>
 
-            {/* Boundary & Burnout Scan */}
-            <div className={styles.scanCard}>
-              <div className={styles.scanNumber}>3</div>
-              <h3 className={styles.scanTitle}>Boundary & Burnout Scan</h3>
-              <p className={styles.scanDescription}>
-                See where your boundaries are porous and where your energy is leaking.
-                Recognize the patterns leading to burnout before they consume you.
+            {/* Scan 3 */}
+            <div className={styles.productCard}>
+              <div className={styles.productBadge}>Scan 3</div>
+              <h3 className={styles.productTitle}>Power Perception Scan</h3>
+              <p className={styles.productDescription}>
+                See who holds real influence and how power actually flows.
+                Understand leverage points and strategic relationships.
               </p>
-              <div className={styles.scanWhat}>
-                <h4>What you'll see:</h4>
-                <ul>
-                  <li>Energy leak identification</li>
-                  <li>Boundary violation patterns</li>
-                  <li>Burnout early warning signals</li>
-                  <li>Recovery pattern analysis</li>
-                </ul>
-              </div>
+              <ul className={styles.productFeatures}>
+                <li>Power structure mapping</li>
+                <li>Influence network analysis</li>
+                <li>Leverage point identification</li>
+                <li>Strategic relationship recognition</li>
+              </ul>
             </div>
 
-            {/* Money Signal Scan */}
-            <div className={styles.scanCard}>
-              <div className={styles.scanNumber}>4</div>
-              <h3 className={styles.scanTitle}>Money Signal Scan</h3>
-              <p className={styles.scanDescription}>
-                Decode the money patterns in your life—earning, spending, saving, and the signals revealing your relationship with value exchange.
+            {/* Scan 4 */}
+            <div className={styles.productCard}>
+              <div className={styles.productBadge}>Scan 4</div>
+              <h3 className={styles.productTitle}>Resource Perception Scan</h3>
+              <p className={styles.productDescription}>
+                Recognize what resources you actually have access to—including the hidden ones.
+                See what's available that you've been blind to.
               </p>
-              <div className={styles.scanWhat}>
-                <h4>What you'll see:</h4>
-                <ul>
-                  <li>Money flow patterns</li>
-                  <li>Value exchange beliefs</li>
-                  <li>Scarcity vs. abundance signals</li>
-                  <li>Revenue ceiling identification</li>
-                </ul>
-              </div>
+              <ul className={styles.productFeatures}>
+                <li>Resource inventory mapping</li>
+                <li>Hidden asset identification</li>
+                <li>Access pathway recognition</li>
+                <li>Resource leverage analysis</li>
+              </ul>
             </div>
 
-            {/* Competence Mapping Scan */}
-            <div className={styles.scanCard}>
-              <div className={styles.scanNumber}>5</div>
-              <h3 className={styles.scanTitle}>Competence Mapping Scan</h3>
-              <p className={styles.scanDescription}>
-                See your actual competencies—not credentials or titles, but the real skills you've developed through lived experience.
-                Map your mastery.
+            {/* Scan 5 */}
+            <div className={styles.productCard}>
+              <div className={styles.productBadge}>Scan 5</div>
+              <h3 className={styles.productTitle}>System Perception Scan</h3>
+              <p className={styles.productDescription}>
+                See how all the pieces connect—the full system view.
+                Understand the meta-patterns that govern everything else.
               </p>
-              <div className={styles.scanWhat}>
-                <h4>What you'll see:</h4>
-                <ul>
-                  <li>Real competencies vs. credentials</li>
-                  <li>Mastery progression patterns</li>
-                  <li>Skill transfer opportunities</li>
-                  <li>Expertise blind spots</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Bundle Preview */}
-      <section className={styles.bundle}>
-        <div className={styles.container}>
-          <div className={styles.bundleCard}>
-            <div className={styles.bundleBadge}>COMING SOON</div>
-            <h2 className={styles.bundleTitle}>The Complete Perception Bundle</h2>
-            <p className={styles.bundleDescription}>
-              Get all five perception scans and build complete pattern recognition across all domains.
-            </p>
-
-            <div className={styles.bundleValue}>
-              <div className={styles.bundleValueLabel}>Estimated Value:</div>
-              <div className={styles.bundleValueAmount}>$35</div>
-              <div className={styles.bundleValueNote}>Bundle pricing TBD (waitlist gets special pricing)</div>
-            </div>
-
-            <div className={styles.bundleNote}>
-              Join the waitlist to be notified when Perception launches and get early access pricing.
+              <ul className={styles.productFeatures}>
+                <li>System architecture mapping</li>
+                <li>Meta-pattern recognition</li>
+                <li>Feedback loop identification</li>
+                <li>Systemic leverage detection</li>
+              </ul>
             </div>
           </div>
         </div>
       </section>
 
       {/* Waitlist Section */}
-      <section id="waitlist" className={styles.waitlist}>
+      <section id="waitlist" className={styles.bundle}>
         <div className={styles.container}>
-          <div className={styles.waitlistCard}>
-            <h2 className={styles.waitlistTitle}>Join the Waitlist</h2>
-            <p className={styles.waitlistDescription}>
-              Be first to know when Rite I: Perception launches. Waitlist members get:
+          <div className={styles.bundleCard}>
+            <div className={styles.bundleBadge}>COMING SOON</div>
+            <h2 className={styles.bundleTitle}>Join the Perception Waitlist</h2>
+            <p className={styles.bundleDescription}>
+              Be first to access when Rite I launches. Waitlist members get early access and special pricing.
             </p>
-            <ul className={styles.waitlistBenefits}>
-              <li>✓ Early access before public launch</li>
-              <li>✓ Special waitlist-only pricing</li>
-              <li>✓ First pick of launch bonuses</li>
-              <li>✓ Updates on development progress</li>
+
+            <div className={styles.bundlePrice}>
+              <div className={styles.bundlePriceMain}>
+                <span className={styles.bundlePriceAmount}>Early Access</span>
+                <span className={styles.bundlePricePeriod}>coming soon</span>
+              </div>
+            </div>
+
+            <ul className={styles.bundleFeatures}>
+              <li>✓ First access to all 5 perception scans</li>
+              <li>✓ Special early-bird pricing</li>
+              <li>✓ Exclusive launch bonuses</li>
+              <li>✓ Priority support during launch</li>
             </ul>
 
-            <form className={styles.waitlistForm}>
-              <input
-                type="email"
-                placeholder="Enter your email"
-                className={styles.waitlistInput}
-                required
-              />
-              <button type="submit" className={styles.waitlistButton}>
-                Join Waitlist
-              </button>
-            </form>
+            <div style={{ textAlign: 'center', padding: '2rem 0' }}>
+              <a
+                href="https://forms.gle/your-waitlist-form"
+                className={styles.heroCta}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span>Join Waitlist</span>
+              </a>
+            </div>
 
-            <div className={styles.waitlistMeta}>
-              No spam. Unsubscribe anytime. We'll only email you about Rite I launch.
+            <div className={styles.guarantee}>
+              No commitment • Get notified at launch • Exclusive early access
             </div>
           </div>
         </div>
       </section>
 
-      {/* Ready to Start Now? */}
-      <section className={styles.readyNow}>
+      {/* Why Perception Comes First */}
+      <section className={styles.guide}>
         <div className={styles.container}>
-          <h2 className={styles.sectionTitle}>Ready to Start Now?</h2>
-          <p className={styles.readyNowDescription}>
-            While you wait for Rite I, you can start with Rite II: Orientation.
-            Most people have developed enough perception through experience—they just need help locating themselves.
-          </p>
-          <Link href="/products/orientation" className={styles.readyNowButton}>
-            Try Rite II: Orientation ($17 bundle)
-          </Link>
+          <h2 className={styles.sectionTitle}>Why Perception Comes First</h2>
+          <div className={styles.guideGrid}>
+            <div className={styles.guideCard}>
+              <h3 className={styles.guideTitle}>You Can't Navigate What You Can't See</h3>
+              <p className={styles.guideDescription}>
+                Before you can locate yourself (Rite II) or choose a direction (Rite III),
+                you need to see the system you're operating within. Perception is the foundation.
+              </p>
+            </div>
+            <div className={styles.guideCard}>
+              <h3 className={styles.guideTitle}>Most People Are Blind</h3>
+              <p className={styles.guideDescription}>
+                They react to symptoms without seeing causes. They chase opportunities
+                without recognizing patterns. They make decisions in the dark.
+              </p>
+            </div>
+            <div className={styles.guideCard}>
+              <h3 className={styles.guideTitle}>Awareness Changes Everything</h3>
+              <p className={styles.guideDescription}>
+                Once you see the patterns, you can't unsee them. Once you recognize the system,
+                you can work with it instead of against it. Perception unlocks everything else.
+              </p>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -274,7 +260,7 @@ export default function RiteIPerceptionPage() {
               <div className={styles.riteCardBadge}>RITE II</div>
               <h3 className={styles.riteCardTitle}>Orientation</h3>
               <p className={styles.riteCardDescription}>Locate yourself within the system</p>
-              <div className={styles.riteCardStatusLive}>Available Now</div>
+              <div className={styles.riteCardStatus}>Available Now</div>
             </Link>
 
             <Link href="/products/declaration" className={styles.riteCard}>
