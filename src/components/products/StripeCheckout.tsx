@@ -20,27 +20,11 @@ export default function StripeCheckout({ paymentLink, productName, price, produc
     setIsProcessing(true);
 
     try {
-      // Prefer API checkout for better tracking and metadata
-      if (productSlug) {
-        const response = await fetch('/api/checkout', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ productSlug }),
-        });
-
-        const data = await response.json();
-
-        if (data.url) {
-          window.location.href = data.url;
-        } else {
-          throw new Error(data.error || 'Checkout failed');
-        }
-      }
-      // Fallback to direct payment link
-      else if (paymentLink) {
+      // Use direct payment link (same as working products)
+      if (paymentLink) {
         window.location.href = paymentLink;
       } else {
-        console.error("No payment method configured");
+        console.error("No payment link configured");
         alert("Payment not configured. Please contact support.");
         setIsProcessing(false);
       }
@@ -65,14 +49,14 @@ export default function StripeCheckout({ paymentLink, productName, price, produc
     );
   }
 
-  // Show error if neither payment method is configured
-  if (!productSlug && !paymentLink) {
+  // Show error if payment link is missing
+  if (!paymentLink) {
     return (
       <div className={styles.checkoutContainer}>
         <div className={styles.placeholder}>
           <p className={styles.placeholderTitle}>⚠️ Payment Not Configured</p>
           <p className={styles.placeholderText}>
-            Product requires either a productSlug or paymentLink prop.
+            Product requires a payment link to be configured.
           </p>
         </div>
       </div>
