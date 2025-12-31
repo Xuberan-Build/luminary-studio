@@ -8,9 +8,9 @@
 import { config } from 'dotenv';
 config({ path: '.env.production' });
 
-import { supabaseAdmin } from './src/lib/supabase/server';
-import { extractCustomerInsights } from './src/lib/ai/insight-extractor';
-import { storeCustomerInsights } from './src/lib/google-sheets/customer-sync';
+import { supabaseAdmin } from '../../src/lib/supabase/server';
+import { extractCustomerInsights } from '../../src/lib/ai/insight-extractor';
+import { storeCustomerInsights } from '../../src/lib/google-sheets/customer-sync';
 
 async function testInsightExtraction(email: string) {
   console.log('🔍 Testing Insight Extraction System\n');

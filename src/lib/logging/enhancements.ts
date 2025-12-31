@@ -59,10 +59,10 @@ export function sanitizeData(data: any): any {
  * Always logs errors, samples success based on rate
  */
 export function shouldLog(
-  eventStatus: 'success' | 'error' | 'pending',
+  eventStatus: 'success' | 'error' | 'pending' | 'info',
   sampleRate: number = 0.1
 ): boolean {
-  // Always log errors and pending
+  // Always log errors, pending, and info
   if (eventStatus !== 'success') return true;
 
   // Sample success logs
@@ -73,11 +73,11 @@ export function shouldLog(
  * Smart sampling - always log slow requests
  */
 export function shouldLogSmart(
-  eventStatus: 'success' | 'error' | 'pending',
+  eventStatus: 'success' | 'error' | 'pending' | 'info',
   durationMs: number,
   sampleRate: number = 0.1
 ): boolean {
-  // Always log errors
+  // Always log errors, pending, and info
   if (eventStatus !== 'success') return true;
 
   // Always log slow requests (>2s)

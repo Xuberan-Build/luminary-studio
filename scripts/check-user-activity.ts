@@ -128,9 +128,10 @@ async function checkUserActivity(email: string) {
 
       Object.entries(responsesBySession).forEach(([sessionId, sessionResponses]) => {
         const session = sessions.find(s => s.id === sessionId);
-        console.log(`\n   Session: ${session?.product_slug} (${sessionResponses.length} responses)`);
+        const responses = sessionResponses as any[];
+        console.log(`\n   Session: ${session?.product_slug} (${responses.length} responses)`);
 
-        sessionResponses.forEach((r) => {
+        responses.forEach((r) => {
           console.log(`   ├─ Step ${r.step_number}: ${r.response_text?.substring(0, 60)}${r.response_text?.length > 60 ? '...' : ''}`);
         });
       });
