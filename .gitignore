@@ -43,3 +43,11 @@ SLIDESHOW_*.md
 .DS_Store
 *.DS_Store
 .vercel
+
+# Security: Don't commit documentation with potential secrets
+*_AUDIT.md
+*_GUIDE.md
+*_READY.md
+PHASED_*.md
+test-email.js
+scripts/production-readiness-check.ts

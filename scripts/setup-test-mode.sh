@@ -1,0 +1,51 @@
+#!/bin/bash
+# Setup Test Mode Environment for Stripe Testing
+
+echo "🧪 STRIPE TEST MODE SETUP"
+echo "═══════════════════════════════════════════════════"
+echo ""
+echo "This script helps you set up test mode for reliable product testing."
+echo ""
+
+# Check if we have test mode webhook configured
+echo "📋 Checking Stripe configuration..."
+echo ""
+
+# List webhooks
+echo "Checking webhooks..."
+stripe webhooks list 2>&1 | head -20
+
+echo ""
+echo "═══════════════════════════════════════════════════"
+echo ""
+echo "🎯 NEXT STEPS (Manual - via Stripe Dashboard):"
+echo ""
+echo "1. Go to: https://dashboard.stripe.com/test/products"
+echo "   (Make sure you're in TEST mode - toggle top left)"
+echo ""
+echo "2. Create Test Products:"
+echo "   - Personal Alignment Orientation (TEST)"
+echo "   - Quantum Initiation (TEST)"
+echo "   - Brand Alignment Orientation (TEST)"
+echo ""
+echo "3. For EACH product:"
+echo "   a) Create Payment Link"
+echo "   b) Add metadata: product_slug = [slug]"
+echo "   c) Set success_url to product interact page"
+echo "   d) Copy the test payment link (has 'test_' prefix)"
+echo ""
+echo "4. Test each link:"
+echo "   - Use test card: 4242 4242 4242 4242"
+echo "   - Check webhook logs (should be HTTP 200)"
+echo "   - Verify admin email arrives"
+echo "   - Run: npm run show-access"
+echo ""
+echo "5. Once ALL tests pass:"
+echo "   - Create LIVE versions"
+echo "   - Update product pages with live links"
+echo "   - Deploy to production"
+echo ""
+echo "═══════════════════════════════════════════════════"
+echo ""
+echo "Need help? Check: TESTING_WORKFLOW.md"
+echo ""

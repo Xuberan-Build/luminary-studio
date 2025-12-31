@@ -48,15 +48,12 @@ export default function PersonalAlignmentPage() {
 
           <div className={styles.trustIndicators}>
             <div className={styles.indicator}>
-              <span className={styles.indicatorIcon}>✨</span>
               <span className={styles.indicatorText}>Instant Access</span>
             </div>
             <div className={styles.indicator}>
-              <span className={styles.indicatorIcon}>🎯</span>
               <span className={styles.indicatorText}>Personalized Blueprint</span>
             </div>
             <div className={styles.indicator}>
-              <span className={styles.indicatorIcon}>🔒</span>
               <span className={styles.indicatorText}>Secure Payment</span>
             </div>
           </div>
@@ -70,7 +67,6 @@ export default function PersonalAlignmentPage() {
 
           <div className={styles.featureGrid}>
             <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>🧭</div>
               <h3 className={styles.featureTitle}>Core Values Discovery</h3>
               <p className={styles.featureDescription}>
                 Extract your authentic values from your own words—not what you were taught, but what genuinely drives you.
@@ -78,7 +74,6 @@ export default function PersonalAlignmentPage() {
             </div>
 
             <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>⚡</div>
               <h3 className={styles.featureTitle}>Energy Architecture</h3>
               <p className={styles.featureDescription}>
                 Understand your unique energy design and how to structure life for sustainable vitality and flow.
@@ -86,7 +81,6 @@ export default function PersonalAlignmentPage() {
             </div>
 
             <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>🌱</div>
               <h3 className={styles.featureTitle}>Identity Evolution</h3>
               <p className={styles.featureDescription}>
                 Validate your growth journey—where you've been, where you are, and who you're becoming next.
@@ -94,7 +88,6 @@ export default function PersonalAlignmentPage() {
             </div>
 
             <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>🎯</div>
               <h3 className={styles.featureTitle}>Life's Task Clarity</h3>
               <p className={styles.featureDescription}>
                 Discover your unique calling and what you're here to do based on recurring themes in your chart.
@@ -102,7 +95,6 @@ export default function PersonalAlignmentPage() {
             </div>
 
             <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>🔮</div>
               <h3 className={styles.featureTitle}>Astrology & Human Design</h3>
               <p className={styles.featureDescription}>
                 Your personal alignment mapped through Sun/Moon/Rising, Venus, Saturn, North Node, and HD type.
@@ -110,7 +102,6 @@ export default function PersonalAlignmentPage() {
             </div>
 
             <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>♾️</div>
               <h3 className={styles.featureTitle}>Instant Results</h3>
               <p className={styles.featureDescription}>
                 Complete the interactive experience in 20 minutes and get your Personal Alignment Blueprint immediately.
@@ -151,7 +142,7 @@ export default function PersonalAlignmentPage() {
             />
 
             <div className={styles.guarantee}>
-              🔒 Secure checkout • Instant delivery • No recurring charges
+              Secure checkout • Instant delivery • No recurring charges
             </div>
           </div>
         </div>

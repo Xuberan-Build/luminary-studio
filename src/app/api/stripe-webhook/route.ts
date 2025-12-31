@@ -134,7 +134,7 @@ async function sendProductAccessEmail(params: {
 <body>
   <div class="container">
     <div class="header">
-      <h1>🎉 Welcome to ${params.productName}!</h1>
+      <h1>Welcome to ${params.productName}!</h1>
     </div>
 
     <div class="content">
@@ -143,7 +143,7 @@ async function sendProductAccessEmail(params: {
       <p><strong>Thank you for your purchase!</strong> Your personalized product experience is ready.</p>
 
       <div class="instructions">
-        <h3>🚀 Getting Started (Simple 3-Step Process):</h3>
+        <h3>Getting Started (Simple 3-Step Process):</h3>
         <ol>
           <li><strong>Log in to your dashboard</strong> - Click the button below to access your account</li>
           <li><strong>Start your experience</strong> - You'll see "${params.productName}" in your dashboard</li>
@@ -155,7 +155,7 @@ async function sendProductAccessEmail(params: {
         <a href="${dashboardUrl}" class="button">Access Your Dashboard</a>
       </div>
 
-      <p><strong>💡 What to Expect:</strong></p>
+      <p><strong>What to Expect:</strong></p>
       <ul>
         <li>Step-by-step guided questionnaire</li>
         <li>AI-powered insights based on your responses</li>
@@ -165,14 +165,14 @@ async function sendProductAccessEmail(params: {
 
       <hr>
 
-      <p><strong>❓ Need Help?</strong></p>
+      <p><strong>Need Help?</strong></p>
       <ul>
         <li><strong>First time?</strong> Create your account using the email: ${params.to}</li>
         <li><strong>Questions?</strong> Email us at ${params.fromEmail}</li>
         <li><strong>Technical issues?</strong> We're here to help!</li>
       </ul>
 
-      <p style="margin-top: 32px;">Ready to get started? Log in to your dashboard and begin your personalized experience! ✨</p>
+      <p style="margin-top: 32px;">Ready to get started? Log in to your dashboard and begin your personalized experience!</p>
 
       <p style="margin-top: 24px;">
         – Austin<br>
@@ -237,7 +237,7 @@ quantumstrategies.online
   const email = [
     `From: "${params.fromName}" <${params.fromEmail}>`,
     `To: ${params.to}`,
-    `Subject: 🎉 Your ${params.productName} is Ready!`,
+    `Subject: Your ${params.productName} is Ready!`,
     'MIME-Version: 1.0',
     'Content-Type: multipart/alternative; boundary="boundary123"',
     '',
@@ -313,7 +313,7 @@ async function sendAdminNotification(params: {
 <body>
   <div class="container">
     <div class="header">
-      <h1>💰 New Purchase!</h1>
+      <h1>New Purchase!</h1>
     </div>
     <div class="content">
       <div class="detail">
@@ -361,7 +361,7 @@ https://dashboard.stripe.com/test/payments
   const email = [
     `From: "Quantum Strategies Notifications" <austin@xuberandigital.com>`,
     `To: santos.93.aus@gmail.com`,
-    `Subject: 💰 New Purchase: ${params.productName} - $${params.amount.toFixed(2)}`,
+    `Subject: New Purchase: ${params.productName} - $${params.amount.toFixed(2)}`,
     'MIME-Version: 1.0',
     'Content-Type: multipart/alternative; boundary="boundary456"',
     '',

@@ -47,15 +47,12 @@ export default function BrandAlignmentPage() {
 
           <div className={styles.trustIndicators}>
             <div className={styles.indicator}>
-              <span className={styles.indicatorIcon}>⚡</span>
               <span className={styles.indicatorText}>25-30 Minutes</span>
             </div>
             <div className={styles.indicator}>
-              <span className={styles.indicatorIcon}>🎯</span>
               <span className={styles.indicatorText}>Chart-Based Strategy</span>
             </div>
             <div className={styles.indicator}>
-              <span className={styles.indicatorIcon}>🔒</span>
               <span className={styles.indicatorText}>Secure Payment</span>
             </div>
           </div>
@@ -69,7 +66,6 @@ export default function BrandAlignmentPage() {
 
           <div className={styles.featureGrid}>
             <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>🧬</div>
               <h3 className={styles.featureTitle}>Brand Essence & Positioning</h3>
               <p className={styles.featureDescription}>
                 Synthesize your core waveform into authentic brand positioning connected to your chart placements.
@@ -77,7 +73,6 @@ export default function BrandAlignmentPage() {
             </div>
 
             <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>🎨</div>
               <h3 className={styles.featureTitle}>Visual Frequency</h3>
               <p className={styles.featureDescription}>
                 Translate chart energy into visual brand recommendations—colors, imagery, design language aligned with your frequency.
@@ -85,7 +80,6 @@ export default function BrandAlignmentPage() {
             </div>
 
             <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>💬</div>
               <h3 className={styles.featureTitle}>Messaging Coherence</h3>
               <p className={styles.featureDescription}>
                 Map your communication style from chart placements. Define tone, voice, and messaging patterns.
@@ -93,7 +87,6 @@ export default function BrandAlignmentPage() {
             </div>
 
             <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>🎯</div>
               <h3 className={styles.featureTitle}>Market Expression</h3>
               <p className={styles.featureDescription}>
                 Connect personal alignment to market positioning where your authentic waveform meets audience needs.
@@ -101,7 +94,6 @@ export default function BrandAlignmentPage() {
             </div>
 
             <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>🔍</div>
               <h3 className={styles.featureTitle}>Alignment Gap Analysis</h3>
               <p className={styles.featureDescription}>
                 Identify where your brand expression diverges from your chart frequency with concrete action steps.
@@ -109,7 +101,6 @@ export default function BrandAlignmentPage() {
             </div>
 
             <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>⚙️</div>
               <h3 className={styles.featureTitle}>Implementation Framework</h3>
               <p className={styles.featureDescription}>
                 Practical next steps to embody this brand alignment in your business, content, and client experience.
@@ -150,7 +141,7 @@ export default function BrandAlignmentPage() {
             />
 
             <div className={styles.guarantee}>
-              🔒 Secure checkout • Instant delivery • No recurring charges
+              Secure checkout • Instant delivery • No recurring charges
             </div>
           </div>
         </div>

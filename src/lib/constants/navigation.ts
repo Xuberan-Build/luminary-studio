@@ -82,6 +82,11 @@ export const navigationConfig = {
           description: "Discover Your Life Purpose"
         },
         {
+          label: "Brand Alignment Orientation",
+          href: "/products/brand-alignment",
+          description: "Unify Who You Are with How You Show Up"
+        },
+        {
           label: "Business Alignment Orientation",
           href: "/products/quantum-initiation",
           description: "Personalized Money Blueprint"

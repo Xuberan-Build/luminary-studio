@@ -47,15 +47,12 @@ export default function QuantumInitiationPage() {
 
           <div className={styles.trustIndicators}>
             <div className={styles.indicator}>
-              <span className={styles.indicatorIcon}>✨</span>
               <span className={styles.indicatorText}>Instant Access</span>
             </div>
             <div className={styles.indicator}>
-              <span className={styles.indicatorIcon}>🎯</span>
               <span className={styles.indicatorText}>Personalized Strategy</span>
             </div>
             <div className={styles.indicator}>
-              <span className={styles.indicatorIcon}>🔒</span>
               <span className={styles.indicatorText}>Secure Payment</span>
             </div>
           </div>
@@ -69,7 +66,6 @@ export default function QuantumInitiationPage() {
 
           <div className={styles.featureGrid}>
             <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>🧠</div>
               <h3 className={styles.featureTitle}>Business Alignment Framework</h3>
               <p className={styles.featureDescription}>
                 Interactive blueprint powered by proven methodology that's generated millions in revenue.
@@ -77,7 +73,6 @@ export default function QuantumInitiationPage() {
             </div>
 
             <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>⚡</div>
               <h3 className={styles.featureTitle}>Astrology & Human Design Integration</h3>
               <p className={styles.featureDescription}>
                 Your money-making strategy aligned with your unique energetic blueprint and cosmic design.
@@ -85,7 +80,6 @@ export default function QuantumInitiationPage() {
             </div>
 
             <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>🎯</div>
               <h3 className={styles.featureTitle}>Know What to Sell</h3>
               <p className={styles.featureDescription}>
                 Discover your ideal offers, products, and services based on your natural strengths and energy.
@@ -93,7 +87,6 @@ export default function QuantumInitiationPage() {
             </div>
 
             <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>💬</div>
               <h3 className={styles.featureTitle}>Know How to Sell It</h3>
               <p className={styles.featureDescription}>
                 Get your personalized sales approach that feels natural and authentic to your design.
@@ -101,7 +94,6 @@ export default function QuantumInitiationPage() {
             </div>
 
             <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>🔐</div>
               <h3 className={styles.featureTitle}>Know Your Pricing Model</h3>
               <p className={styles.featureDescription}>
                 Receive clear guidance on how to price your offers in alignment with your energetic frequency.
@@ -109,7 +101,6 @@ export default function QuantumInitiationPage() {
             </div>
 
             <div className={styles.featureCard}>
-              <div className={styles.featureIcon}>♾️</div>
               <h3 className={styles.featureTitle}>Instant Results</h3>
               <p className={styles.featureDescription}>
                 Complete the interactive experience in 20 minutes and get your personalized blueprint immediately.
@@ -150,7 +141,7 @@ export default function QuantumInitiationPage() {
             />
 
             <div className={styles.guarantee}>
-              🔒 Secure checkout • Instant delivery • No recurring charges
+              Secure checkout • Instant delivery • No recurring charges
             </div>
           </div>
         </div>

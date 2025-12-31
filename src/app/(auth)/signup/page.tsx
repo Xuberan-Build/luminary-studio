@@ -55,7 +55,27 @@ export default function SignupPage() {
         <div className={styles.card}>
           <div className={styles.header}>
             <h1>✅ Account Created!</h1>
-            <p>Check your email to verify your account, then sign in.</p>
+            <p>Check your email to verify your account</p>
+          </div>
+
+          <div className={styles.success}>
+            We've sent a confirmation email to <strong>{email}</strong>
+          </div>
+
+          <div className={styles.warning}>
+            <div>
+              <strong>Check your spam folder!</strong> Our confirmation emails sometimes end up there.
+              If you don't see it in your inbox, please check spam/junk.
+            </div>
+          </div>
+
+          <div className={styles.footer}>
+            <p>
+              After confirming, you can{' '}
+              <Link href="/login" className={styles.link}>
+                sign in here
+              </Link>
+            </p>
           </div>
         </div>
       </div>
