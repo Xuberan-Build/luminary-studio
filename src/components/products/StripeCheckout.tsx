@@ -1,19 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import Script from "next/script";
-import { redirectToCheckout } from "@/lib/stripe/checkout";
 import styles from "./stripe-checkout.module.css";
 
 interface StripeCheckoutProps {
-  paymentLink?: string; // Legacy, not used anymore
+  paymentLink?: string;
   productName: string;
   price: number;
-  productSlug?: string; // New: used for checkout API
+  productSlug?: string;
 }
 
 export default function StripeCheckout({ paymentLink, productName, price, productSlug }: StripeCheckoutProps) {
-  const [isStripeLoaded, setIsStripeLoaded] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const publishableKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
 
@@ -66,26 +63,17 @@ export default function StripeCheckout({ paymentLink, productName, price, produc
   }
 
   return (
-    <>
-      {/* Load Stripe.js */}
-      <Script
-        src="https://js.stripe.com/v3/"
-        onLoad={() => setIsStripeLoaded(true)}
-        strategy="lazyOnload"
-      />
-
-      <div className={styles.checkoutContainer}>
-        <button
-          onClick={handleCheckout}
-          className={styles.checkoutButton}
-          disabled={!isStripeLoaded || isProcessing}
-        >
-          {isProcessing ? 'Processing...' : `Purchase ${productName} - $${price}`}
-        </button>
-        <p className={styles.checkoutNote}>
-          Secure checkout powered by Stripe • Instant access
-        </p>
-      </div>
-    </>
+    <div className={styles.checkoutContainer}>
+      <button
+        onClick={handleCheckout}
+        className={styles.checkoutButton}
+        disabled={isProcessing}
+      >
+        {isProcessing ? 'Processing...' : `Purchase ${productName} - $${price}`}
+      </button>
+      <p className={styles.checkoutNote}>
+        Secure checkout powered by Stripe • Instant access
+      </p>
+    </div>
   );
 }
