@@ -88,79 +88,85 @@ export default function SessionVersionManager({
 
       {showVersionHistory && (
         <div
-          className={styles.modal}
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
           onClick={() => setShowVersionHistory(false)}
         >
           <div
-            className={styles.modalContent}
+            className="relative w-full max-w-2xl mx-4 bg-gradient-to-br from-gray-900 to-gray-800 rounded-2xl border border-white/10 shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className={styles.modalHeader}>
-              <h3>Version History</h3>
+            {/* Header */}
+            <div className="flex items-center justify-between p-6 border-b border-white/10">
+              <h3 className="text-2xl font-bold text-white">Version History</h3>
               <button
                 onClick={() => setShowVersionHistory(false)}
-                className={styles.closeButton}
+                className="text-gray-400 hover:text-white transition-colors"
               >
-                ✕
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
               </button>
             </div>
 
-            <div className={styles.versionList}>
+            {/* Version List */}
+            <div className="p-6 max-h-96 overflow-y-auto">
               {versions.length === 0 ? (
-                <p className={styles.emptyState}>No versions found</p>
+                <p className="text-center text-gray-400 py-8">No versions found</p>
               ) : (
-                versions.map((v) => (
-                  <div
-                    key={v.session_id}
-                    className={`${styles.versionItem} ${
-                      v.is_latest ? styles.latestVersion : ''
-                    }`}
-                  >
-                    <div className={styles.versionInfo}>
-                      <div className={styles.versionHeader}>
-                        <span className={styles.versionNumber}>
-                          Version {v.version}
-                        </span>
-                        {v.is_latest && (
-                          <span className={styles.latestBadge}>Current</span>
-                        )}
-                        {v.is_complete && (
-                          <span className={styles.completeBadge}>
-                            Complete
-                          </span>
-                        )}
-                      </div>
-                      <p className={styles.versionDate}>
-                        Created: {new Date(v.created_at).toLocaleDateString()}
-                      </p>
-                      {v.completed_at && (
-                        <p className={styles.versionDate}>
-                          Completed:{' '}
-                          {new Date(v.completed_at).toLocaleDateString()}
-                        </p>
-                      )}
-                    </div>
+                <div className="space-y-4">
+                  {versions.map((v) => (
+                    <div
+                      key={v.session_id}
+                      className="bg-white/5 rounded-xl border border-white/10 p-4 hover:bg-white/10 transition-colors"
+                    >
+                      <div className="flex items-start justify-between">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-2">
+                            <span className="text-lg font-semibold text-white">
+                              Version {v.version}
+                            </span>
+                            {v.is_latest && (
+                              <span className="px-2 py-1 text-xs font-medium bg-teal-500/20 text-teal-300 rounded-md">
+                                Current
+                              </span>
+                            )}
+                            {v.is_complete && (
+                              <span className="px-2 py-1 text-xs font-medium bg-green-500/20 text-green-300 rounded-md">
+                                Complete
+                              </span>
+                            )}
+                          </div>
+                          <p className="text-sm text-gray-400">
+                            Created: {new Date(v.created_at).toLocaleDateString()}
+                          </p>
+                          {v.completed_at && (
+                            <p className="text-sm text-gray-400">
+                              Completed: {new Date(v.completed_at).toLocaleDateString()}
+                            </p>
+                          )}
+                        </div>
 
-                    <div className={styles.versionActions}>
-                      <a
-                        href={`/dashboard/sessions/${v.session_id}`}
-                        className={styles.viewButton}
-                      >
-                        {v.has_deliverable
-                          ? 'View Deliverable'
-                          : 'View Session'}
-                      </a>
+                        <a
+                          href={`/dashboard/sessions/${v.session_id}`}
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-violet-600 to-purple-600 text-white text-sm font-medium rounded-lg hover:from-violet-500 hover:to-purple-500 transition-all"
+                        >
+                          {v.has_deliverable ? 'View Deliverable' : 'View Session'}
+                        </a>
+                      </div>
                     </div>
-                  </div>
-                ))
+                  ))}
+                </div>
               )}
             </div>
 
-            <div className={styles.modalFooter}>
-              <p className={styles.attemptsInfo}>
-                Free attempts used: {2 - attemptsRemaining}/2
-              </p>
-            </div>
+            {/* Footer */}
+            {attemptsRemaining >= 0 && attemptsRemaining < 1000 && (
+              <div className="p-6 border-t border-white/10">
+                <p className="text-sm text-gray-400 text-center">
+                  {attemptsRemaining} attempt{attemptsRemaining !== 1 ? 's' : ''} remaining
+                </p>
+              </div>
+            )}
           </div>
         </div>
       )}

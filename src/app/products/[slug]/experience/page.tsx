@@ -85,9 +85,10 @@ export default async function ProductExperiencePage({
 
   // Auto-copy placements from user's latest confirmed session if missing
   if (!productSession?.placements) {
-    const { data: placementSource } = await supabase
+    console.log('[experience] Attempting auto-copy - no placements in current session');
+    const { data: placementSource, error: sourceError } = await supabase
       .from('product_sessions')
-      .select('placements')
+      .select('placements, product_slug')
       .eq('user_id', session.user.id)
       .eq('placements_confirmed', true)
       .not('placements', 'is', null)
@@ -96,8 +97,16 @@ export default async function ProductExperiencePage({
       .limit(1)
       .maybeSingle();
 
+    console.log('[experience] Auto-copy source query result:', {
+      found: !!placementSource,
+      error: sourceError,
+      sourceProduct: placementSource?.product_slug,
+      hasPlacementsData: !!placementSource?.placements
+    });
+
     if (placementSource?.placements) {
-      await supabase
+      console.log('[experience] Auto-copying placements from', placementSource.product_slug);
+      const { error: updateError } = await supabase
         .from('product_sessions')
         .update({
           placements: placementSource.placements,
@@ -107,6 +116,12 @@ export default async function ProductExperiencePage({
         })
         .eq('id', productSession.id);
 
+      if (updateError) {
+        console.error('[experience] Error updating session with auto-copied placements:', updateError);
+      } else {
+        console.log('[experience] Successfully auto-copied placements to session');
+      }
+
       productSession = {
         ...productSession,
         placements: placementSource.placements,
@@ -114,7 +129,11 @@ export default async function ProductExperiencePage({
         current_step: 1,
         current_section: 1,
       };
+    } else {
+      console.log('[experience] No confirmed session found to auto-copy from');
     }
+  } else {
+    console.log('[experience] Session already has placements, skipping auto-copy');
   }
 
   // Treat missing/placeholder placements as not confirmed
