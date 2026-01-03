@@ -674,14 +674,16 @@ const [hasGuarded, setHasGuarded] = useState(false);
   };
 
   const handleReviewCharts = async () => {
-    setPlacementsConfirmed(false);
-    setConfirmGate(false);
+    // Reset to step 1 to review/edit placements
+    // BUT: Keep placements_confirmed true in DB so completed sessions can be auto-copied
+    setPlacementsConfirmed(false); // Client-side only - triggers confirmation gate
+    setConfirmGate(true); // Show confirmation gate
     setCurrentStep(1);
     setStepResponse('');
     setShowFollowUp(false);
     await supabase
       .from('product_sessions')
-      .update({ current_step: 1, placements_confirmed: false })
+      .update({ current_step: 1 }) // Don't reset placements_confirmed!
       .eq('id', session.id)
       .eq('user_id', userId)
       .throwOnError();
