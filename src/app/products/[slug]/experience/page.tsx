@@ -137,12 +137,12 @@ export default async function ProductExperiencePage({
   if (needsConfirmation) {
     console.log('[experience] Forcing confirmation due to missing/empty placements');
     // Normalize session on the server so the client can't skip confirmation
+    // IMPORTANT: Keep placements even if empty - user needs to see them in confirmation gate
     await supabase
       .from('product_sessions')
       .update({
         current_step: 1,
         placements_confirmed: false,
-        placements: isPlacementsEmpty(productSession.placements) ? null : productSession.placements,
         current_section: 1,
       })
       .eq('id', productSession.id);
@@ -151,9 +151,6 @@ export default async function ProductExperiencePage({
       ...productSession,
       current_step: 1,
       placements_confirmed: false,
-      placements: isPlacementsEmpty(productSession.placements)
-        ? null
-        : productSession.placements,
       current_section: 1,
     };
   }
