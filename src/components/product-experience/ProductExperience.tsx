@@ -1169,6 +1169,9 @@ const [hasGuarded, setHasGuarded] = useState(false);
                   onClick={() => {
                     setConfirmGate(false);
                     setPlacements(null);
+                    setUploadedFiles([]);
+                    setUploadError(null);
+                    setPlacementsError(null);
                   }}
                   className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/15"
                 >
@@ -1188,7 +1191,9 @@ const [hasGuarded, setHasGuarded] = useState(false);
               <button
                 onClick={() => {
                   setConfirmGate(false);
-                  setUploadError('Please re-upload your charts to proceed.');
+                  setUploadedFiles([]);
+                  setUploadError(null);
+                  setPlacementsError(null);
                 }}
                 className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/15"
               >
