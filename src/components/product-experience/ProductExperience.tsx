@@ -1166,7 +1166,14 @@ const [hasGuarded, setHasGuarded] = useState(false);
                   Confirm and continue
                 </button>
                 <button
-                  onClick={() => {
+                  onClick={async () => {
+                    // Delete uploaded files from database
+                    await supabase
+                      .from('uploaded_documents')
+                      .delete()
+                      .eq('session_id', session.id);
+
+                    // Clear state
                     setConfirmGate(false);
                     setPlacements(null);
                     setUploadedFiles([]);
@@ -1189,7 +1196,14 @@ const [hasGuarded, setHasGuarded] = useState(false);
                 {isExtracting ? 'Extracting…' : 'Extract placements'}
               </button>
               <button
-                onClick={() => {
+                onClick={async () => {
+                  // Delete uploaded files from database
+                  await supabase
+                    .from('uploaded_documents')
+                    .delete()
+                    .eq('session_id', session.id);
+
+                  // Clear state
                   setConfirmGate(false);
                   setUploadedFiles([]);
                   setUploadError(null);
