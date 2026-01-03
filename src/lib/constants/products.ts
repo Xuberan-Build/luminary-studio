@@ -16,8 +16,8 @@ export interface ProductConfig {
 }
 
 export const PRODUCTS: Record<string, ProductConfig> = {
-  'quantum-initiation': {
-    slug: 'quantum-initiation',
+  'business-alignment': {
+    slug: 'business-alignment',
     name: 'Business Alignment Orientation',
     price: 7,
     interactTitle: 'Build Your Business Alignment Blueprint',

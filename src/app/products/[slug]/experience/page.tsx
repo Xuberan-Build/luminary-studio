@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import ProductExperience from '@/components/product-experience/ProductExperience';
+import { isPlacementsEmpty } from '@/lib/utils/placements';
 
 export const dynamic = 'force-dynamic';
 
@@ -117,28 +118,13 @@ export default async function ProductExperiencePage({
   }
 
   // Treat missing/placeholder placements as not confirmed
-  const placementsEmpty = (pl: any) => {
-    if (!pl) return true;
-    const astro = pl.astrology || {};
-    const hd = pl.human_design || {};
-    const astroHas = Object.values(astro).some(
-      (v) => v && String(v).trim() && String(v).trim().toUpperCase() !== 'UNKNOWN'
-    );
-    const hdHas = Object.values(hd).some(
-      (v) => v && String(v).trim() && String(v).trim().toUpperCase() !== 'UNKNOWN'
-    );
-    const notesHas =
-      pl.notes && typeof pl.notes === 'string' && pl.notes.trim().length > 0;
-    return !(astroHas || hdHas || notesHas);
-  };
-
   const needsConfirmation =
-    !productSession.placements_confirmed || placementsEmpty(productSession.placements);
+    !productSession.placements_confirmed || isPlacementsEmpty(productSession.placements);
 
   console.log('[experience] Session loaded:', {
     sessionId: productSession.id,
     placementsConfirmed: productSession.placements_confirmed,
-    placementsEmpty: placementsEmpty(productSession.placements),
+    placementsEmpty: isPlacementsEmpty(productSession.placements),
     placementsPresent: !!productSession.placements,
     currentStep: productSession.current_step,
     totalSteps: product.total_steps,
@@ -156,7 +142,7 @@ export default async function ProductExperiencePage({
       .update({
         current_step: 1,
         placements_confirmed: false,
-        placements: placementsEmpty(productSession.placements) ? null : productSession.placements,
+        placements: isPlacementsEmpty(productSession.placements) ? null : productSession.placements,
         current_section: 1,
       })
       .eq('id', productSession.id);
@@ -165,15 +151,11 @@ export default async function ProductExperiencePage({
       ...productSession,
       current_step: 1,
       placements_confirmed: false,
-      placements: placementsEmpty(productSession.placements)
+      placements: isPlacementsEmpty(productSession.placements)
         ? null
         : productSession.placements,
       current_section: 1,
     };
-  } else if (productSession.current_step === 1 && productSession.placements_confirmed) {
-    // Placements are valid and confirmed - keep on step 1 to show confirmation gate
-    // The client will show a gate asking user to confirm or re-upload
-    console.log('[experience] Placements confirmed - keeping on step 1 to show confirmation gate');
   }
 
   return (

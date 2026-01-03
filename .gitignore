@@ -51,3 +51,4 @@ SLIDESHOW_*.md
 PHASED_*.md
 test-email.js
 scripts/production-readiness-check.ts
+.env*.local

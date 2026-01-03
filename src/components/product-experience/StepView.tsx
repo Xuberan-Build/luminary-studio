@@ -121,7 +121,7 @@ export function StepView({
                 </div>
               )}
               <p className="text-xs uppercase tracking-[0.16em] text-gray-400 mb-2">Wizard</p>
-              <div className="prose prose-invert prose-sm max-w-none [&_strong]:text-purple-300 [&_strong]:font-semibold [&_p]:text-gray-300 [&_li]:text-gray-300 [&_h1]:text-gray-200 [&_h2]:text-gray-200 [&_h3]:text-gray-200">
+              <div className="prose prose-invert prose-sm max-w-none [&_strong]:text-[#F8F5FF] [&_strong]:font-semibold [&_p]:text-gray-300 [&_li]:text-gray-300 [&_h1]:text-gray-200 [&_h2]:text-gray-200 [&_h3]:text-gray-200">
                 <ReactMarkdown remarkPlugins={[remarkGfm]}>
                   {assistantReply}
                 </ReactMarkdown>
@@ -130,7 +130,7 @@ export function StepView({
           )}
 
           {step.question && step.title && (
-            <div className="prose prose-invert prose-lg max-w-none [&_strong]:text-purple-400 [&_strong]:font-bold [&_p]:text-white [&_li]:text-white [&_h1]:text-white [&_h2]:text-white [&_h3]:text-white mb-6">
+            <div className="prose prose-invert prose-lg max-w-none [&_strong]:text-[#F8F5FF] [&_strong]:font-bold [&_p]:text-white [&_li]:text-white [&_h1]:text-white [&_h2]:text-white [&_h3]:text-white mb-6">
               <ReactMarkdown remarkPlugins={[remarkGfm]}>
                 {step.question}
               </ReactMarkdown>
@@ -176,9 +176,9 @@ export function StepView({
               />
               {uploadedFiles.length > 0 && (
                 <div className="mt-3 flex flex-wrap gap-2">
-                  {uploadedFiles.map((file) => (
+                  {uploadedFiles.map((file, idx) => (
                     <div
-                      key={file}
+                      key={`uploaded-file-${idx}`}
                       className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1 text-xs text-white"
                     >
                       <span className="max-w-[140px] truncate">{file.split('/').pop()}</span>

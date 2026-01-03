@@ -8,6 +8,17 @@ const config: NextConfig = {
 
   // Skip trailing slash redirects for API routes (fixes Stripe webhook 308 errors)
   skipTrailingSlashRedirect: true,
+
+  // Redirects for renamed product slugs
+  async redirects() {
+    return [
+      {
+        source: '/products/quantum-initiation/:path*',
+        destination: '/products/business-alignment/:path*',
+        permanent: true,
+      },
+    ];
+  },
 };
 
 export default config;

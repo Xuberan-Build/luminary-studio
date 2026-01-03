@@ -4,6 +4,7 @@ import Link from 'next/link';
 import styles from './dashboard.module.css';
 import { revalidatePath } from 'next/cache';
 import SessionVersionManager from '@/components/dashboard/SessionVersionManager';
+import { getProductBySlug } from '@/lib/constants/products';
 
 export const dynamic = 'force-dynamic';
 
@@ -226,8 +227,8 @@ export default async function DashboardPage() {
           {sessions.length === 0 ? (
             <div className={styles.emptyState}>
               <p>No sessions yet for this account. Finish or resume a product to unlock your briefing and chat history.</p>
-              <Link href="/products/quantum-initiation/experience" className={styles.browseButton}>
-                Resume Quantum Initiation
+              <Link href="/products/business-alignment/experience" className={styles.browseButton}>
+                Resume Business Alignment
               </Link>
             </div>
           ) : (
@@ -235,11 +236,12 @@ export default async function DashboardPage() {
               {sessions.map(async (s: any) => {
                 const completed = !!s.completed_at;
                 const attempts = await getSessionAttempts(session.user.id, s.product_slug);
+                const productInfo = getProductBySlug(s.product_slug);
 
                 return (
                   <div key={s.id} className={styles.productCard}>
                     <div className={styles.productHeader}>
-                      <h3>{s.product_slug}</h3>
+                      <h3>{productInfo?.name || s.product_slug}</h3>
                       <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
                         {s.version > 1 && (
                           <span className={styles.versionBadge}>v{s.version}</span>

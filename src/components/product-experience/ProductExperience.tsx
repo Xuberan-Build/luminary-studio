@@ -8,6 +8,7 @@ import { FollowUpChat } from './FollowUpChat';
 import { DeliverableView } from './DeliverableView';
 import { WelcomeBanner } from './WelcomeBanner';
 import { supabase } from '@/lib/supabase/client';
+import { isPlacementsEmpty } from '@/lib/utils/placements';
 import { chartAnalysisModel, conversationalModel } from '@/lib/ai/models';
 
 interface ProductExperienceProps {
@@ -27,6 +28,7 @@ export default function ProductExperience({
   const [followUpCount, setFollowUpCount] = useState(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [deliverable, setDeliverable] = useState<string | null>(null);
+  const [actionableNudges, setActionableNudges] = useState<string[]>([]);
   const [uploadedFiles, setUploadedFiles] = useState<string[]>([]);
   const [uploadError, setUploadError] = useState<string | null>(null);
   const [placements, setPlacements] = useState<any>(session.placements || null);
@@ -118,27 +120,18 @@ const [hasGuarded, setHasGuarded] = useState(false);
     );
   }, [placementsConfirmed, currentStep, confirmGate, placements, uploadedFiles.length, showFollowUp]);
 
-  const isPlacementsEmpty = (pl: any) => {
-    if (!pl) return true;
-    const astro = pl.astrology || {};
-    const hd = pl.human_design || {};
-    const astroHas = Object.values(astro).some((v) => v && v !== 'UNKNOWN');
-    const hdHas = Object.values(hd).some((v) => v && v !== 'UNKNOWN');
-    const notesHas = pl.notes && typeof pl.notes === 'string' && pl.notes.trim().length > 0;
-    return !(astroHas || hdHas || notesHas);
-  };
-
   // Use steps directly from product (now stored in Supabase)
   const steps = product.steps || [];
   const currentStepData = steps[currentStep - 1];
   const isLastStep = currentStep === steps.length;
   const completionPercentage = Math.round((currentStep / steps.length) * 100);
   const hasPlacementData = !isPlacementsEmpty(placements);
+  // CRITICAL: Show auto-copied gate when placements exist but not confirmed
+  // Remove uploadedFiles check - gate must show regardless
   const showAutoCopiedGate =
     currentStep === 1 &&
     hasPlacementData &&
-    !placementsConfirmed &&
-    uploadedFiles.length === 0;
+    !placementsConfirmed;
 
   // Check if session is complete and load deliverable
   useEffect(() => {
@@ -190,6 +183,112 @@ const [hasGuarded, setHasGuarded] = useState(false);
       }
     }
   }, [placementsConfirmed, searchParams]);
+
+  // Extract actionable nudges from conversations when deliverable is ready
+  useEffect(() => {
+    const extractNudges = async () => {
+      if (!deliverable) return;
+
+      const { data, error } = await supabase
+        .from('conversations')
+        .select('messages, step_number')
+        .eq('session_id', session.id)
+        .order('step_number', { ascending: true });
+
+      if (error || !data) return;
+
+      const nudges: string[] = [];
+
+      // Extract actionable insights from assistant responses
+      data.forEach((conversation: any) => {
+        const messages = conversation.messages || [];
+
+        // Only process messages that follow user input (actual AI responses, not prompts)
+        for (let i = 1; i < messages.length; i++) {
+          const msg = messages[i];
+          const prevMsg = messages[i - 1];
+
+          // Skip if not an assistant message following a user message
+          if (msg.role !== 'assistant' || prevMsg.role !== 'user') continue;
+          if (!msg.content) continue;
+
+          // PRIORITY 1: Extract explicitly formatted "Actionable nudge (timeframe):" statements
+          // Pattern: "Actionable nudge (this week): do something"
+          const explicitNudges = msg.content.match(/Actionable nudge[^:]{0,60}:[^.!?\n]{20,300}[.!]?/gi);
+          if (explicitNudges) {
+            explicitNudges.forEach((nudge: string) => {
+              const trimmed = nudge.trim().replace(/\*\*/g, ''); // Remove markdown bold
+              if (trimmed.length > 30) {
+                nudges.push(trimmed);
+              }
+            });
+          }
+
+          // Extract specific insights/observations about them
+          // Pattern: "Your [chart thing] says/means/shows [insight]"
+          const insights = msg.content.match(/Your [^.!?]{10,80}(?:says|means|shows|suggests|confirms|reveals)[^.!?]{20,120}[.!]/gi);
+          if (insights) {
+            insights.forEach((insight: string) => {
+              const trimmed = insight.trim();
+              if (!trimmed.includes('Example:') &&
+                  !trimmed.includes('Step ') &&
+                  trimmed.length > 50 &&
+                  trimmed.length < 200) {
+                nudges.push(trimmed);
+              }
+            });
+          }
+
+          // Extract actionable next steps (imperative statements with action verbs)
+          // Expanded verb list to catch more actionable advice
+          const actions = msg.content.match(/(?:^|\n)(?:Choose|Write|Pick|Post|Add|Send|Reach out|Schedule|Plan|Draft|Review|Try|Start|Begin|Consider|Focus on|Design|Build|Create|Shift to|Release|Let go of|Lean into|Explore|Test|Practice|Run|Launch|Set up|Configure|Update|Refine)[^.!?]{30,200}[.!]/gi);
+          if (actions) {
+            actions.forEach((action: string) => {
+              const trimmed = action.trim();
+              // Filter out questions disguised as actions and template content
+              const lower = trimmed.toLowerCase();
+              const isQuestion = trimmed.includes('?') ||
+                                 lower.includes(': are you') ||
+                                 lower.includes(': do you') ||
+                                 lower.includes(': can you') ||
+                                 lower.includes(': would you');
+
+              if (!isQuestion &&
+                  !trimmed.includes('Example:') &&
+                  !trimmed.includes('Step ') &&
+                  trimmed.length > 40 &&
+                  trimmed.length < 250) {
+                nudges.push(trimmed);
+              }
+            });
+          }
+        }
+      });
+
+      // Deduplicate, remove generic statements and clarifying questions, limit to top 6
+      const unique = [...new Set(nudges)]
+        .filter(n => {
+          const lower = n.toLowerCase();
+          // Filter out overly generic, template-like content, and clarifying questions
+          return !lower.includes('looking at') &&
+                 !lower.includes('based on') &&
+                 !lower.includes('let me show') &&
+                 !lower.includes('quick clarifier') &&
+                 !lower.includes('let me ask') &&
+                 !lower.includes('i need to know') &&
+                 !lower.includes('help me understand') &&
+                 !lower.includes('can you tell me') &&
+                 !lower.startsWith('you ') &&
+                 !lower.startsWith('question:') &&
+                 !n.includes('?'); // Exclude any remaining questions
+        })
+        .slice(0, 6);
+
+      setActionableNudges(unique);
+    };
+
+    extractNudges();
+  }, [deliverable, session.id]);
 
   // Preload any existing uploaded documents (handles refresh)
   useEffect(() => {
@@ -808,6 +907,7 @@ const [hasGuarded, setHasGuarded] = useState(false);
         deliverable={deliverable}
         productName={product.name}
         instructions={product.instructions}
+        actionableNudges={actionableNudges}
       />
     );
   }

@@ -19,6 +19,7 @@ async function sendProductAccessEmail(params: {
   to: string;
   name: string;
   productName: string;
+  productSlug: string;
   fromEmail: string;
   fromName: string;
   isBundle?: boolean;
@@ -39,7 +40,13 @@ async function sendProductAccessEmail(params: {
   const gmail = google.gmail({ version: 'v1', auth });
 
   // Create HTML email
-  const dashboardUrl = `${process.env.NEXT_PUBLIC_SITE_URL || 'https://quantumstrategies.online'}/dashboard`;
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://quantumstrategies.online';
+  const dashboardUrl = `${baseUrl}/dashboard`;
+  const signupUrl = `${baseUrl}/signup`;
+  const redirectPath = params.isBundle
+    ? '/dashboard?bundle=orientation'
+    : `/products/${params.productSlug}/experience`;
+  const loginUrl = `${baseUrl}/login?redirect=${encodeURIComponent(redirectPath)}`;
 
   const emailHtml = `
 <!DOCTYPE html>
@@ -158,15 +165,21 @@ async function sendProductAccessEmail(params: {
       <div class="instructions">
         <h3>Getting Started (Simple 3-Step Process):</h3>
         <ol>
-          <li><strong>Log in to your dashboard</strong> - Click the button below to access your account</li>
+          <li><strong>Create your account</strong> - Use the same email you purchased with</li>
+          <li><strong>Log in to begin</strong> - Use the login link below</li>
           <li><strong>Start your experience</strong> - You'll see ${params.isBundle ? 'all three orientation products' : `"${params.productName}"`} in your dashboard</li>
           <li><strong>Complete the guided process</strong> - Answer questions and receive your ${params.isBundle ? 'deliverables' : 'deliverable'}</li>
         </ol>
       </div>
 
       <div style="text-align: center;">
-        <a href="${dashboardUrl}" class="button">Access Your Dashboard</a>
+        <a href="${signupUrl}" class="button">Create Your Account</a>
       </div>
+
+      <p style="margin-top: 8px; text-align: center;">
+        Already have an account?
+        <a href="${loginUrl}" style="color: #6C5CE7; text-decoration: none;">Log in here</a>
+      </p>
 
       <p><strong>What to Expect:</strong></p>
       <ul>
@@ -228,12 +241,16 @@ All three orientations are now available in your dashboard!
 
 GETTING STARTED (Simple 3-Step Process):
 
-1. Log in to your dashboard - Visit: ${dashboardUrl}
-2. Start your experience - You'll see ${params.isBundle ? 'all three orientation products' : `"${params.productName}"`} in your dashboard
-3. Complete the guided process - Answer questions and receive your ${params.isBundle ? 'deliverables' : 'deliverable'}
+1. Create your account - Visit: ${signupUrl}
+2. Log in to begin: ${loginUrl}
+3. Start your experience - You'll see ${params.isBundle ? 'all three orientation products' : `"${params.productName}"`} in your dashboard
+4. Complete the guided process - Answer questions and receive your ${params.isBundle ? 'deliverables' : 'deliverable'}
 
-ACCESS YOUR DASHBOARD:
-${dashboardUrl}
+CREATE YOUR ACCOUNT:
+${signupUrl}
+
+ALREADY HAVE AN ACCOUNT?
+Log in here: ${loginUrl}
 
 WHAT TO EXPECT:
 - Step-by-step guided questionnaire
@@ -578,6 +595,7 @@ export async function POST(request: NextRequest) {
         to: customerEmail,
         name: customerName,
         productName: product.name,
+        productSlug,
         fromEmail: product.fromEmail,
         fromName: product.fromName,
         isBundle: productSlug === 'orientation-bundle',

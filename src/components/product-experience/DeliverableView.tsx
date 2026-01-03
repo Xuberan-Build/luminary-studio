@@ -8,6 +8,7 @@ interface DeliverableViewProps {
   deliverable: string;
   productName: string;
   instructions?: ProductInstructions;
+  actionableNudges?: string[];
 }
 
 interface Section {
@@ -16,7 +17,7 @@ interface Section {
   content: string;
 }
 
-export function DeliverableView({ deliverable, productName, instructions }: DeliverableViewProps) {
+export function DeliverableView({ deliverable, productName, instructions, actionableNudges }: DeliverableViewProps) {
   const [copied, setCopied] = useState(false);
 
   // Parse deliverable into sections
@@ -26,23 +27,28 @@ export function DeliverableView({ deliverable, productName, instructions }: Deli
     let currentSection: Section | null = null;
 
     for (const line of lines) {
-      // Match patterns like "## 1. Brand Essence" or "**1. Brand Essence**" or "# 1. Brand Essence"
-      const headerMatch = line.match(/^(?:#{1,3}\s*)?(?:\*\*)?(\d+)\.\s*([^*\n]+?)(?:\*\*)?$/);
+      // Match various header patterns:
+      // "## 1. Title" or "**1. Title**" or "# 1. Title" or "##1) Title" or "## SECTION 1:" etc.
+      const headerMatch = line.match(/^(?:#{1,3}\s*)?(?:\*\*)?(?:SECTION\s+)?(\d+)[.):\s]+([^*\n]+?)(?:\*\*)?$/i);
 
       if (headerMatch) {
         // Save previous section
         if (currentSection) {
           parsed.push(currentSection);
         }
-        // Start new section
+        // Start new section - strip any remaining markdown from title
+        const cleanTitle = headerMatch[2].trim().replace(/[*#]/g, '');
         currentSection = {
           number: headerMatch[1],
-          title: headerMatch[2].trim(),
+          title: cleanTitle,
           content: ''
         };
-      } else if (currentSection && line.trim()) {
-        // Add content to current section
-        currentSection.content += line + '\n';
+      } else if (currentSection) {
+        // Skip the line if it's just a header marker without our number pattern
+        if (!line.trim().match(/^#{1,3}\s*$/)) {
+          // Add content to current section (preserve empty lines for spacing)
+          currentSection.content += line + '\n';
+        }
       }
     }
 
@@ -128,7 +134,7 @@ export function DeliverableView({ deliverable, productName, instructions }: Deli
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#030048] via-[#1a0066] to-[#030048] py-12 px-4">
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 via-gray-900 to-black py-12 px-4">
       <div className="max-w-4xl mx-auto">
         {/* Success Header */}
         <div className="text-center mb-12">
@@ -259,25 +265,63 @@ export function DeliverableView({ deliverable, productName, instructions }: Deli
                   </h3>
 
                   {/* Section Content */}
-                  <div className="text-[#F8F5FF]/90 leading-relaxed space-y-4">
+                  <div className="text-[#F8F5FF]/90 leading-relaxed space-y-3">
                     {section.content.split('\n').map((line, lineIndex) => {
                       const trimmedLine = line.trim();
-                      if (!trimmedLine) return null;
+                      if (!trimmedLine) return <div key={lineIndex} className="h-4" />;
 
-                      // Bold text: **text** - make it purple
-                      const boldFormatted = trimmedLine.replace(
-                        /\*\*([^*]+)\*\*/g,
-                        '<strong class="text-[#A29BFE] font-bold">$1</strong>'
-                      );
+                      // Format text: bold **text**, italic *text*
+                      let formatted = trimmedLine
+                        .replace(/\*\*([^*]+)\*\*/g, '<strong class="text-[#F8F5FF] font-semibold">$1</strong>')
+                        .replace(/\*([^*]+)\*/g, '<em class="text-[#F8F5FF]/80 italic">$1</em>');
 
-                      // Bullet points: - or •
-                      if (trimmedLine.startsWith('-') || trimmedLine.startsWith('•')) {
+                      // Sub-headers (###, ####)
+                      if (trimmedLine.startsWith('###') || trimmedLine.startsWith('####')) {
+                        const text = trimmedLine.replace(/^#{3,4}\s+/, '');
+                        return (
+                          <h4
+                            key={lineIndex}
+                            className="text-lg font-semibold text-[#F8F5FF] mt-4 mb-2"
+                            dangerouslySetInnerHTML={{ __html: text }}
+                          />
+                        );
+                      }
+
+                      // Unordered bullet points: - or • or *
+                      if (trimmedLine.match(/^[-•*]\s+/)) {
                         return (
                           <div key={lineIndex} className="flex items-start space-x-3 ml-4">
                             <span className="text-[#6C5CE7] mt-1.5 flex-shrink-0">●</span>
                             <p
-                              className="flex-1"
-                              dangerouslySetInnerHTML={{ __html: boldFormatted.replace(/^[-•]\s*/, '') }}
+                              className="flex-1 text-[#F8F5FF]/90"
+                              dangerouslySetInnerHTML={{ __html: formatted.replace(/^[-•*]\s+/, '') }}
+                            />
+                          </div>
+                        );
+                      }
+
+                      // Numbered lists: 1., 2., etc.
+                      const numberedMatch = trimmedLine.match(/^(\d+)\.\s+(.+)/);
+                      if (numberedMatch) {
+                        return (
+                          <div key={lineIndex} className="flex items-start space-x-3 ml-4">
+                            <span className="text-[#6C5CE7] font-semibold min-w-[24px]">{numberedMatch[1]}.</span>
+                            <p
+                              className="flex-1 text-[#F8F5FF]/90"
+                              dangerouslySetInnerHTML={{ __html: formatted.replace(/^\d+\.\s+/, '') }}
+                            />
+                          </div>
+                        );
+                      }
+
+                      // Arrow lists: → or ->
+                      if (trimmedLine.match(/^[→>-]\s+/)) {
+                        return (
+                          <div key={lineIndex} className="flex items-start space-x-3 ml-4">
+                            <span className="text-[#6C5CE7] mt-1.5 flex-shrink-0">→</span>
+                            <p
+                              className="flex-1 text-[#F8F5FF]/90"
+                              dangerouslySetInnerHTML={{ __html: formatted.replace(/^[→>-]\s+/, '') }}
                             />
                           </div>
                         );
@@ -287,8 +331,8 @@ export function DeliverableView({ deliverable, productName, instructions }: Deli
                       return (
                         <p
                           key={lineIndex}
-                          className="text-[#F8F5FF]/90 leading-relaxed"
-                          dangerouslySetInnerHTML={{ __html: boldFormatted }}
+                          className="text-[#F8F5FF]/90 leading-[1.7] mb-2"
+                          dangerouslySetInnerHTML={{ __html: formatted }}
                         />
                       );
                     })}
@@ -299,6 +343,37 @@ export function DeliverableView({ deliverable, productName, instructions }: Deli
               // Fallback if parsing fails
               <div className="text-[#F8F5FF] whitespace-pre-wrap leading-relaxed">
                 {deliverable}
+              </div>
+            )}
+
+            {/* Actionable Nudges Bonus Section */}
+            {actionableNudges && actionableNudges.length > 0 && (
+              <div className="mt-8 pt-8 border-t border-[#F8F5FF]/20">
+                <div className="bg-gradient-to-br from-[#6C5CE7]/20 to-[#A29BFE]/10 backdrop-blur-sm rounded-xl border border-[#6C5CE7]/30 p-6">
+                  <div className="flex items-center space-x-3 mb-4">
+                    <div className="w-10 h-10 bg-gradient-to-br from-[#6C5CE7] to-[#A29BFE] rounded-lg flex items-center justify-center">
+                      <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                      </svg>
+                    </div>
+                    <h3 className="text-2xl font-bold text-[#F8F5FF]">
+                      Actionable Nudges
+                    </h3>
+                  </div>
+                  <p className="text-[#F8F5FF]/70 mb-6">
+                    Key insights and next steps from your journey:
+                  </p>
+                  <div className="space-y-3">
+                    {actionableNudges.map((nudge, index) => (
+                      <div key={index} className="flex items-start space-x-3">
+                        <span className="text-[#6C5CE7] mt-1.5 flex-shrink-0">●</span>
+                        <p className="text-[#F8F5FF]/90 leading-relaxed">
+                          {nudge}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             )}
           </div>
