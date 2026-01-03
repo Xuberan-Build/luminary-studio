@@ -24,14 +24,22 @@ export async function POST(req: Request) {
     const astroPdfTexts: string[] = [];
     const hdPdfTexts: string[] = [];
 
-    const isAstro = (path: string) =>
-      path.toLowerCase().includes('astro') ||
-      path.toLowerCase().includes('birth') ||
-      path.toLowerCase().includes('chart');
-    const isHD = (path: string) =>
-      path.toLowerCase().includes('humandesign') ||
-      path.toLowerCase().includes('human-design') ||
-      path.toLowerCase().includes('myhumandesign');
+    const isAstro = (path: string) => {
+      const lower = path.toLowerCase();
+      return lower.includes('astro') ||
+             lower.includes('birth') ||
+             lower.includes('chart') ||
+             lower.includes('natal');
+    };
+
+    const isHD = (path: string) => {
+      const lower = path.toLowerCase();
+      return lower.includes('humandesign') ||
+             lower.includes('human-design') ||
+             lower.includes('myhumandesign') ||
+             lower.includes('human_design') ||
+             lower.includes('bodygraph');
+    };
 
     console.log('Processing files from user-uploads bucket...');
 
@@ -59,7 +67,7 @@ export async function POST(req: Request) {
             console.log('  - Categorized PDF text as Human Design');
             hdPdfTexts.push(textSlice);
           } else {
-            console.log('  - Categorized PDF text as Astrology');
+            console.log('  - Categorized PDF text as Astrology (default)');
             astroPdfTexts.push(textSlice);
           }
         }
@@ -73,12 +81,23 @@ export async function POST(req: Request) {
           throw new Error(`Could not sign file: ${path}`);
         }
         console.log(`Signed URL created: ${data.signedUrl.substring(0, 50)}...`);
-        if (isHD(path)) {
+
+        // Categorize image based on filename patterns
+        const matchesHD = isHD(path);
+        const matchesAstro = isAstro(path);
+
+        if (matchesHD) {
           console.log('  - Categorized as Human Design');
           hdImages.push(data.signedUrl);
-        } else {
+        } else if (matchesAstro) {
           console.log('  - Categorized as Astrology');
           astroImages.push(data.signedUrl);
+        } else {
+          // Edge case: filename doesn't match either pattern (e.g., Screenshot)
+          // Try to extract BOTH types of data from it
+          console.log('  - Filename unclear - will attempt both Astrology AND Human Design extraction');
+          astroImages.push(data.signedUrl);
+          hdImages.push(data.signedUrl);
         }
       }
     }
