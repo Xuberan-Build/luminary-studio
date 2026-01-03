@@ -547,14 +547,14 @@ export async function POST(request: NextRequest) {
     }
 
     // Determine product from session metadata or success URL
-    let productSlug = 'quantum-initiation'; // Default fallback
+    let productSlug = 'business-alignment'; // Default fallback
 
     // Try 1: Get from session metadata (if configured in Stripe payment link)
     if (session.metadata?.product_slug) {
       productSlug = session.metadata.product_slug;
       console.log('✅ Product detected from metadata:', productSlug);
     }
-    // Try 2: Parse from success URL (e.g., /products/quantum-initiation/interact)
+    // Try 2: Parse from success URL (e.g., /products/business-alignment/interact)
     else if (session.success_url) {
       const urlMatch = session.success_url.match(/\/products\/([^\/]+)\//);
       if (urlMatch && urlMatch[1]) {
@@ -562,11 +562,11 @@ export async function POST(request: NextRequest) {
         console.log('✅ Product detected from success URL:', productSlug);
       } else {
         console.warn('⚠️ Could not parse product from success URL:', session.success_url);
-        console.warn('⚠️ Using default fallback: quantum-initiation');
+        console.warn('⚠️ Using default fallback: business-alignment');
       }
     } else {
       console.warn('⚠️ No metadata or success URL found');
-      console.warn('⚠️ Using default fallback: quantum-initiation');
+      console.warn('⚠️ Using default fallback: business-alignment');
       console.warn('⚠️ Session ID:', session.id);
     }
 
@@ -663,7 +663,7 @@ export async function POST(request: NextRequest) {
 
       if (productSlug === 'orientation-bundle') {
         // Bundle grants access to all 3 orientation products
-        productsToGrant = ['personal-alignment', 'quantum-initiation', 'brand-alignment'];
+        productsToGrant = ['personal-alignment', 'business-alignment', 'brand-alignment'];
         console.log('🎁 Bundle purchase detected - granting access to all 3 products');
       } else {
         // Single product purchase

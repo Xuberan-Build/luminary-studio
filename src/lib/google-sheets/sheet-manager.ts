@@ -41,7 +41,7 @@ export async function fetchPurchasesFromSheet(): Promise<PurchaseRecord[]> {
     const gptLink = row[6] || '';
 
     // Try to extract slug from GPT link or infer from product name
-    let productSlug = 'quantum-initiation'; // Default
+    let productSlug = 'business-alignment'; // Default
     if (productName.includes('Structure')) {
       productSlug = 'quantum-structure-profit-scale';
     } else if (gptLink.includes('quantum-structure')) {

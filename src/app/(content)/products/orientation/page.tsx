@@ -184,7 +184,7 @@ export default function RiteIIOrientationPage() {
               </ul>
               <div className={styles.productFooter}>
                 <span className={styles.productPrice}>$7</span>
-                <Link href="/products/quantum-initiation" className={styles.productButton}>
+                <Link href="/products/business-alignment" className={styles.productButton}>
                   Learn More
                 </Link>
               </div>

@@ -16,7 +16,7 @@ export async function POST(request: NextRequest) {
       followUpQuestion,
       conversationHistory,
       placements = {},
-      productSlug = 'quantum-initiation',
+      productSlug = 'business-alignment',
       userId,
     } = await request.json();
 

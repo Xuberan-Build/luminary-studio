@@ -32,7 +32,7 @@ export function calculateDaysSince(timestamp: string): number {
 function getNextProduct(productSlug: string): { name: string; link: string } | null {
   // Define product progression
   const progression: Record<string, { slug: string; url: string }> = {
-    'quantum-initiation': {
+    'business-alignment': {
       slug: 'quantum-structure-profit-scale',
       url: 'https://www.quantumstrategies.online/products/quantum-structure-profit-scale'
     },

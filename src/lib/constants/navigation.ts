@@ -95,7 +95,7 @@ export const navigationConfig = {
                   },
                   {
                     label: "Business Alignment",
-                    href: "/products/quantum-initiation",
+                    href: "/products/business-alignment",
                   },
                   {
                     label: "Brand Alignment",

@@ -16,7 +16,7 @@ export async function POST(req: Request) {
       systemPrompt,
       productName,
       priorMessages = [],
-      productSlug = 'quantum-initiation',
+      productSlug = 'business-alignment',
       sessionId,
       userId,
     } = body || {};
@@ -73,7 +73,7 @@ Question: ${stepData?.question || 'N/A'}
 User response: ${mainResponse || 'N/A'}
 Placements:
 ${placementSummary}
-Product: ${productName || 'Quantum Initiation'}
+Product: ${productName || 'Business Alignment Orientation'}
 `.trim();
 
     // Build conversation history

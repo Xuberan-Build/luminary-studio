@@ -7,7 +7,7 @@ import { EmailTemplateService } from '@/lib/services/EmailTemplateService';
 
 export async function POST(req: Request) {
   try {
-    const { sessionId, placements, productName = 'Quantum Initiation', productSlug = 'quantum-initiation' } = await req.json();
+    const { sessionId, placements, productName = 'Business Alignment Orientation', productSlug = 'business-alignment' } = await req.json();
     if (!sessionId) {
       return NextResponse.json({ error: 'sessionId is required' }, { status: 400 });
     }
@@ -98,7 +98,7 @@ export async function POST(req: Request) {
 
     // Load system prompt from database with fallback
     const systemPrompt = await PromptService.getPrompt({
-      productSlug: productSlug || 'quantum-initiation',
+      productSlug: productSlug || 'business-alignment',
       scope: 'final_briefing',
       fallback: `You are the Quantum Brand Architect AI (Sage–Magician). You produce premium-grade blueprints worth $700 of clarity.
 
@@ -267,8 +267,8 @@ Generate the blueprint now.`;
           // Only schedule email if user hasn't enrolled and hasn't opted out
           if (!user.is_affiliate && !user.affiliate_opted_out) {
             const emailContent: EmailContent = {
-              product_name: productName || 'Quantum Initiation',
-              product_slug: session.product_slug || productSlug || 'quantum-initiation',
+              product_name: productName || 'Business Alignment Orientation',
+              product_slug: session.product_slug || productSlug || 'business-alignment',
               deliverable_preview: EmailTemplateService.getDeliverablePreview(briefing),
               user_first_name: EmailTemplateService.getFirstName(user.name),
               user_email: user.email,

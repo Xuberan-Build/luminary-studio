@@ -58,7 +58,7 @@ export default async function SessionDetailPage({
               YOUR QUANTUM BLUEPRINT
             </div>
             <h1 className="bg-gradient-to-r from-white via-violet-100 to-purple-200 bg-clip-text text-4xl font-bold text-transparent">
-              {session.product_slug === 'quantum-initiation' ? 'Business Alignment Orientation' : 'Product Session'}
+              {session.product_slug === 'business-alignment' ? 'Business Alignment Orientation' : 'Product Session'}
             </h1>
             <p className="mt-2 text-sm text-slate-400">
               Completed {new Date(session.created_at).toLocaleDateString('en-US', {
@@ -80,7 +80,7 @@ export default async function SessionDetailPage({
         {/* Main Briefing */}
         <DeliverableViewer
           deliverable={session.deliverable_content || session.deliverable}
-          productName={session.product_slug === 'quantum-initiation' ? 'Business Alignment Orientation' : 'Product'}
+          productName={session.product_slug === 'business-alignment' ? 'Business Alignment Orientation' : 'Product'}
         />
 
         {/* Chat Transcript - Collapsible */}
