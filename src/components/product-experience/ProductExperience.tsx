@@ -57,6 +57,7 @@ const [hasGuarded, setHasGuarded] = useState(false);
   const [showWelcome, setShowWelcome] = useState(
     !!product.instructions && currentStep === 1 && !session.completed_at
   );
+  const [forceEditMode, setForceEditMode] = useState(false);
 
   const appendConversation = async (stepNumber: number, newMessages: Array<{ role: string; content: string; type?: string }>) => {
     const { data } = await supabase
@@ -128,10 +129,12 @@ const [hasGuarded, setHasGuarded] = useState(false);
   const hasPlacementData = !isPlacementsEmpty(placements);
   // CRITICAL: Show auto-copied gate when placements exist but not confirmed
   // Remove uploadedFiles check - gate must show regardless
+  // Hide if user clicked "Review & Edit" (forceEditMode)
   const showAutoCopiedGate =
     currentStep === 1 &&
     hasPlacementData &&
-    !placementsConfirmed;
+    !placementsConfirmed &&
+    !forceEditMode;
 
   // Check if session is complete and load deliverable
   useEffect(() => {
@@ -154,25 +157,10 @@ const [hasGuarded, setHasGuarded] = useState(false);
     }
   }, [placementsConfirmed, currentStep, steps.length, session.id, userId]);
 
-  // If placements are empty but marked confirmed, reset and force confirmation
-  useEffect(() => {
-    if (placementsConfirmed && isPlacementsEmpty(placements)) {
-      setPlacementsConfirmed(false);
-      setConfirmGate(true);
-      setCurrentStep(1);
-      supabase
-        .from('product_sessions')
-        .update({
-          current_step: 1,
-          placements_confirmed: false,
-          placements: null,
-          current_section: 1,
-        })
-        .eq('id', session.id)
-        .eq('user_id', userId)
-        .throwOnError();
-    }
-  }, [placementsConfirmed, placements, steps.length, session.id, userId]);
+  // HOTFIX: Removed erasure logic that was deleting auto-copied placements
+  // Previous useEffect would set placements = null if isPlacementsEmpty() was true
+  // This broke auto-copy because it erased placements immediately after copying
+  // Now auto-copied placements are preserved and shown in confirmation gate
 
   // If query has confirm=1, open the confirmation gate
   useEffect(() => {
@@ -674,14 +662,16 @@ const [hasGuarded, setHasGuarded] = useState(false);
   };
 
   const handleReviewCharts = async () => {
-    setPlacementsConfirmed(false);
-    setConfirmGate(false);
+    // Reset to step 1 to review/edit placements
+    // BUT: Keep placements_confirmed true in DB so completed sessions can be auto-copied
+    setPlacementsConfirmed(false); // Client-side only - triggers confirmation gate
+    setConfirmGate(true); // Show confirmation gate
     setCurrentStep(1);
     setStepResponse('');
     setShowFollowUp(false);
     await supabase
       .from('product_sessions')
-      .update({ current_step: 1, placements_confirmed: false })
+      .update({ current_step: 1 }) // Don't reset placements_confirmed!
       .eq('id', session.id)
       .eq('user_id', userId)
       .throwOnError();
@@ -970,37 +960,49 @@ const [hasGuarded, setHasGuarded] = useState(false);
             </div>
           </div>
 
-          <div className="flex gap-3">
-            <button
-              onClick={async () => {
-                // Use existing placements - advance to step 2
-                await supabase
-                  .from('product_sessions')
-                  .update({ current_step: 2, current_section: 1, placements_confirmed: true })
-                  .eq('id', session.id)
-                  .eq('user_id', userId);
-                setPlacementsConfirmed(true);
-                setCurrentStep(2);
-              }}
-              className="flex-1 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-6 py-3.5 font-semibold text-white shadow-lg shadow-teal-500/30 transition-all hover:shadow-xl hover:shadow-teal-500/40 hover:scale-[1.02]"
-            >
-              ✓ Use These Placements
-            </button>
+          <div className="flex flex-col gap-3">
             <button
               onClick={() => {
-                // Reset to allow new upload
-                setPlacementsConfirmed(false);
-                setPlacements(null);
-                supabase
-                  .from('product_sessions')
-                  .update({ placements_confirmed: false, placements: null })
-                  .eq('id', session.id)
-                  .eq('user_id', userId);
+                // Show editable confirmation gate instead of auto-accepting
+                setForceEditMode(true);
+                setConfirmGate(true);
               }}
-              className="flex-1 rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 font-semibold text-white transition-all hover:bg-white/10"
+              className="w-full rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 px-6 py-3.5 font-semibold text-white shadow-lg shadow-purple-500/30 transition-all hover:shadow-xl hover:shadow-purple-500/40 hover:scale-[1.02]"
             >
-              Upload New Charts
+              ✏️ Review & Edit Placements
             </button>
+            <div className="flex gap-3">
+              <button
+                onClick={async () => {
+                  // Use existing placements as-is - advance to step 2
+                  await supabase
+                    .from('product_sessions')
+                    .update({ current_step: 2, current_section: 1, placements_confirmed: true })
+                    .eq('id', session.id)
+                    .eq('user_id', userId);
+                  setPlacementsConfirmed(true);
+                  setCurrentStep(2);
+                }}
+                className="flex-1 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-6 py-3.5 font-semibold text-white shadow-lg shadow-teal-500/30 transition-all hover:shadow-xl hover:shadow-teal-500/40 hover:scale-[1.02]"
+              >
+                ✓ Use As-Is
+              </button>
+              <button
+                onClick={() => {
+                  // Reset to allow new upload
+                  setPlacementsConfirmed(false);
+                  setPlacements(null);
+                  supabase
+                    .from('product_sessions')
+                    .update({ placements_confirmed: false, placements: null })
+                    .eq('id', session.id)
+                    .eq('user_id', userId);
+                }}
+                className="flex-1 rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 font-semibold text-white transition-all hover:bg-white/10"
+              >
+                Upload New
+              </button>
+            </div>
           </div>
         </div>
       </div>
