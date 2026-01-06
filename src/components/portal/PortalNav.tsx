@@ -19,6 +19,11 @@ export default function PortalNav({ userName }: PortalNavProps) {
       active: pathname === '/dashboard',
     },
     {
+      label: 'Profile',
+      href: '/dashboard/profile',
+      active: pathname?.startsWith('/dashboard/profile'),
+    },
+    {
       label: 'Affiliate',
       href: '/dashboard/affiliate',
       active: pathname?.startsWith('/dashboard/affiliate'),

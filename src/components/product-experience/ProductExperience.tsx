@@ -37,6 +37,7 @@ export default function ProductExperience({
   );
   const [uploadsLoaded, setUploadsLoaded] = useState<boolean>(false);
   const [placementsAcknowledgedUnknowns, setPlacementsAcknowledgedUnknowns] = useState<boolean>(false);
+  const [userPlacements, setUserPlacements] = useState<any>(null);
   const [currentSection, setCurrentSection] = useState<number>(
     session.current_section || 1
   );
@@ -103,6 +104,23 @@ const [hasGuarded, setHasGuarded] = useState(false);
       )
     );
   }, []); // log once on mount
+
+  // Fetch user's profile placements on mount
+  useEffect(() => {
+    const fetchUserPlacements = async () => {
+      try {
+        const response = await fetch('/api/profile/placements');
+        if (response.ok) {
+          const data = await response.json();
+          setUserPlacements(data.placements);
+        }
+      } catch (error) {
+        console.error('Failed to fetch user profile placements:', error);
+      }
+    };
+    fetchUserPlacements();
+  }, []);
+
   useEffect(() => {
     console.log(
       '[PX] state change',
@@ -921,8 +939,18 @@ const [hasGuarded, setHasGuarded] = useState(false);
             <p className="text-xs uppercase tracking-[0.18em] text-teal-200/80">Chart data found</p>
             <h1 className="text-3xl font-semibold text-white">Use existing placements?</h1>
             <p className="text-slate-200/85">
-              We found your chart data from a previous product. You can use the same placements or upload new charts if anything has changed.
+              {userPlacements
+                ? 'Using your chart data from your Profile. You can use these placements or upload new charts if anything has changed.'
+                : 'We found your chart data from a previous product. You can use the same placements or upload new charts if anything has changed.'}
             </p>
+            {userPlacements && (
+              <p className="text-xs text-teal-400/80 mt-2">
+                💡 Manage your chart data anytime in{' '}
+                <a href="/dashboard/profile" className="underline hover:text-teal-300">
+                  Profile Settings
+                </a>
+              </p>
+            )}
           </div>
 
           <div className="space-y-3">
@@ -975,6 +1003,20 @@ const [hasGuarded, setHasGuarded] = useState(false);
               <button
                 onClick={async () => {
                   // Use existing placements as-is - advance to step 2
+                  // If user profile doesn't have placements, save to profile (dual-write)
+                  if (!userPlacements) {
+                    try {
+                      await fetch('/api/profile/placements', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ placements, confirmed: true }),
+                      });
+                      setUserPlacements(placements);
+                    } catch (error) {
+                      console.error('Failed to save placements to profile:', error);
+                    }
+                  }
+
                   await supabase
                     .from('product_sessions')
                     .update({ current_step: 2, current_section: 1, placements_confirmed: true })
@@ -1144,10 +1186,27 @@ const [hasGuarded, setHasGuarded] = useState(false);
                   onClick={async () => {
                     setIsSubmitting(true);
                     setPlacementsError(null);
+
+                    const updatedPlacements = { ...(placements || {}), notes: placementNotes };
+
+                    // If user profile doesn't have placements, save to profile (dual-write)
+                    if (!userPlacements) {
+                      try {
+                        await fetch('/api/profile/placements', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ placements: updatedPlacements, confirmed: true }),
+                        });
+                        setUserPlacements(updatedPlacements);
+                      } catch (error) {
+                        console.error('Failed to save placements to profile:', error);
+                      }
+                    }
+
                     const { error } = await supabase
                       .from('product_sessions')
                       .update({
-                        placements: { ...(placements || {}), notes: placementNotes },
+                        placements: updatedPlacements,
                         placements_confirmed: true,
                         current_section: 1,
                       })
