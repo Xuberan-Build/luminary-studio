@@ -11,6 +11,7 @@ export default function MobileMenu() {
   const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [expandedSection, setExpandedSection] = useState<string | null>(null);
+  const [expandedNodes, setExpandedNodes] = useState<Record<string, boolean>>({});
 
   const isActive = (href: string) => (href === "/" ? pathname === "/" : pathname.startsWith(href));
   const toggleSection = (label: string) => setExpandedSection(expandedSection === label ? null : label);
@@ -18,6 +19,7 @@ export default function MobileMenu() {
   const closeMenu = () => {
     setIsOpen(false);
     setExpandedSection(null);
+    setExpandedNodes({});
   };
 
   // Lock body scroll when the drawer is open
@@ -30,6 +32,64 @@ export default function MobileMenu() {
       };
     }
   }, [isOpen]);
+
+  const toggleNode = (id: string) => {
+    setExpandedNodes((prev) => ({ ...prev, [id]: !prev[id] }));
+  };
+
+  const renderSubmenu = (links: any[], path: string[], depth = 0) => {
+    return links.map((link) => {
+      const nodeId = [...path, link.label].join(">");
+      const hasSubmenu = Array.isArray(link.submenu) && link.submenu.length > 0;
+      const isExpanded = Boolean(expandedNodes[nodeId]);
+      const indent = `${2.5 + depth * 0.75}rem`;
+
+      return (
+        <div key={`${nodeId}-${link.href || "nolink"}`}>
+          <div className={styles.subLinkRow}>
+            {link.href ? (
+              <Link
+                href={link.href}
+                className={`${styles.subLink} ${isActive(link.href) ? styles.active : ""}`}
+                style={{ paddingLeft: indent }}
+                onClick={closeMenu}
+              >
+                <div className={styles.subLinkContent}>
+                  <div className={styles.subLinkLabel}>{link.label}</div>
+                  {link.description && (
+                    <div className={styles.subLinkDescription}>{link.description}</div>
+                  )}
+                </div>
+              </Link>
+            ) : (
+              <div className={styles.subLinkLabelOnly} style={{ paddingLeft: indent }}>
+                {link.label}
+              </div>
+            )}
+            {hasSubmenu && (
+              <button
+                type="button"
+                className={styles.subToggle}
+                aria-expanded={isExpanded}
+                aria-label={`Toggle ${link.label}`}
+                onClick={() => toggleNode(nodeId)}
+              >
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"
+                     className={`${styles.chevron} ${isExpanded ? styles.chevronOpen : ""}`}>
+                  <path d="M4 6l4 4 4-4" strokeWidth="2" stroke="currentColor" fill="none" />
+                </svg>
+              </button>
+            )}
+          </div>
+          {hasSubmenu && isExpanded && (
+            <div className={styles.nestedList}>
+              {renderSubmenu(link.submenu, [...path, link.label], depth + 1)}
+            </div>
+          )}
+        </div>
+      );
+    });
+  };
 
   return (
     <>
@@ -131,17 +191,10 @@ export default function MobileMenu() {
                           <div className={styles.sectionContent}>
                             {item.megaMenu.sections.map((section) => (
                               <div key={section.title} className={styles.megaSection}>
-                                <div className={styles.megaSectionTitle}>{section.title}</div>
-                                {section.links.map((link, idx) => (
-                                  <Link
-                                    key={`${link.href}-${idx}`}
-                                    href={link.href}
-                                    className={`${styles.subLink} ${isActive(link.href) ? styles.active : ""}`}
-                                    onClick={closeMenu}
-                                  >
-                                    {link.label}
-                                  </Link>
-                                ))}
+                                {section.title && (
+                                  <div className={styles.megaSectionTitle}>{section.title}</div>
+                                )}
+                                {renderSubmenu(section.links, [item.label, section.title || "links"])}
                               </div>
                             ))}
                           </div>

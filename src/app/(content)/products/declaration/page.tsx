@@ -1,15 +1,19 @@
 import { Metadata } from "next";
 import Link from "next/link";
 import Navbar from "@/components/navigation/Navbar";
+import StripeCheckout from "@/components/products/StripeCheckout";
+import { PRODUCTS } from "@/lib/constants/products";
 import styles from "./declaration.module.css";
 
 export const metadata: Metadata = {
-  title: "Rite III: Declaration - Choose Your Direction",
+  title: "Rite III: Declaration - Bind Clarity to Chosen Trajectory",
   description:
-    "Three declaration protocols to help you move from possibility to commitment. Transform vague intention into committed direction.",
+    "Three strategic declarations to move from possibility to commitment. Declare your life vision, business model, and strategic path in 75-105 minutes total.",
 };
 
 export default function RiteIIIDeclarationPage() {
+  const bundleProduct = PRODUCTS["declaration-rite-bundle"];
+
   return (
     <div className={styles.page}>
       <Navbar />
@@ -25,33 +29,50 @@ export default function RiteIIIDeclarationPage() {
           <div className={styles.riteBadge}>RITE III: DECLARATION</div>
 
           <h1 className={styles.heroTitle}>
-            Choose Your Direction
+            Bind Clarity to Chosen Trajectory
             <span className={styles.titleAccent}>Possibility → Commitment</span>
           </h1>
 
           <p className={styles.heroDescription}>
-            Three declaration protocols to transform clarity into committed action.
+            Three declarations that collapse ambiguity into a specific, measurable, executable plan.
             <br />
-            This is where strategy begins.
+            Declare your life vision, design your business model, and choose your strategic path.
           </p>
 
           <div className={styles.heroMicrocopy}>
-            Get notified when Rite III launches. Be first to access the three declaration protocols.
+            Complete all three declarations in 75-105 minutes and walk away with strategic documents ready to execute.
           </div>
 
-          <a href="#waitlist" className={styles.heroCta}>
-            <span>Join the Waitlist</span>
+          <a href="#bundle" className={styles.heroCta}>
+            <span>Get The Complete Declaration Bundle</span>
           </a>
 
           <div className={styles.trustIndicators}>
             <div className={styles.indicator}>
-              <span className={styles.indicatorText}>3 Declaration Protocols</span>
+              <span className={styles.indicatorText}>3 Declarations</span>
             </div>
             <div className={styles.indicator}>
-              <span className={styles.indicatorText}>Coming Soon</span>
+              <span className={styles.indicatorText}>$24 Bundle</span>
             </div>
             <div className={styles.indicator}>
-              <span className={styles.indicatorText}>Early Access</span>
+              <span className={styles.indicatorText}>Instant Access</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* What Declaration Does */}
+      <section className={styles.prereq}>
+        <div className={styles.container}>
+          <div className={styles.prereqCard}>
+            <h2 className={styles.prereqTitle}>Recommended Prerequisites</h2>
+            <p className={styles.prereqText}>
+              Rite III is strongest after completing Rite I (Perception) and Rite II (Orientation).
+              It is highly recommended but not required.
+            </p>
+            <div className={styles.prereqLinks}>
+              <Link href="/products/perception">View Rite I: Perception</Link>
+              <Link href="/products/orientation">View Rite II: Orientation</Link>
             </div>
           </div>
         </div>
@@ -65,186 +86,145 @@ export default function RiteIIIDeclarationPage() {
             <div className={styles.purposeCard}>
               <h3 className={styles.purposeTitle}>The Shift</h3>
               <p className={styles.purposeDescription}>
-                Declaration moves you from <strong>possibility</strong> to <strong>commitment</strong>.
-                You'll stop exploring options and start executing on a chosen direction. This is where clarity becomes strategy.
+                Declaration moves you from <strong>clarity</strong> to <strong>commitment</strong>.
+                You stop circling possibilities and choose a specific path, revenue target, and timeline.
               </p>
             </div>
             <div className={styles.purposeCard}>
               <h3 className={styles.purposeTitle}>How It Fits</h3>
               <p className={styles.purposeDescription}>
                 This is the third rite in the system. Rite I helps you <em>see</em> the patterns.
-                Rite II helps you <em>locate yourself</em> within them. Rite III helps you <em>choose your direction</em>.
+                Rite II helps you <em>locate yourself</em> within them. Rite III helps you <em>declare your direction</em>.
               </p>
             </div>
           </div>
         </div>
       </section>
 
-      {/* The Three Declaration Protocols */}
-      <section className={styles.products}>
-        <div className={styles.container}>
-          <h2 className={styles.sectionTitle}>The Three Declaration Protocols</h2>
-          <p className={styles.sectionSubtitle}>
-            Each protocol transforms vague possibility into committed direction across a specific domain.
-          </p>
-
-          <div className={styles.productGrid}>
-            {/* Protocol 1 */}
-            <div className={styles.productCard}>
-              <div className={styles.productBadge}>Protocol 1</div>
-              <h3 className={styles.productTitle}>Personal Direction Declaration</h3>
-              <p className={styles.productDescription}>
-                Declare your personal direction—where you're going, what you're becoming, and what you're committing to in your life.
-                No more vague aspirations. This is your chosen path.
-              </p>
-              <ul className={styles.productFeatures}>
-                <li>Your chosen life direction</li>
-                <li>Identity commitments</li>
-                <li>Non-negotiable boundaries</li>
-                <li>Success definitions</li>
-                <li>Personal evolution milestones</li>
-              </ul>
-            </div>
-
-            {/* Protocol 2 */}
-            <div className={styles.productCard}>
-              <div className={styles.productBadge}>Protocol 2</div>
-              <h3 className={styles.productTitle}>Business Direction Declaration</h3>
-              <p className={styles.productDescription}>
-                Declare your business direction—the market you're serving, the problems you're solving, and the strategy you're executing.
-                Transform business ideas into committed strategy.
-              </p>
-              <ul className={styles.productFeatures}>
-                <li>Target market commitment</li>
-                <li>Core problem statement</li>
-                <li>Revenue model decision</li>
-                <li>Growth strategy declaration</li>
-                <li>Business evolution roadmap</li>
-              </ul>
-            </div>
-
-            {/* Protocol 3 */}
-            <div className={styles.productCard}>
-              <div className={styles.productBadge}>Protocol 3</div>
-              <h3 className={styles.productTitle}>Ideal Life Direction Declaration</h3>
-              <p className={styles.productDescription}>
-                Declare your ideal life direction—how you want to live, what lifestyle you're building toward, and the integration of all domains.
-                This is where personal and business directions converge.
-              </p>
-              <ul className={styles.productFeatures}>
-                <li>Lifestyle architecture</li>
-                <li>Work-life integration model</li>
-                <li>Freedom definition</li>
-                <li>Legacy intention</li>
-                <li>Complete vision statement</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Waitlist Section */}
-      <section id="waitlist" className={styles.bundle}>
+      {/* Bundle Offer */}
+      <section id="bundle" className={styles.bundle}>
         <div className={styles.container}>
           <div className={styles.bundleCard}>
-            <div className={styles.bundleBadge}>COMING SOON</div>
-            <h2 className={styles.bundleTitle}>Join the Declaration Waitlist</h2>
+            <div className={styles.bundleBadge}>BEST VALUE</div>
+            <h2 className={styles.bundleTitle}>The Complete Declaration Bundle</h2>
             <p className={styles.bundleDescription}>
-              Be first to access when Rite III launches. Waitlist members get early access and special pricing.
+              Get all three declarations and leave with a complete strategic plan and committed path forward.
             </p>
 
             <div className={styles.bundlePrice}>
+              <span className={styles.bundlePriceStrike}>$27 individually</span>
               <div className={styles.bundlePriceMain}>
-                <span className={styles.bundlePriceAmount}>Early Access</span>
-                <span className={styles.bundlePricePeriod}>coming soon</span>
+                <span className={styles.bundlePriceAmount}>$24</span>
+                <span className={styles.bundlePricePeriod}>one-time</span>
               </div>
+              <span className={styles.bundleSavings}>Save $3</span>
             </div>
 
             <ul className={styles.bundleFeatures}>
-              <li>✓ First access to all 3 declaration protocols</li>
-              <li>✓ Special early-bird pricing</li>
-              <li>✓ Exclusive launch bonuses</li>
-              <li>✓ Priority support during launch</li>
+              <li>✓ Life Vision Declaration ($9 value)</li>
+              <li>✓ Business Model Declaration ($9 value)</li>
+              <li>✓ Strategic Path Declaration ($9 value)</li>
+              <li>✓ Integrated strategic documents ready to execute</li>
+              <li>✓ 75-105 minutes total to complete all three</li>
+              <li>✓ Instant access, no recurring charges</li>
             </ul>
 
-            <div style={{ textAlign: 'center', padding: '2rem 0' }}>
-              <a
-                href="https://forms.gle/your-waitlist-form"
-                className={styles.heroCta}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <span>Join Waitlist</span>
-              </a>
-            </div>
+            <StripeCheckout
+              paymentLink={bundleProduct?.stripePaymentLink}
+              productName={bundleProduct?.name || "Declaration Rite Bundle"}
+              price={bundleProduct?.price || 24}
+              productSlug={bundleProduct?.slug}
+            />
 
             <div className={styles.guarantee}>
-              No commitment • Get notified at launch • Exclusive early access
+              Secure checkout • Instant delivery • No recurring charges
             </div>
           </div>
         </div>
       </section>
 
-      {/* Why Declaration Comes Last */}
-      <section className={styles.guide}>
+      {/* Individual Purchase Section */}
+      <section id="purchase" className={styles.individualPurchase}>
         <div className={styles.container}>
-          <h2 className={styles.sectionTitle}>Why Declaration Comes Last</h2>
-          <div className={styles.guideGrid}>
-            <div className={styles.guideCard}>
-              <h3 className={styles.guideTitle}>You Can't Declare Without Foundation</h3>
-              <p className={styles.guideDescription}>
-                Declaration requires you to see the patterns (Rite I) and know where you are (Rite II).
-                Without this foundation, declarations are hollow and commitments waver.
-              </p>
-            </div>
-            <div className={styles.guideCard}>
-              <h3 className={styles.guideTitle}>Most People Skip the Foundation</h3>
-              <p className={styles.guideDescription}>
-                They declare goals without perception or orientation. That's why their strategies fail,
-                their commitments dissolve, and their direction keeps shifting.
-              </p>
-            </div>
-            <div className={styles.guideCard}>
-              <h3 className={styles.guideTitle}>The System Is Sequential</h3>
-              <p className={styles.guideDescription}>
-                Rite III works because it comes third. First you see what's possible. Then you know where you are.
-                Only then can you commit to a direction with full conviction.
-              </p>
-            </div>
-          </div>
+          <h2 className={styles.sectionTitle}>Or Purchase Individually</h2>
+          <p className={styles.sectionSubtitle}>
+            Prefer to start with just one? Each declaration is $9 individually.
+          </p>
         </div>
       </section>
 
-      {/* Cross-Linking to Other Rites */}
-      <section className={styles.otherRites}>
+      {/* Individual Declarations */}
+      <section className={styles.products}>
         <div className={styles.container}>
-          <h2 className={styles.sectionTitle}>Explore the Other Rites</h2>
-          <div className={styles.ritesGrid}>
-            <Link href="/products/perception" className={styles.riteCard}>
-              <div className={styles.riteCardBadge}>RITE I</div>
-              <h3 className={styles.riteCardTitle}>Perception</h3>
-              <p className={styles.riteCardDescription}>Learn to see the patterns</p>
-              <div className={styles.riteCardStatus}>Coming Soon</div>
-            </Link>
+          <h2 className={styles.sectionTitle}>The Three Declarations</h2>
+          <p className={styles.sectionSubtitle}>
+            Each declaration can be purchased individually for $9, or get all three in the bundle above.
+          </p>
 
-            <Link href="/products/orientation" className={styles.riteCard}>
-              <div className={styles.riteCardBadge}>RITE II</div>
-              <h3 className={styles.riteCardTitle}>Orientation</h3>
-              <p className={styles.riteCardDescription}>Locate yourself within the system</p>
-              <div className={styles.riteCardStatus}>Available Now</div>
-            </Link>
-
-            <div className={styles.riteCard} style={{ opacity: 0.5, cursor: 'default' }}>
-              <div className={styles.riteCardBadge}>RITE III</div>
-              <h3 className={styles.riteCardTitle}>Declaration</h3>
-              <p className={styles.riteCardDescription}>Choose your direction</p>
-              <div className={styles.riteCardStatusCurrent}>You're here</div>
+          <div className={styles.productGrid}>
+            {/* Life Vision */}
+            <div className={styles.productCard}>
+              <div className={styles.productBadge}>Life Vision</div>
+              <h3 className={styles.productTitle}>Life Vision Declaration</h3>
+              <p className={styles.productDescription}>
+                Declare your moonshot and calculate the real revenue required to fund the life you want.
+                Align ambition with values and sign a personal manifesto.
+              </p>
+              <ul className={styles.productFeatures}>
+                <li>Baseline vs freedom vs moonshot clarity</li>
+                <li>Revenue requirement math</li>
+                <li>Values and capacity alignment</li>
+                <li>Personal manifesto + signature</li>
+              </ul>
+              <div className={styles.productFooter}>
+                <span className={styles.productPrice}>$9</span>
+                <Link href="/products/declaration-rite-life-vision" className={styles.productButton}>
+                  Learn More
+                </Link>
+              </div>
             </div>
-          </div>
-          <div className={styles.ritesFooter}>
-            <Link href="/the-rite-system" className={styles.ritesLink}>
-              Learn more about The Rite System →
-            </Link>
+
+            {/* Business Model */}
+            <div className={styles.productCard}>
+              <div className={styles.productBadge}>Business Model</div>
+              <h3 className={styles.productTitle}>Business Model Declaration</h3>
+              <p className={styles.productDescription}>
+                Map your business as a system, identify constraints, and design the ecosystem required to scale.
+              </p>
+              <ul className={styles.productFeatures}>
+                <li>Unit economics + constraint analysis</li>
+                <li>Feedback loops + leverage points</li>
+                <li>4-pillar ecosystem design</li>
+                <li>Build requirements + timelines</li>
+              </ul>
+              <div className={styles.productFooter}>
+                <span className={styles.productPrice}>$9</span>
+                <Link href="/products/declaration-rite-business-model" className={styles.productButton}>
+                  Learn More
+                </Link>
+              </div>
+            </div>
+
+            {/* Strategic Path */}
+            <div className={styles.productCard}>
+              <div className={styles.productBadge}>Strategic Path</div>
+              <h3 className={styles.productTitle}>Strategic Path Declaration</h3>
+              <p className={styles.productDescription}>
+                Integrate everything into one execution plan and choose your path: solo build or strategic partnership.
+              </p>
+              <ul className={styles.productFeatures}>
+                <li>Integrated 12-month roadmap</li>
+                <li>Solo vs partnership economics</li>
+                <li>Values-based decision framework</li>
+                <li>Final strategic commitment</li>
+              </ul>
+              <div className={styles.productFooter}>
+                <span className={styles.productPrice}>$9</span>
+                <Link href="/products/declaration-rite-strategic-path" className={styles.productButton}>
+                  Learn More
+                </Link>
+              </div>
+            </div>
           </div>
         </div>
       </section>

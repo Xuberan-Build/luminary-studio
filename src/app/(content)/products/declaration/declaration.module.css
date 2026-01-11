@@ -120,6 +120,51 @@
   margin-bottom: 2rem;
 }
 
+/* Prerequisite Banner */
+.prereq {
+  padding: 2rem 2rem;
+  background: linear-gradient(180deg, rgba(15, 5, 36, 0.9) 0%, rgba(3, 0, 72, 0.9) 100%);
+}
+
+.prereqCard {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem 2rem;
+  border-radius: 20px;
+  border: 1px solid rgba(192, 132, 252, 0.25);
+  background: rgba(24, 8, 54, 0.65);
+  box-shadow: 0 20px 40px rgba(8, 4, 24, 0.4);
+  text-align: center;
+}
+
+.prereqTitle {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.prereqText {
+  color: rgba(248, 245, 255, 0.8);
+  margin-bottom: 0.75rem;
+}
+
+.prereqLinks {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.prereqLinks a {
+  color: #C084FC;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.prereqLinks a:hover {
+  color: #E9D5FF;
+}
+
 .heroCta {
   display: inline-block;
   padding: 1rem 2.5rem;
@@ -220,6 +265,133 @@
   line-height: 1.7;
 }
 
+/* Bundle Section */
+.bundle {
+  padding: 6rem 2rem;
+  background: rgba(3, 0, 72, 0.8);
+}
+
+.bundleCard {
+  max-width: 600px;
+  margin: 0 auto;
+  background: linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(192, 132, 252, 0.05) 100%);
+  border: 2px solid rgba(147, 51, 234, 0.3);
+  border-radius: 24px;
+  padding: 3rem;
+  text-align: center;
+  position: relative;
+}
+
+.bundleBadge {
+  display: inline-block;
+  padding: 0.5rem 1.25rem;
+  background: linear-gradient(135deg, #C084FC 0%, #9333EA 100%);
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: white;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+}
+
+.bundleTitle {
+  font-size: clamp(1.75rem, 3vw, 2.5rem);
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #F8F5FF;
+}
+
+.bundleDescription {
+  font-size: 1.125rem;
+  color: rgba(248, 245, 255, 0.8);
+  margin-bottom: 2rem;
+}
+
+.bundlePrice {
+  margin-bottom: 2rem;
+}
+
+.bundlePriceStrike {
+  display: block;
+  font-size: 1rem;
+  color: rgba(248, 245, 255, 0.5);
+  text-decoration: line-through;
+  margin-bottom: 0.5rem;
+}
+
+.bundlePriceMain {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.bundlePriceAmount {
+  font-size: 4rem;
+  font-weight: 700;
+  color: #F8F5FF;
+}
+
+.bundlePricePeriod {
+  font-size: 1.25rem;
+  color: rgba(248, 245, 255, 0.7);
+}
+
+.bundleSavings {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  background: rgba(34, 197, 94, 0.15);
+  border: 1px solid rgba(34, 197, 94, 0.3);
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #86efac;
+}
+
+.bundleFeatures {
+  list-style: none;
+  padding: 0;
+  margin: 2rem 0;
+  text-align: left;
+}
+
+.bundleFeatures li {
+  padding: 0.75rem 0;
+  color: rgba(248, 245, 255, 0.9);
+  font-size: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.bundleFeatures li:last-child {
+  border-bottom: none;
+}
+
+.bundleCta {
+  display: inline-block;
+  padding: 1.25rem 2.5rem;
+  background: linear-gradient(135deg, #9333EA 0%, #7C3AED 100%);
+  color: white;
+  text-decoration: none;
+  border-radius: 12px;
+  font-weight: 700;
+  font-size: 1.25rem;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 20px rgba(147, 51, 234, 0.4);
+  margin-bottom: 1.5rem;
+}
+
+.bundleCta:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 30px rgba(147, 51, 234, 0.6);
+}
+
+.guarantee {
+  font-size: 0.875rem;
+  color: rgba(248, 245, 255, 0.6);
+}
+
 /* Products Section */
 .products {
   padding: 6rem 2rem;
@@ -299,93 +471,36 @@
   color: #9333EA;
 }
 
-/* Bundle Section */
-.bundle {
-  padding: 6rem 2rem;
-  background: rgba(3, 0, 72, 0.8);
-}
-
-.bundleCard {
-  max-width: 600px;
-  margin: 0 auto;
-  background: linear-gradient(135deg, rgba(147, 51, 234, 0.1) 0%, rgba(192, 132, 252, 0.05) 100%);
-  border: 2px solid rgba(147, 51, 234, 0.3);
-  border-radius: 24px;
-  padding: 3rem;
-  text-align: center;
-  position: relative;
-}
-
-.bundleBadge {
-  display: inline-block;
-  padding: 0.5rem 1.25rem;
-  background: linear-gradient(135deg, #C084FC 0%, #9333EA 100%);
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  font-weight: 700;
-  color: white;
-  letter-spacing: 0.05em;
-  text-transform: uppercase;
-  margin-bottom: 1.5rem;
-}
-
-.bundleTitle {
-  font-size: clamp(1.75rem, 3vw, 2.5rem);
-  font-weight: 700;
-  margin-bottom: 1rem;
-  color: #F8F5FF;
-}
-
-.bundleDescription {
-  font-size: 1.125rem;
-  color: rgba(248, 245, 255, 0.8);
-  margin-bottom: 2rem;
-}
-
-.bundlePrice {
-  margin-bottom: 2rem;
-}
-
-.bundlePriceMain {
+.productFooter {
   display: flex;
-  align-items: baseline;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 1.5rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-.bundlePriceAmount {
-  font-size: 4rem;
+.productPrice {
+  font-size: 2rem;
   font-weight: 700;
   color: #F8F5FF;
 }
 
-.bundlePricePeriod {
-  font-size: 1.25rem;
-  color: rgba(248, 245, 255, 0.7);
-}
-
-.bundleFeatures {
-  list-style: none;
-  padding: 0;
-  margin: 2rem 0;
-  text-align: left;
-}
-
-.bundleFeatures li {
-  padding: 0.75rem 0;
-  color: rgba(248, 245, 255, 0.9);
-  font-size: 1rem;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.bundleFeatures li:last-child {
-  border-bottom: none;
-}
-
-.guarantee {
+.productButton {
+  display: inline-block;
+  padding: 0.75rem 1.5rem;
+  background: rgba(147, 51, 234, 0.2);
+  border: 1px solid rgba(147, 51, 234, 0.4);
+  color: #E9D5FF;
+  text-decoration: none;
+  border-radius: 8px;
+  font-weight: 600;
   font-size: 0.875rem;
-  color: rgba(248, 245, 255, 0.6);
+  transition: all 0.3s ease;
+}
+
+.productButton:hover {
+  background: rgba(147, 51, 234, 0.3);
+  border-color: rgba(147, 51, 234, 0.6);
 }
 
 /* Guide Section */
@@ -419,6 +534,49 @@
 .guideDescription {
   color: rgba(248, 245, 255, 0.8);
   line-height: 1.6;
+}
+
+.guideRecommendation {
+  margin-top: 3rem;
+  padding: 1.5rem;
+  background: rgba(147, 51, 234, 0.1);
+  border: 1px solid rgba(147, 51, 234, 0.3);
+  border-radius: 12px;
+  text-align: center;
+  color: rgba(248, 245, 255, 0.9);
+  font-size: 1.125rem;
+}
+
+/* FAQ Section */
+.faq {
+  padding: 6rem 2rem;
+  background: rgba(9, 0, 24, 0.5);
+}
+
+.faqGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+  margin-top: 3rem;
+}
+
+.faqItem {
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.faqQuestion {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+  color: #E9D5FF;
+}
+
+.faqAnswer {
+  color: rgba(248, 245, 255, 0.8);
+  line-height: 1.7;
 }
 
 /* Other Rites Section - Dark & Intriguing */

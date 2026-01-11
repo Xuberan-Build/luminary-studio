@@ -100,6 +100,7 @@ export default function StackedMegaMenu({ isActive, onMouseLeave, menuData }: St
 
   const activeTypeData = contentTypes.find((t) => t.label === activeType);
   const activeCategoryData = activeTypeData?.categories?.find((c) => c.label === activeCategory);
+  const hasDenseCategories = (activeTypeData?.categories?.length || 0) >= 5;
 
   return (
     <div className={styles.stackedMenu} onMouseLeave={onMouseLeave}>
@@ -138,7 +139,11 @@ export default function StackedMegaMenu({ isActive, onMouseLeave, menuData }: St
 
       {/* Row 2: Categories (Horizontal) - Shows when hovering a type with categories */}
       {activeTypeData?.categories && (
-        <div className={`${styles.row} ${styles.categoriesRow}`}>
+        <div
+          className={`${styles.row} ${styles.categoriesRow} ${
+            hasDenseCategories ? styles.categoriesRowDense : ""
+          }`}
+        >
           {activeTypeData.categories.map((category) => (
             <div
               key={category.label}

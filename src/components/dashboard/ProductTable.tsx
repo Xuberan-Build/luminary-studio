@@ -1,0 +1,224 @@
+'use client';
+
+import { useMemo, useState } from 'react';
+import Link from 'next/link';
+import SessionVersionManager from '@/components/dashboard/SessionVersionManager';
+import styles from '@/app/dashboard/dashboard.module.css';
+
+export type ProductTableRow = {
+  slug: string;
+  name: string;
+  estimatedDuration: string;
+  totalSteps: number;
+  riteLabel: string;
+  statusLabel: 'Locked' | 'Ready' | 'In Progress' | 'Complete';
+  statusClass: string;
+  statusRank: number;
+  progressLabel: string;
+  progressValue: number;
+  lastActivityLabel: string;
+  lastActivityTimestamp: number;
+  primaryHref: string;
+  primaryLabel: string;
+  primaryVariant: 'primary' | 'purchase';
+  detailsHref: string;
+  showChat: boolean;
+  chatHref?: string;
+  sessionId?: string;
+  attemptsRemaining: number | null;
+};
+
+type SortKey = 'product' | 'rite' | 'status' | 'progress' | 'lastActivity';
+
+type SortState = {
+  key: SortKey;
+  direction: 'asc' | 'desc';
+};
+
+type Props = {
+  rows: ProductTableRow[];
+  createNewVersionAction: (formData: FormData) => Promise<void>;
+};
+
+const defaultSort: SortState = {
+  key: 'status',
+  direction: 'asc',
+};
+
+const defaultDirectionByKey: Record<SortKey, SortState['direction']> = {
+  product: 'asc',
+  rite: 'asc',
+  status: 'asc',
+  progress: 'desc',
+  lastActivity: 'desc',
+};
+
+function getSortValue(row: ProductTableRow, key: SortKey) {
+  switch (key) {
+    case 'product':
+      return row.name.toLowerCase();
+    case 'rite':
+      return row.riteLabel.toLowerCase();
+    case 'status':
+      return row.statusRank;
+    case 'progress':
+      return row.progressValue;
+    case 'lastActivity':
+      return row.lastActivityTimestamp;
+    default:
+      return '';
+  }
+}
+
+function compareValues(a: string | number, b: string | number) {
+  if (typeof a === 'number' && typeof b === 'number') {
+    return a - b;
+  }
+  return String(a).localeCompare(String(b));
+}
+
+function SortIndicator({ active, direction }: { active: boolean; direction: 'asc' | 'desc' }) {
+  const classes = [
+    styles.sortIcon,
+    active ? styles.sortIconActive : '',
+    direction === 'desc' ? styles.sortIconDown : '',
+  ]
+    .filter(Boolean)
+    .join(' ');
+  return (
+    <span className={classes} aria-hidden="true">
+      ^
+    </span>
+  );
+}
+
+export default function ProductTable({ rows, createNewVersionAction }: Props) {
+  const [sortState, setSortState] = useState<SortState>(defaultSort);
+
+  const sortedRows = useMemo(() => {
+    const sorted = [...rows].sort((a, b) => {
+      const valueA = getSortValue(a, sortState.key);
+      const valueB = getSortValue(b, sortState.key);
+      const primaryCompare = compareValues(valueA, valueB);
+      if (primaryCompare !== 0) {
+        return sortState.direction === 'asc' ? primaryCompare : -primaryCompare;
+      }
+      const fallbackCompare = b.lastActivityTimestamp - a.lastActivityTimestamp;
+      return fallbackCompare;
+    });
+
+    return sorted;
+  }, [rows, sortState]);
+
+  const handleSort = (key: SortKey) => {
+    setSortState((prev) => {
+      if (prev.key === key) {
+        return {
+          key,
+          direction: prev.direction === 'asc' ? 'desc' : 'asc',
+        };
+      }
+      return {
+        key,
+        direction: defaultDirectionByKey[key],
+      };
+    });
+  };
+
+  return (
+    <div className={styles.table}>
+      <div className={styles.tableHeader}>
+        <button
+          type="button"
+          className={styles.tableHeaderCell}
+          onClick={() => handleSort('product')}
+        >
+          Product
+          <SortIndicator active={sortState.key === 'product'} direction={sortState.direction} />
+        </button>
+        <button
+          type="button"
+          className={styles.tableHeaderCell}
+          onClick={() => handleSort('rite')}
+        >
+          Rite
+          <SortIndicator active={sortState.key === 'rite'} direction={sortState.direction} />
+        </button>
+        <button
+          type="button"
+          className={styles.tableHeaderCell}
+          onClick={() => handleSort('status')}
+        >
+          Status
+          <SortIndicator active={sortState.key === 'status'} direction={sortState.direction} />
+        </button>
+        <button
+          type="button"
+          className={styles.tableHeaderCell}
+          onClick={() => handleSort('progress')}
+        >
+          Progress
+          <SortIndicator active={sortState.key === 'progress'} direction={sortState.direction} />
+        </button>
+        <button
+          type="button"
+          className={styles.tableHeaderCell}
+          onClick={() => handleSort('lastActivity')}
+        >
+          Last Activity
+          <SortIndicator active={sortState.key === 'lastActivity'} direction={sortState.direction} />
+        </button>
+        <span className={styles.tableHeaderCellStatic}>Next Action</span>
+        <span className={styles.tableHeaderCellStatic}>Options</span>
+      </div>
+      {sortedRows.map((row) => (
+        <div key={row.slug} className={styles.tableRow}>
+          <div className={styles.tableCell}>
+            <div className={styles.productName}>{row.name}</div>
+            <div className={styles.productSub}>
+              {row.estimatedDuration} • {row.totalSteps} steps
+            </div>
+          </div>
+          <div className={styles.tableCell}>{row.riteLabel}</div>
+          <div className={styles.tableCell}>
+            <span
+              className={`${styles.statusPill} ${styles[row.statusClass]}`}
+            >
+              {row.statusLabel}
+            </span>
+          </div>
+          <div className={styles.tableCell}>{row.progressLabel}</div>
+          <div className={styles.tableCell}>{row.lastActivityLabel}</div>
+          <div className={styles.tableCell}>
+            <Link
+              href={row.primaryHref}
+              className={row.primaryVariant === 'primary' ? styles.primaryAction : styles.purchaseAction}
+            >
+              {row.primaryLabel}
+            </Link>
+          </div>
+          <div className={styles.tableCell}>
+            <div className={styles.secondaryActions}>
+              <Link href={row.detailsHref} className={styles.secondaryAction}>
+                Overview
+              </Link>
+              {row.showChat && row.chatHref && (
+                <Link href={row.chatHref} className={styles.secondaryAction}>
+                  View Chat
+                </Link>
+              )}
+              {row.sessionId && row.attemptsRemaining !== null && (
+                <SessionVersionManager
+                  sessionId={row.sessionId}
+                  productSlug={row.slug}
+                  attemptsRemaining={row.attemptsRemaining}
+                  createNewVersionAction={createNewVersionAction}
+                />
+              )}
+            </div>
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}

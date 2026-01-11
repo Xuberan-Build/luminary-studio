@@ -178,6 +178,12 @@
   animation: slideDown 0.2s ease;
 }
 
+.subLinkRow {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
 .subLink {
   display: block;
   padding: 0.75rem 1.5rem 0.75rem 2.5rem;
@@ -214,6 +220,35 @@
   font-size: 0.85rem;
   opacity: 0.7;
   color: #B399FF;
+}
+
+.subLinkLabelOnly {
+  color: #B399FF;
+  font-size: 0.95rem;
+  padding: 0.75rem 1.5rem 0.75rem 2.5rem;
+}
+
+.subToggle {
+  background: transparent;
+  border: 1px solid rgba(150, 134, 214, 0.25);
+  color: #cebeff;
+  border-radius: 999px;
+  padding: 4px;
+  margin-right: 1rem;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.subToggle:hover {
+  background: rgba(93, 63, 211, 0.2);
+  border-color: rgba(150, 134, 214, 0.5);
+}
+
+.nestedList {
+  padding: 0.25rem 0 0.25rem 0;
 }
 
 /* Mega Menu Section */

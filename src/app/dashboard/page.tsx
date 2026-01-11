@@ -1,10 +1,11 @@
 import { redirect } from 'next/navigation';
 import { createServerSupabaseClient, supabaseAdmin } from '@/lib/supabase/server';
-import Link from 'next/link';
 import styles from './dashboard.module.css';
 import { revalidatePath } from 'next/cache';
-import SessionVersionManager from '@/components/dashboard/SessionVersionManager';
 import { getProductBySlug } from '@/lib/constants/products';
+import ProductTable from '@/components/dashboard/ProductTable';
+import Link from 'next/link';
+import { ALL_BETA_PRODUCTS } from '@/lib/beta/constants';
 
 export const dynamic = 'force-dynamic';
 
@@ -128,6 +129,19 @@ async function getSessionAttempts(userId: string, productSlug: string) {
   }
 }
 
+function getRiteLabel(productSlug: string) {
+  if (productSlug.startsWith('perception-rite-')) {
+    return 'Rite I';
+  }
+  if (productSlug === 'personal-alignment' || productSlug === 'business-alignment' || productSlug === 'brand-alignment' || productSlug === 'orientation-bundle') {
+    return 'Rite II';
+  }
+  if (productSlug.startsWith('declaration-rite-')) {
+    return 'Rite III';
+  }
+  return 'Other';
+}
+
 export default async function DashboardPage() {
   const supabase = await createServerSupabaseClient();
 
@@ -147,6 +161,35 @@ export default async function DashboardPage() {
 
   const products = await getAllProductsWithAccess(session.user.id);
   const sessions = await getUserSessions(session.user.id);
+  const sessionBySlug = new Map(sessions.map((s) => [s.product_slug, s]));
+  const attemptsEntries = await Promise.all(
+    sessions.map(async (s) => [
+      s.product_slug,
+      await getSessionAttempts(session.user.id, s.product_slug),
+    ])
+  );
+  const attemptsBySlug = new Map(attemptsEntries);
+
+  const nextActionItem = (() => {
+    for (const s of sessions) {
+      if (!s.completed_at) {
+        return { slug: s.product_slug, label: 'Continue' };
+      }
+    }
+    const unlocked = products.find((p: any) => p.hasAccess);
+    if (unlocked) {
+      return { slug: unlocked.product.product_slug, label: 'Start' };
+    }
+    const betaProduct = products.find((p: any) => ALL_BETA_PRODUCTS.includes(p.product.product_slug as any));
+    if (betaProduct) {
+      return { slug: 'beta', label: 'Join Beta' };
+    }
+    const first = products[0];
+    if (first) {
+      return { slug: first.product.product_slug, label: 'View' };
+    }
+    return null;
+  })();
 
   return (
     <div className={styles.container}>
@@ -157,137 +200,125 @@ export default async function DashboardPage() {
 
       <main className={styles.main}>
         <section className={styles.section}>
-          <h2>Your Products</h2>
+          <div className={styles.nextActionCard}>
+            <div>
+              <h2 className={styles.nextActionTitle}>Next Action</h2>
+              <p className={styles.nextActionSubtitle}>
+                Continue where you left off or start your next product.
+              </p>
+            </div>
+            {nextActionItem ? (
+              <Link
+                href={nextActionItem.slug === 'beta' ? '/products/beta' : `/products/${nextActionItem.slug}/experience`}
+                className={styles.nextActionButton}
+              >
+                {nextActionItem.label} {nextActionItem.slug === 'beta' ? '' : (getProductBySlug(nextActionItem.slug)?.name || nextActionItem.slug)}
+              </Link>
+            ) : (
+              <span className={styles.nextActionEmpty}>No products available yet.</span>
+            )}
+          </div>
+        </section>
 
+        <section className={styles.section}>
+          <h2>Your Products</h2>
           {products.length === 0 ? (
             <div className={styles.emptyState}>
               <p>No products available yet.</p>
             </div>
           ) : (
-            <div className={styles.productGrid}>
-              {products.map((item: any) => {
+            <ProductTable
+              rows={products.map((item: any) => {
                 const product = item.product;
                 const access = item.access;
                 const hasAccess = item.hasAccess;
-                const isStarted = access?.started_at !== null;
-                const isComplete = access?.completed_at !== null;
+                const sessionRow = sessionBySlug.get(product.product_slug);
+                const attempts = attemptsBySlug.get(product.product_slug);
+                const completed = !!sessionRow?.completed_at || !!access?.completed_at;
+                const started = !!sessionRow || !!access?.started_at;
+                const status = !hasAccess
+                  ? 'Locked'
+                  : completed
+                    ? 'Complete'
+                    : started
+                      ? 'In Progress'
+                      : 'Ready';
+                const statusClass = !hasAccess
+                  ? 'statusLocked'
+                  : completed
+                    ? 'statusComplete'
+                    : started
+                      ? 'statusInProgress'
+                      : 'statusUnlocked';
+                const statusRank = status === 'In Progress'
+                  ? 0
+                  : status === 'Ready'
+                    ? 1
+                    : status === 'Locked'
+                      ? 2
+                      : 3;
+                const totalSteps = Number(sessionRow?.total_steps || product.total_steps || 0);
+                const currentStep = Number(sessionRow?.current_step || 0);
+                const progressValue = completed
+                  ? 1
+                  : totalSteps
+                    ? Math.min(currentStep / totalSteps, 1)
+                    : 0;
+                const progress = completed
+                  ? '100%'
+                  : sessionRow && totalSteps
+                    ? `Step ${currentStep || 1} / ${totalSteps}`
+                    : '0%';
+                const lastActivity = sessionRow?.last_activity_at || sessionRow?.updated_at || access?.purchase_date;
+                const lastActivityTimestamp = lastActivity
+                  ? new Date(lastActivity).getTime()
+                  : 0;
+                const lastActivityLabel = lastActivity
+                  ? new Date(lastActivity).toLocaleDateString()
+                  : '—';
+                const isBetaProduct = ALL_BETA_PRODUCTS.includes(product.product_slug as any);
+                const primaryHref = !hasAccess
+                  ? isBetaProduct
+                    ? '/products/beta'
+                    : `/products/${product.product_slug}#purchase`
+                  : completed && sessionRow
+                    ? `/dashboard/sessions/${sessionRow.id}`
+                    : `/products/${product.product_slug}/experience`;
+                const primaryLabel = !hasAccess
+                  ? isBetaProduct
+                    ? 'Join Beta (Free)'
+                    : `Buy Access $${product.price}`
+                  : completed
+                    ? 'View Report'
+                    : started
+                      ? 'Continue Scan'
+                      : 'Start Scan';
 
-                return (
-                  <div key={product.product_slug} className={styles.productCard}>
-                    <div className={styles.productHeader}>
-                      <h3>{product.name}</h3>
-                      {hasAccess && isComplete && (
-                        <span className={styles.badge}>Complete</span>
-                      )}
-                      {hasAccess && !isComplete && isStarted && (
-                        <span className={styles.badgeInProgress}>
-                          In Progress
-                        </span>
-                      )}
-                      {!hasAccess && (
-                        <span className={styles.badgeLocked}>
-                          ${product.price}
-                        </span>
-                      )}
-                    </div>
-
-                    <p className={styles.productDescription}>
-                      {product.description}
-                    </p>
-
-                    <div className={styles.productMeta}>
-                      <span>{product.estimated_duration}</span>
-                      <span>{product.total_steps} steps</span>
-                    </div>
-
-                    {hasAccess ? (
-                      <Link
-                        href={`/products/${product.product_slug}/experience`}
-                        className={styles.productButton}
-                      >
-                        {isComplete ? 'View Results' : isStarted ? 'Continue' : 'Start'}
-                      </Link>
-                    ) : (
-                      <Link
-                        href={`/products/${product.product_slug}#purchase`}
-                        className={styles.purchaseButton}
-                      >
-                        Purchase for ${product.price}
-                      </Link>
-                    )}
-                  </div>
-                );
+                return {
+                  slug: product.product_slug,
+                  name: product.name,
+                  estimatedDuration: product.estimated_duration || '—',
+                  totalSteps: Number(product.total_steps || 0),
+                  riteLabel: getRiteLabel(product.product_slug),
+                  statusLabel: status,
+                  statusClass,
+                  statusRank,
+                  progressLabel: progress,
+                  progressValue,
+                  lastActivityLabel,
+                  lastActivityTimestamp,
+                  primaryHref,
+                  primaryLabel,
+                  primaryVariant: hasAccess ? 'primary' : 'purchase',
+                  detailsHref: `/products/${product.product_slug}`,
+                  showChat: completed && !!sessionRow,
+                  chatHref: sessionRow ? `/dashboard/sessions/${sessionRow.id}` : undefined,
+                  sessionId: sessionRow?.id,
+                  attemptsRemaining: attempts?.remaining ?? null,
+                };
               })}
-            </div>
-          )}
-        </section>
-
-        <section className={styles.section}>
-          <h2>Your Assets & Briefings</h2>
-          {sessions.length === 0 ? (
-            <div className={styles.emptyState}>
-              <p>No sessions yet for this account. Finish or resume a product to unlock your briefing and chat history.</p>
-              <Link href="/products/business-alignment/experience" className={styles.browseButton}>
-                Resume Business Alignment
-              </Link>
-            </div>
-          ) : (
-            <div className={styles.productGrid}>
-              {sessions.map(async (s: any) => {
-                const completed = !!s.completed_at;
-                const attempts = await getSessionAttempts(session.user.id, s.product_slug);
-                const productInfo = getProductBySlug(s.product_slug);
-
-                return (
-                  <div key={s.id} className={styles.productCard}>
-                    <div className={styles.productHeader}>
-                      <h3>{productInfo?.name || s.product_slug}</h3>
-                      <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
-                        {s.version > 1 && (
-                          <span className={styles.versionBadge}>v{s.version}</span>
-                        )}
-                        {completed ? (
-                          <span className={styles.badge}>Complete</span>
-                        ) : (
-                          <span className={styles.badgeInProgress}>In Progress</span>
-                        )}
-                      </div>
-                    </div>
-                    <p className={styles.productDescription}>
-                      {completed
-                        ? 'View your final briefing and full chat transcript.'
-                        : 'Finish the experience to unlock your briefing.'}
-                    </p>
-                    <div className={styles.productMeta}>
-                      <span>Started: {new Date(s.created_at).toLocaleDateString()}</span>
-                      <span>Attempts: {attempts.used}/{attempts.limit}</span>
-                    </div>
-                    <div className={styles.productActions}>
-                      <Link
-                        href={`/products/${s.product_slug}/experience`}
-                        className={styles.productButton}
-                      >
-                        {completed ? 'View Results' : 'Continue Experience'}
-                      </Link>
-                      {completed && (
-                        <Link
-                          href={`/dashboard/sessions/${s.id}`}
-                          className={styles.secondaryButton}
-                        >
-                          View Briefing & Chat
-                        </Link>
-                      )}
-                      <SessionVersionManager
-                        sessionId={s.id}
-                        productSlug={s.product_slug}
-                        attemptsRemaining={attempts.remaining}
-                        createNewVersionAction={createNewVersion}
-                      />
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
+              createNewVersionAction={createNewVersion}
+            />
           )}
         </section>
       </main>

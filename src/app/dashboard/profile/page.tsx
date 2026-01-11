@@ -1,11 +1,16 @@
 import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import ProfileEditor from '@/components/profile/ProfileEditor';
+import { isPlacementsEmpty } from '@/lib/utils/placements';
 import styles from '../dashboard.module.css';
 
 export const dynamic = 'force-dynamic';
 
-export default async function ProfilePage() {
+type ProfilePageProps = {
+  searchParams?: { onboarding?: string };
+};
+
+export default async function ProfilePage({ searchParams }: ProfilePageProps) {
   const supabase = await createServerSupabaseClient();
 
   const {
@@ -13,7 +18,7 @@ export default async function ProfilePage() {
   } = await supabase.auth.getSession();
 
   if (!session) {
-    redirect('/auth/signin');
+    redirect('/login');
   }
 
   // Fetch user's profile placements
@@ -27,6 +32,10 @@ export default async function ProfilePage() {
     console.error('Error fetching user profile:', error);
   }
 
+  const needsPlacements =
+    !userData?.placements_confirmed || isPlacementsEmpty(userData?.placements || null);
+  const showOnboarding = searchParams?.onboarding === 'beta' || needsPlacements;
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -36,6 +45,23 @@ export default async function ProfilePage() {
         </p>
       </div>
       <div className={styles.main}>
+        {showOnboarding && (
+          <div className={styles.onboardingCard}>
+            <div>
+              <h2 className={styles.onboardingTitle}>Step 1: Verify your charts</h2>
+              <p className={styles.onboardingText}>
+                Upload your astrology + Human Design charts so we can extract placements and
+                personalize every beta product. Review and confirm before you continue.
+              </p>
+              <div className={styles.onboardingSteps}>
+                <span>1) Upload charts</span>
+                <span>2) Review placements</span>
+                <span>3) Confirm accuracy</span>
+              </div>
+            </div>
+            <div className={styles.onboardingBadge}>Beta Onboarding</div>
+          </div>
+        )}
         <ProfileEditor
           initialPlacements={userData?.placements || null}
           placementsConfirmed={userData?.placements_confirmed || false}

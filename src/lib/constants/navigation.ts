@@ -83,7 +83,28 @@ export const navigationConfig = {
               {
                 label: "Rite I: Perception",
                 href: "/products/perception",
-                description: "coming soon"
+                submenu: [
+                  {
+                    label: "Signal Awareness",
+                    href: "/products/perception-rite-scan-1",
+                  },
+                  {
+                    label: "Value Pattern Decoder",
+                    href: "/products/perception-rite-scan-2",
+                  },
+                  {
+                    label: "Boundary & Burnout",
+                    href: "/products/perception-rite-scan-3",
+                  },
+                  {
+                    label: "Money Signal",
+                    href: "/products/perception-rite-scan-4",
+                  },
+                  {
+                    label: "Competence Mapping",
+                    href: "/products/perception-rite-scan-5",
+                  },
+                ],
               },
               {
                 label: "Rite II: Orientation",
@@ -106,7 +127,20 @@ export const navigationConfig = {
               {
                 label: "Rite III: Declaration",
                 href: "/products/declaration",
-                description: "coming soon"
+                submenu: [
+                  {
+                    label: "Life Vision Declaration",
+                    href: "/products/declaration-rite-life-vision",
+                  },
+                  {
+                    label: "Business Model Declaration",
+                    href: "/products/declaration-rite-business-model",
+                  },
+                  {
+                    label: "Strategic Path Declaration",
+                    href: "/products/declaration-rite-strategic-path",
+                  },
+                ],
               },
             ],
           },

@@ -120,6 +120,14 @@
   margin-bottom: 2rem;
 }
 
+.heroCtaGroup {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 2rem;
+}
+
 .heroCta {
   display: inline-block;
   padding: 1rem 2.5rem;
@@ -131,7 +139,6 @@
   font-size: 1.125rem;
   transition: all 0.3s ease;
   box-shadow: 0 4px 20px rgba(147, 51, 234, 0.3);
-  margin-bottom: 2rem;
 }
 
 .heroCta:hover {
@@ -139,6 +146,24 @@
   box-shadow: 0 6px 30px rgba(147, 51, 234, 0.5);
 }
 
+.heroCtaSecondary {
+  display: inline-block;
+  padding: 1rem 2.5rem;
+  border: 1px solid rgba(192, 132, 252, 0.4);
+  border-radius: 12px;
+  color: #E9D5FF;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1.125rem;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.heroCtaSecondary:hover {
+  transform: translateY(-2px);
+  border-color: rgba(192, 132, 252, 0.7);
+  box-shadow: 0 6px 24px rgba(192, 132, 252, 0.2);
+}
 .trustIndicators {
   display: flex;
   gap: 1.5rem;
@@ -299,6 +324,21 @@
   color: #9333EA;
 }
 
+.productCta {
+  display: inline-block;
+  margin-top: auto;
+  color: #E9D5FF;
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px solid rgba(192, 132, 252, 0.5);
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.productCta:hover {
+  color: #FFFFFF;
+  border-color: rgba(255, 255, 255, 0.7);
+}
+
 /* Bundle Section */
 .bundle {
   padding: 6rem 2rem;
@@ -354,6 +394,24 @@
   margin-bottom: 0.5rem;
 }
 
+.bundlePriceSub {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1rem;
+  font-size: 0.95rem;
+  color: rgba(248, 245, 255, 0.7);
+}
+
+.bundlePriceOriginal {
+  text-decoration: line-through;
+  color: rgba(248, 245, 255, 0.5);
+}
+
+.bundlePriceDiscount {
+  color: #C084FC;
+  font-weight: 600;
+}
 .bundlePriceAmount {
   font-size: 4rem;
   font-weight: 700;
