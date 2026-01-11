@@ -17,6 +17,8 @@ if (!ROOT_ID) {
   process.exit(1);
 }
 
+const rootId: string = ROOT_ID;
+
 function getCredentials() {
   const serviceAccountFile = process.env.GOOGLE_SERVICE_ACCOUNT_FILE;
   if (serviceAccountFile && fs.existsSync(serviceAccountFile)) {
@@ -159,9 +161,9 @@ async function moveFile(fileId: string, newParentId: string) {
 async function main() {
   console.log('Applying Ops structure updates...');
 
-  const operations = await ensureFolder(ROOT_ID, 'Operations');
-  const growth = await ensureFolder(ROOT_ID, 'Growth');
-  const delivery = await ensureFolder(ROOT_ID, 'Delivery');
+  const operations = await ensureFolder(rootId, 'Operations');
+  const growth = await ensureFolder(rootId, 'Growth');
+  const delivery = await ensureFolder(rootId, 'Delivery');
 
   const crmFolder = await ensureFolder(operations, 'CRM + BI');
   const deliveryProduct = await ensureFolder(delivery, 'Product');
