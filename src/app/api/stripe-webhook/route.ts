@@ -12,6 +12,8 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-12-15.clover',
 });
 
+const adminEmail = process.env.STRIPE_ADMIN_NOTIFY_EMAIL || 'austin@xuberandigital.com';
+
 function getGoogleCredentials() {
   const client_email = process.env.GOOGLE_GMAIL_CLIENT_EMAIL || process.env.GOOGLE_DRIVE_CLIENT_EMAIL;
   let private_key = process.env.GOOGLE_GMAIL_PRIVATE_KEY || process.env.GOOGLE_DRIVE_PRIVATE_KEY;
@@ -362,8 +364,6 @@ async function sendAdminNotification(params: {
   amount: number;
   sessionId: string;
 }) {
-  const adminEmail = process.env.STRIPE_ADMIN_NOTIFY_EMAIL || 'austin@xuberandigital.com';
-
   const credentials = {
     ...getGoogleCredentials(),
   };
@@ -707,7 +707,6 @@ export async function POST(request: NextRequest) {
       console.log('Email sent successfully');
 
       // Send admin notification
-      const adminEmail = process.env.STRIPE_ADMIN_NOTIFY_EMAIL || 'austin@xuberandigital.com';
       try {
         console.log(`Sending admin notification to ${adminEmail}`);
         await sendAdminNotification({
