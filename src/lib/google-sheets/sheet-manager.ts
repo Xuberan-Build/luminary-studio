@@ -7,7 +7,9 @@ import { PurchaseRecord } from '../email/sequence-manager';
 export async function fetchPurchasesFromSheet(): Promise<PurchaseRecord[]> {
   const credentials = {
     client_email: process.env.GOOGLE_DRIVE_CLIENT_EMAIL,
-    private_key: process.env.GOOGLE_DRIVE_PRIVATE_KEY,
+    private_key: process.env.GOOGLE_DRIVE_PRIVATE_KEY?.includes('\\n')
+      ? process.env.GOOGLE_DRIVE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+      : process.env.GOOGLE_DRIVE_PRIVATE_KEY,
   };
 
   const auth = new google.auth.JWT({
@@ -17,7 +19,7 @@ export async function fetchPurchasesFromSheet(): Promise<PurchaseRecord[]> {
   });
 
   const sheets = google.sheets({ version: 'v4', auth });
-  const spreadsheetId = '1EhC-MCjlqG_4otRZjxefEpttR98s5rXqr98vj2TnLTE';
+  const spreadsheetId = '1rTuGFZePZPV1PpC9bm7rcLs4nWXdr6zsb931OGH3rr8';
 
   // Fetch all rows from Purchases sheet
   const response = await sheets.spreadsheets.values.get({
@@ -71,7 +73,9 @@ export async function updateSheetEmailStatus(
 ): Promise<void> {
   const credentials = {
     client_email: process.env.GOOGLE_DRIVE_CLIENT_EMAIL,
-    private_key: process.env.GOOGLE_DRIVE_PRIVATE_KEY,
+    private_key: process.env.GOOGLE_DRIVE_PRIVATE_KEY?.includes('\\n')
+      ? process.env.GOOGLE_DRIVE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+      : process.env.GOOGLE_DRIVE_PRIVATE_KEY,
   };
 
   const auth = new google.auth.JWT({
@@ -81,7 +85,7 @@ export async function updateSheetEmailStatus(
   });
 
   const sheets = google.sheets({ version: 'v4', auth });
-  const spreadsheetId = '1EhC-MCjlqG_4otRZjxefEpttR98s5rXqr98vj2TnLTE';
+  const spreadsheetId = '1rTuGFZePZPV1PpC9bm7rcLs4nWXdr6zsb931OGH3rr8';
 
   // First, find the row for this email
   const response = await sheets.spreadsheets.values.get({
@@ -140,7 +144,9 @@ export async function updateSheetEmailStatus(
 export async function updateSheetUnsubscribe(email: string): Promise<void> {
   const credentials = {
     client_email: process.env.GOOGLE_DRIVE_CLIENT_EMAIL,
-    private_key: process.env.GOOGLE_DRIVE_PRIVATE_KEY,
+    private_key: process.env.GOOGLE_DRIVE_PRIVATE_KEY?.includes('\\n')
+      ? process.env.GOOGLE_DRIVE_PRIVATE_KEY?.replace(/\\n/g, '\n')
+      : process.env.GOOGLE_DRIVE_PRIVATE_KEY,
   };
 
   const auth = new google.auth.JWT({
@@ -150,7 +156,7 @@ export async function updateSheetUnsubscribe(email: string): Promise<void> {
   });
 
   const sheets = google.sheets({ version: 'v4', auth });
-  const spreadsheetId = '1EhC-MCjlqG_4otRZjxefEpttR98s5rXqr98vj2TnLTE';
+  const spreadsheetId = '1rTuGFZePZPV1PpC9bm7rcLs4nWXdr6zsb931OGH3rr8';
 
   // Find the row for this email
   const response = await sheets.spreadsheets.values.get({

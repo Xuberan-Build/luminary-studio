@@ -1,4 +1,6 @@
 import { google } from 'googleapis';
+import fs from 'fs';
+import path from 'path';
 
 /**
  * Customer Sync Manager
@@ -50,14 +52,34 @@ export interface CustomerInsightData {
   notes?: string;
 }
 
+function getGoogleCredentials() {
+  const serviceAccountPath = process.env.GOOGLE_SERVICE_ACCOUNT_FILE;
+  let fileCredentials: { client_email?: string; private_key?: string } | null = null;
+  if (serviceAccountPath) {
+    try {
+      const resolvedPath = path.isAbsolute(serviceAccountPath)
+        ? serviceAccountPath
+        : path.resolve(process.cwd(), serviceAccountPath);
+      const raw = fs.readFileSync(resolvedPath, 'utf8');
+      fileCredentials = JSON.parse(raw);
+    } catch {
+      fileCredentials = null;
+    }
+  }
+
+  const client_email = fileCredentials?.client_email || process.env.GOOGLE_DRIVE_CLIENT_EMAIL;
+  let private_key = fileCredentials?.private_key || process.env.GOOGLE_DRIVE_PRIVATE_KEY;
+  if (private_key && private_key.includes('\\n')) {
+    private_key = private_key.replace(/\\n/g, '\n');
+  }
+  return { client_email, private_key };
+}
+
 /**
  * Create or update customer in Customers sheet
  */
 export async function syncCustomer(data: CustomerData): Promise<void> {
-  const credentials = {
-    client_email: process.env.GOOGLE_DRIVE_CLIENT_EMAIL,
-    private_key: process.env.GOOGLE_DRIVE_PRIVATE_KEY,
-  };
+  const credentials = getGoogleCredentials();
 
   const auth = new google.auth.JWT({
     email: credentials.client_email,
@@ -66,7 +88,10 @@ export async function syncCustomer(data: CustomerData): Promise<void> {
   });
 
   const sheets = google.sheets({ version: 'v4', auth });
-  const spreadsheetId = '1EhC-MCjlqG_4otRZjxefEpttR98s5rXqr98vj2TnLTE';
+  const spreadsheetId =
+    process.env.GOOGLE_CRM_SHEET_ID ||
+    process.env.GOOGLE_SHEET_ID ||
+    '1rTuGFZePZPV1PpC9bm7rcLs4nWXdr6zsb931OGH3rr8';
 
   // Check if customer exists
   const response = await sheets.spreadsheets.values.get({
@@ -150,10 +175,7 @@ export async function syncCustomer(data: CustomerData): Promise<void> {
  * Store customer insights from GPT product experience
  */
 export async function storeCustomerInsights(data: CustomerInsightData): Promise<void> {
-  const credentials = {
-    client_email: process.env.GOOGLE_DRIVE_CLIENT_EMAIL,
-    private_key: process.env.GOOGLE_DRIVE_PRIVATE_KEY,
-  };
+  const credentials = getGoogleCredentials();
 
   const auth = new google.auth.JWT({
     email: credentials.client_email,
@@ -162,7 +184,10 @@ export async function storeCustomerInsights(data: CustomerInsightData): Promise<
   });
 
   const sheets = google.sheets({ version: 'v4', auth });
-  const spreadsheetId = '1EhC-MCjlqG_4otRZjxefEpttR98s5rXqr98vj2TnLTE';
+  const spreadsheetId =
+    process.env.GOOGLE_CRM_SHEET_ID ||
+    process.env.GOOGLE_SHEET_ID ||
+    '1rTuGFZePZPV1PpC9bm7rcLs4nWXdr6zsb931OGH3rr8';
 
   // Generate segment tags based on profile
   const tags = [];
@@ -244,10 +269,7 @@ export async function storeCustomerInsights(data: CustomerInsightData): Promise<
  * Update customer tags in Customers sheet
  */
 async function updateCustomerTags(email: string, tags: string): Promise<void> {
-  const credentials = {
-    client_email: process.env.GOOGLE_DRIVE_CLIENT_EMAIL,
-    private_key: process.env.GOOGLE_DRIVE_PRIVATE_KEY,
-  };
+  const credentials = getGoogleCredentials();
 
   const auth = new google.auth.JWT({
     email: credentials.client_email,
@@ -256,7 +278,7 @@ async function updateCustomerTags(email: string, tags: string): Promise<void> {
   });
 
   const sheets = google.sheets({ version: 'v4', auth });
-  const spreadsheetId = '1EhC-MCjlqG_4otRZjxefEpttR98s5rXqr98vj2TnLTE';
+  const spreadsheetId = '1rTuGFZePZPV1PpC9bm7rcLs4nWXdr6zsb931OGH3rr8';
 
   // Find customer row
   const response = await sheets.spreadsheets.values.get({

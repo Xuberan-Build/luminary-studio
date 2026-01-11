@@ -1,0 +1,2 @@
+# Drive content index backfill (every 6 hours)
+0 */6 * * * /bin/bash /Users/studio/Projects/luminary-studio-nextjs/scripts/drive/cron/drive-index.sh >> /Users/studio/Projects/luminary-studio-nextjs/scripts/drive/output/drive-index-cron.log 2>&1
