@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { ReactNode, useState, useMemo } from 'react';
 import jsPDF from 'jspdf';
 import { ProductInstructions } from '@/lib/product-definitions/types';
 
@@ -9,6 +9,7 @@ interface DeliverableViewProps {
   productName: string;
   instructions?: ProductInstructions;
   actionableNudges?: string[];
+  feedback?: ReactNode;
 }
 
 interface Section {
@@ -17,7 +18,7 @@ interface Section {
   content: string;
 }
 
-export function DeliverableView({ deliverable, productName, instructions, actionableNudges }: DeliverableViewProps) {
+export function DeliverableView({ deliverable, productName, instructions, actionableNudges, feedback }: DeliverableViewProps) {
   const [copied, setCopied] = useState(false);
 
   // Parse deliverable into sections
@@ -25,21 +26,38 @@ export function DeliverableView({ deliverable, productName, instructions, action
     const parsed: Section[] = [];
     const lines = deliverable.split('\n');
     let currentSection: Section | null = null;
+    let sectionCounter = 0;
 
     for (const line of lines) {
       // Match various header patterns:
-      // "## 1. Title" or "**1. Title**" or "# 1. Title" or "##1) Title" or "## SECTION 1:" etc.
-      const headerMatch = line.match(/^(?:#{1,3}\s*)?(?:\*\*)?(?:SECTION\s+)?(\d+)[.):\s]+([^*\n]+?)(?:\*\*)?$/i);
+      // "**OPENING: Title (subtitle)**" - special case without number
+      // "**SECTION 1: Title**" or "## 1. Title" or "**1. Title**" etc.
+      const openingMatch = line.match(/^\*\*OPENING:\s*([^*]+?)\*\*$/i);
+      const sectionMatch = line.match(/^(?:#{1,3}\s*)?(?:\*\*)?(?:SECTION\s+)?(\d+)[.):\s]+([^*\n]+?)(?:\*\*)?$/i);
 
-      if (headerMatch) {
+      if (openingMatch) {
         // Save previous section
         if (currentSection) {
           parsed.push(currentSection);
         }
-        // Start new section - strip any remaining markdown from title
-        const cleanTitle = headerMatch[2].trim().replace(/[*#]/g, '');
+        // Opening section (no number)
+        sectionCounter++;
+        const cleanTitle = openingMatch[1].trim().replace(/[*#()]/g, '');
         currentSection = {
-          number: headerMatch[1],
+          number: '✦',
+          title: cleanTitle,
+          content: ''
+        };
+      } else if (sectionMatch) {
+        // Save previous section
+        if (currentSection) {
+          parsed.push(currentSection);
+        }
+        // Numbered section
+        sectionCounter++;
+        const cleanTitle = sectionMatch[2].trim().replace(/[*#()]/g, '');
+        currentSection = {
+          number: sectionMatch[1],
           title: cleanTitle,
           content: ''
         };
@@ -48,6 +66,16 @@ export function DeliverableView({ deliverable, productName, instructions, action
         if (!line.trim().match(/^#{1,3}\s*$/)) {
           // Add content to current section (preserve empty lines for spacing)
           currentSection.content += line + '\n';
+        }
+      } else if (line.trim()) {
+        // Content before first section (shouldn't happen but handle gracefully)
+        if (!currentSection) {
+          sectionCounter++;
+          currentSection = {
+            number: '✦',
+            title: 'Introduction',
+            content: line + '\n'
+          };
         }
       }
     }
@@ -364,20 +392,35 @@ export function DeliverableView({ deliverable, productName, instructions, action
                     Key insights and next steps from your journey:
                   </p>
                   <div className="space-y-3">
-                    {actionableNudges.map((nudge, index) => (
-                      <div key={index} className="flex items-start space-x-3">
-                        <span className="text-[#6C5CE7] mt-1.5 flex-shrink-0">●</span>
-                        <p className="text-[#F8F5FF]/90 leading-relaxed">
-                          {nudge}
-                        </p>
-                      </div>
-                    ))}
+                    {actionableNudges.map((nudge, index) => {
+                      // Clean and format markdown in nudges
+                      const cleanNudge = nudge.trim();
+                      const formattedNudge = cleanNudge
+                        .replace(/\*\*([^*]+)\*\*/g, '<strong class="text-[#F8F5FF] font-semibold">$1</strong>')
+                        .replace(/\*([^*]+)\*/g, '<em class="text-[#F8F5FF]/80 italic">$1</em>');
+
+                      return (
+                        <div key={index} className="flex items-start space-x-3">
+                          <span className="text-[#6C5CE7] mt-1.5 flex-shrink-0">●</span>
+                          <p
+                            className="text-[#F8F5FF]/90 leading-relaxed"
+                            dangerouslySetInnerHTML={{ __html: formattedNudge }}
+                          />
+                        </div>
+                      );
+                    })}
                   </div>
                 </div>
               </div>
             )}
           </div>
         </div>
+
+        {feedback && (
+          <div className="mt-12">
+            {feedback}
+          </div>
+        )}
 
         {/* Next Steps */}
         <div className="mt-8 text-center">

@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import ProductExperience from '@/components/product-experience/ProductExperience';
 import { isPlacementsEmpty } from '@/lib/utils/placements';
+import { ALL_BETA_PRODUCTS } from '@/lib/beta/constants';
 
 export const dynamic = 'force-dynamic';
 
@@ -34,6 +35,9 @@ export default async function ProductExperiencePage({
     .single();
 
   if (!access) {
+    if (ALL_BETA_PRODUCTS.includes(slug as any)) {
+      redirect('/products/beta');
+    }
     redirect('/dashboard?error=no-access');
   }
 
@@ -83,8 +87,49 @@ export default async function ProductExperiencePage({
         .eq('id', access.id);
   }
 
+  const sessionPlacementsMissing =
+    !productSession?.placements || isPlacementsEmpty(productSession?.placements);
+
+  // Prefer profile placements if available
+  if (sessionPlacementsMissing) {
+    const { data: profilePlacements, error: profileError } = await supabase
+      .from('users')
+      .select('placements, placements_confirmed')
+      .eq('id', session.user.id)
+      .single();
+
+    if (profileError) {
+      console.error('[experience] Failed to fetch profile placements:', profileError);
+    }
+
+    if (profilePlacements?.placements && !isPlacementsEmpty(profilePlacements.placements)) {
+      console.log('[experience] Using placements from user profile');
+      const { error: updateError } = await supabase
+        .from('product_sessions')
+        .update({
+          placements: profilePlacements.placements,
+          placements_confirmed: !!profilePlacements.placements_confirmed,
+          current_step: 1,
+          current_section: 1,
+        })
+        .eq('id', productSession.id);
+
+      if (updateError) {
+        console.error('[experience] Error updating session with profile placements:', updateError);
+      } else {
+        productSession = {
+          ...productSession,
+          placements: profilePlacements.placements,
+          placements_confirmed: !!profilePlacements.placements_confirmed,
+          current_step: 1,
+          current_section: 1,
+        };
+      }
+    }
+  }
+
   // Auto-copy placements from user's latest confirmed session if missing
-  if (!productSession?.placements) {
+  if (!productSession?.placements || isPlacementsEmpty(productSession?.placements)) {
     console.log('[experience] Attempting auto-copy - no placements in current session');
     const { data: placementSource, error: sourceError } = await supabase
       .from('product_sessions')

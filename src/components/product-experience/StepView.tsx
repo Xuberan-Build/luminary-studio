@@ -1,7 +1,8 @@
 'use client';
 
 import { ChatWindow } from './ChatWindow';
-import { useRef, useState, useEffect } from 'react';
+import WheelOfLife from './WheelOfLife';
+import { useRef, useState, useEffect, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 
@@ -44,6 +45,34 @@ export function StepView({
 }: StepViewProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [currentProcessingMessage, setCurrentProcessingMessage] = useState(0);
+  const [wheelRatings, setWheelRatings] = useState<Record<string, number>>({});
+  const [structuredValue, setStructuredValue] = useState<string | string[]>('');
+  const [structuredOther, setStructuredOther] = useState('');
+  const [textValue, setTextValue] = useState('');
+  const [multiTextValues, setMultiTextValues] = useState<Record<string, string>>({});
+  const textMinLength = step?.text_input?.min_length || 0;
+  const textLength = textValue.trim().length;
+
+  // Handle WheelOfLife rating changes - update response with all 8 ratings
+  const handleWheelRatingChange = (ratings: Record<string, number>) => {
+    setWheelRatings(ratings);
+
+    // Format all ratings for GPT to analyze
+    const ratingsText = `My Wheel of Life Ratings:
+Health: ${ratings.health}/10
+Relationships: ${ratings.relationships}/10
+Purpose: ${ratings.purpose}/10
+Money: ${ratings.money}/10
+Growth: ${ratings.growth}/10
+Creativity: ${ratings.creativity}/10
+Environment: ${ratings.environment}/10
+Contribution: ${ratings.contribution}/10
+
+`;
+
+    // Update response
+    onResponseChange(ratingsText);
+  };
 
   // Rotate through processing messages every 2.5 seconds
   useEffect(() => {
@@ -65,6 +94,16 @@ export function StepView({
     }
   }, [isSubmitting]);
 
+  useEffect(() => {
+    setWheelRatings({});
+    setStructuredValue('');
+    setStructuredOther('');
+    setTextValue('');
+    setMultiTextValues({});
+    onResponseChange('');
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stepNumber]);
+
   const handleAttachClick = () => fileInputRef.current?.click();
   const handleKeyPress = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && e.metaKey) {
@@ -75,6 +114,100 @@ export function StepView({
   const processingText = processingMessages && processingMessages.length > 0
     ? processingMessages[currentProcessingMessage]
     : 'Thinking…';
+
+  const buildStructuredResponse = () => {
+    const parts: string[] = [];
+    const structured = step?.structured_options;
+
+    if (structured) {
+      const selected = Array.isArray(structuredValue) ? structuredValue : structuredValue ? [structuredValue] : [];
+      if (selected.length > 0) {
+        parts.push(`Selected options: ${selected.join(', ')}`);
+      }
+      if (structured.allow_other && structuredOther.trim()) {
+        parts.push(`Other: ${structuredOther.trim()}`);
+      }
+    }
+
+    if (step?.text_inputs && Array.isArray(step.text_inputs)) {
+      const multiLines = step.text_inputs
+        .map((field: any) => {
+          const value = (multiTextValues[field.field_name] || '').trim();
+          return value ? `${field.label} ${value}` : '';
+        })
+        .filter(Boolean);
+      if (multiLines.length > 0) {
+        parts.push(multiLines.join('\n'));
+      }
+    }
+
+    if (step?.text_input && textValue.trim()) {
+      parts.push(textValue.trim());
+    }
+
+    return parts.join('\n\n');
+  };
+
+  const canSubmit = useMemo(() => {
+    if (step?.input_type === 'mixed') {
+      const structured = step?.structured_options;
+      const selected = Array.isArray(structuredValue) ? structuredValue : structuredValue ? [structuredValue] : [];
+      const minRequired = structured?.required_count ?? 0;
+      const hasStructured = selected.length >= minRequired;
+      const requiresText = step?.text_input?.required;
+      const hasText = !requiresText || textValue.trim().length >= (step?.text_input?.min_length || 0);
+      return hasStructured && hasText;
+    }
+
+    if (step?.input_type === 'multi_text') {
+      const fields = step?.text_inputs || [];
+      const requiredFieldsFilled = fields.every((field: any) => {
+        if (!field.required) return true;
+        return (multiTextValues[field.field_name] || '').trim().length > 0;
+      });
+      const requiresText = step?.text_input?.required;
+      const hasText = !requiresText || textValue.trim().length >= (step?.text_input?.min_length || 0);
+      return requiredFieldsFilled && hasText;
+    }
+
+    if (step?.input_type === 'interactive') {
+      return textValue.trim().length >= (step?.text_input?.min_length || 0);
+    }
+
+    if (step?.input_type === 'text') {
+      if (step?.text_inputs) {
+        const fields = step?.text_inputs || [];
+        const requiredFieldsFilled = fields.every((field: any) => {
+          if (!field.required) return true;
+          return (multiTextValues[field.field_name] || '').trim().length > 0;
+        });
+        const requiresText = step?.text_input?.required;
+        const hasText = !requiresText || textValue.trim().length >= (step?.text_input?.min_length || 0);
+        return requiredFieldsFilled && hasText;
+      }
+      if (step?.text_input) {
+        const minLen = step?.text_input?.min_length || 0;
+        return textValue.trim().length >= minLen;
+      }
+    }
+
+    return response.trim().length > 0;
+  }, [step, structuredValue, structuredOther, textValue, multiTextValues, response]);
+
+  useEffect(() => {
+    if (
+      step?.input_type === 'mixed' ||
+      step?.input_type === 'multi_text' ||
+      step?.input_type === 'interactive' ||
+      step?.input_type === 'text' ||
+      step?.text_inputs ||
+      step?.text_input
+    ) {
+      const nextResponse = buildStructuredResponse();
+      onResponseChange(nextResponse);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [structuredValue, structuredOther, textValue, multiTextValues]);
 
   // If this is a file upload step, use ChatWindow (prefer the premium upload UI even if a question is present)
   if (step?.allow_file_upload && !step?.question) {
@@ -137,15 +270,191 @@ export function StepView({
             </div>
           )}
 
-          <textarea
-            value={response}
-            onChange={(e) => onResponseChange(e.target.value)}
-            onKeyDown={handleKeyPress}
-            placeholder="Type your answer here..."
-            className="w-full h-64 bg-gray-900/50 border border-gray-700/50 rounded-xl px-6 py-4 text-white text-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all resize-none"
-            disabled={isSubmitting}
-            autoFocus
-          />
+          {/* Wheel of Life rating component for alignment rating steps */}
+          {step.question?.includes('Rate it 1-10') && (
+            <div className="my-8 pt-4">
+              <WheelOfLife
+                onRatingChange={handleWheelRatingChange}
+                initialRatings={wheelRatings}
+              />
+            </div>
+          )}
+
+          {step?.input_type === 'mixed' && step?.structured_options && (
+            <div className="space-y-6">
+              <div className="grid gap-3 md:grid-cols-2">
+                {step.structured_options.options?.map((option: any) => {
+                  const isSelected = Array.isArray(structuredValue)
+                    ? structuredValue.includes(option.value)
+                    : structuredValue === option.value;
+                  return (
+                    <button
+                      key={option.value}
+                      type="button"
+                      className={`text-left rounded-xl border px-4 py-3 transition ${
+                        isSelected
+                          ? 'border-teal-400 bg-teal-500/10 text-white'
+                          : 'border-gray-700/60 bg-gray-900/40 text-gray-200 hover:border-gray-500'
+                      }`}
+                      onClick={() => {
+                        if (step.structured_options.type === 'checkbox') {
+                          const current = Array.isArray(structuredValue) ? structuredValue : [];
+                          const next = current.includes(option.value)
+                            ? current.filter((item) => item !== option.value)
+                            : [...current, option.value];
+                          setStructuredValue(next);
+                        } else {
+                          setStructuredValue(option.value);
+                        }
+                      }}
+                    >
+                      <div className="font-semibold">{option.label}</div>
+                      {option.description && (
+                        <div className="text-sm text-gray-400">{option.description}</div>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {step.structured_options.allow_other && (
+                <div className="space-y-2">
+                  <label className="text-sm text-gray-400">
+                    {step.structured_options.other_label || 'Other'}
+                  </label>
+                  <input
+                    value={structuredOther}
+                    onChange={(e) => setStructuredOther(e.target.value)}
+                    placeholder="Type your response..."
+                    className="w-full rounded-xl border border-gray-700/60 bg-gray-900/50 px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    disabled={isSubmitting}
+                  />
+                </div>
+              )}
+
+              {step.text_input && (
+                <div className="space-y-2">
+                  <label className="text-sm text-gray-400">{step.text_input.label}</label>
+                  <textarea
+                    value={textValue}
+                    onChange={(e) => setTextValue(e.target.value)}
+                    onKeyDown={handleKeyPress}
+                    placeholder={step.text_input.placeholder || 'Type your answer here...'}
+                    className="w-full h-48 bg-gray-900/50 border border-gray-700/50 rounded-xl px-6 py-4 text-white text-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all resize-none"
+                    disabled={isSubmitting}
+                  />
+                  {textMinLength > 0 && (
+                    <p className="text-xs text-gray-500">
+                      Minimum {textMinLength} characters · {textLength}/{textMinLength}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {step?.input_type === 'multi_text' && step?.text_inputs && (
+            <div className="space-y-6">
+              {step.text_inputs.map((field: any) => (
+                <div key={field.field_name} className="space-y-2">
+                  <label className="text-sm text-gray-400">{field.label}</label>
+                  <input
+                    value={multiTextValues[field.field_name] || ''}
+                    onChange={(e) => setMultiTextValues((prev) => ({ ...prev, [field.field_name]: e.target.value }))}
+                    placeholder={field.placeholder || 'Type your answer...'}
+                    className="w-full rounded-xl border border-gray-700/60 bg-gray-900/50 px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    disabled={isSubmitting}
+                  />
+                </div>
+              ))}
+
+              {step.text_input && (
+                <div className="space-y-2">
+                  <label className="text-sm text-gray-400">{step.text_input.label}</label>
+                  <textarea
+                    value={textValue}
+                    onChange={(e) => setTextValue(e.target.value)}
+                    onKeyDown={handleKeyPress}
+                    placeholder={step.text_input.placeholder || 'Type your answer here...'}
+                    className="w-full h-48 bg-gray-900/50 border border-gray-700/50 rounded-xl px-6 py-4 text-white text-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all resize-none"
+                    disabled={isSubmitting}
+                  />
+                  {textMinLength > 0 && (
+                    <p className="text-xs text-gray-500">
+                      Minimum {textMinLength} characters · {textLength}/{textMinLength}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {step?.input_type === 'interactive' && step?.text_input && (
+            <div className="space-y-2">
+              <label className="text-sm text-gray-400">{step.text_input.label}</label>
+              <textarea
+                value={textValue}
+                onChange={(e) => setTextValue(e.target.value)}
+                onKeyDown={handleKeyPress}
+                placeholder={step.text_input.placeholder || 'Type your answer here...'}
+                className="w-full h-64 bg-gray-900/50 border border-gray-700/50 rounded-xl px-6 py-4 text-white text-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all resize-none"
+                disabled={isSubmitting}
+              />
+              {textMinLength > 0 && (
+                <p className="text-xs text-gray-500">
+                  Minimum {textMinLength} characters · {textLength}/{textMinLength}
+                </p>
+              )}
+            </div>
+          )}
+
+          {step?.input_type === 'text' && (
+            <div className="space-y-6">
+              {step.text_inputs && step.text_inputs.map((field: any) => (
+                <div key={field.field_name} className="space-y-2">
+                  <label className="text-sm text-gray-400">{field.label}</label>
+                  <input
+                    value={multiTextValues[field.field_name] || ''}
+                    onChange={(e) => setMultiTextValues((prev) => ({ ...prev, [field.field_name]: e.target.value }))}
+                    placeholder={field.placeholder || 'Type your answer...'}
+                    className="w-full rounded-xl border border-gray-700/60 bg-gray-900/50 px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500"
+                    disabled={isSubmitting}
+                  />
+                </div>
+              ))}
+
+              {step.text_input && (
+                <div className="space-y-2">
+                  <label className="text-sm text-gray-400">{step.text_input.label}</label>
+                  <textarea
+                    value={textValue}
+                    onChange={(e) => setTextValue(e.target.value)}
+                    onKeyDown={handleKeyPress}
+                    placeholder={step.text_input.placeholder || 'Type your answer here...'}
+                    className="w-full h-64 bg-gray-900/50 border border-gray-700/50 rounded-xl px-6 py-4 text-white text-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all resize-none"
+                    disabled={isSubmitting}
+                  />
+                  {textMinLength > 0 && (
+                    <p className="text-xs text-gray-500">
+                      Minimum {textMinLength} characters · {textLength}/{textMinLength}
+                    </p>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
+          {!step?.input_type && (
+            <textarea
+              value={response}
+              onChange={(e) => onResponseChange(e.target.value)}
+              onKeyDown={handleKeyPress}
+              placeholder="Type your answer here..."
+              className="w-full h-64 bg-gray-900/50 border border-gray-700/50 rounded-xl px-6 py-4 text-white text-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all resize-none"
+              disabled={isSubmitting}
+              autoFocus
+            />
+          )}
 
           {/* File Upload Option (if allowed) */}
           {step.allow_file_upload && step.file_upload_prompt && (
@@ -228,7 +537,7 @@ export function StepView({
             )}
             <button
               onClick={onSubmit}
-              disabled={!response.trim() || isSubmitting}
+              disabled={!canSubmit || isSubmitting}
               className="flex-1 bg-teal-500 hover:bg-teal-400 disabled:bg-gray-700/50 disabled:text-gray-600 text-white font-bold py-4 rounded-xl transition-all disabled:cursor-not-allowed shadow-lg hover:shadow-teal-500/50 text-lg"
             >
               {isSubmitting ? (

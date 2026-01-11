@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { ReactNode, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { ProgressBar } from './ProgressBar';
 import { StepView } from './StepView';
@@ -10,6 +10,14 @@ import { WelcomeBanner } from './WelcomeBanner';
 import { supabase } from '@/lib/supabase/client';
 import { isPlacementsEmpty } from '@/lib/utils/placements';
 import { chartAnalysisModel, conversationalModel } from '@/lib/ai/models';
+import { useStep1StateMachine } from './useStep1StateMachine';
+import { THREE_RITES_PRODUCTS } from '@/lib/beta/constants';
+import ScanFeedbackForm from '@/components/beta/ScanFeedbackForm';
+import BlueprintFeedbackForm from '@/components/beta/BlueprintFeedbackForm';
+import DeclarationFeedbackForm from '@/components/beta/DeclarationFeedbackForm';
+import RiteOneConsolidationForm from '@/components/beta/RiteOneConsolidationForm';
+import RiteTwoConsolidationForm from '@/components/beta/RiteTwoConsolidationForm';
+import CompleteJourneyForm from '@/components/beta/CompleteJourneyForm';
 
 interface ProductExperienceProps {
   product: any;
@@ -36,7 +44,6 @@ export default function ProductExperience({
     !!session.placements_confirmed
   );
   const [uploadsLoaded, setUploadsLoaded] = useState<boolean>(false);
-  const [placementsAcknowledgedUnknowns, setPlacementsAcknowledgedUnknowns] = useState<boolean>(false);
   const [userPlacements, setUserPlacements] = useState<any>(null);
   const [currentSection, setCurrentSection] = useState<number>(
     session.current_section || 1
@@ -44,21 +51,24 @@ export default function ProductExperience({
   const [followupCounts, setFollowupCounts] = useState<Record<number, number>>(
     session.followup_counts || {}
   );
-  const [confirmGate, setConfirmGate] = useState(false);
   const [isExtracting, setIsExtracting] = useState(false);
   const [placementsError, setPlacementsError] = useState<string | null>(null);
   const [placementNotes, setPlacementNotes] = useState<string>('');
   const searchParams = useSearchParams();
   const [assistantReply, setAssistantReply] = useState<string>('');
   const [showIntroReply, setShowIntroReply] = useState<boolean>(false);
-const [hasGuarded, setHasGuarded] = useState(false);
   const [seedInsightShown, setSeedInsightShown] = useState(false);
-  const [forcedConfirmOnce, setForcedConfirmOnce] = useState(false);
-  const [forcedInitReset, setForcedInitReset] = useState(false);
-  const [showWelcome, setShowWelcome] = useState(
-    !!product.instructions && currentStep === 1 && !session.completed_at
-  );
-  const [forceEditMode, setForceEditMode] = useState(false);
+  const [isBetaParticipant, setIsBetaParticipant] = useState(false);
+
+  // Step 1 State Machine - replaces fragile boolean flags
+  const hasPlacementData = !isPlacementsEmpty(placements);
+  const step1Machine = useStep1StateMachine({
+    hasInstructions: !!product.instructions,
+    hasPlacementsData: hasPlacementData,
+    placementsConfirmed,
+    isExtracting,
+    currentStep,
+  });
 
   const appendConversation = async (stepNumber: number, newMessages: Array<{ role: string; content: string; type?: string }>) => {
     const { data } = await supabase
@@ -105,6 +115,12 @@ const [hasGuarded, setHasGuarded] = useState(false);
     );
   }, []); // log once on mount
 
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    setStepResponse('');
+  }, [currentStep, showFollowUp]);
+
   // Fetch user's profile placements on mount
   useEffect(() => {
     const fetchUserPlacements = async () => {
@@ -122,13 +138,30 @@ const [hasGuarded, setHasGuarded] = useState(false);
   }, []);
 
   useEffect(() => {
+    const fetchBetaStatus = async () => {
+      try {
+        const { data } = await supabase
+          .from('beta_participants')
+          .select('id')
+          .eq('user_id', userId)
+          .maybeSingle();
+        setIsBetaParticipant(Boolean(data?.id));
+      } catch (error) {
+        console.error('Failed to fetch beta participant status:', error);
+      }
+    };
+
+    fetchBetaStatus();
+  }, [userId]);
+
+  useEffect(() => {
     console.log(
       '[PX] state change',
       JSON.stringify(
         {
           currentStep,
           placementsConfirmed,
-          confirmGate,
+          step1State: step1Machine.state,
           placementsEmpty: isPlacementsEmpty(placements),
           uploadedFiles: uploadedFiles.length,
           showFollowUp,
@@ -137,22 +170,13 @@ const [hasGuarded, setHasGuarded] = useState(false);
         2
       )
     );
-  }, [placementsConfirmed, currentStep, confirmGate, placements, uploadedFiles.length, showFollowUp]);
+  }, [placementsConfirmed, currentStep, step1Machine.state, placements, uploadedFiles.length, showFollowUp]);
 
   // Use steps directly from product (now stored in Supabase)
   const steps = product.steps || [];
   const currentStepData = steps[currentStep - 1];
   const isLastStep = currentStep === steps.length;
   const completionPercentage = Math.round((currentStep / steps.length) * 100);
-  const hasPlacementData = !isPlacementsEmpty(placements);
-  // CRITICAL: Show auto-copied gate when placements exist but not confirmed
-  // Remove uploadedFiles check - gate must show regardless
-  // Hide if user clicked "Review & Edit" (forceEditMode)
-  const showAutoCopiedGate =
-    currentStep === 1 &&
-    hasPlacementData &&
-    !placementsConfirmed &&
-    !forceEditMode;
 
   // Check if session is complete and load deliverable
   useEffect(() => {
@@ -161,34 +185,10 @@ const [hasGuarded, setHasGuarded] = useState(false);
     }
   }, [session.completed_at]);
 
-  // If placements are not confirmed, force user back to step 1 and the confirmation gate
-  useEffect(() => {
-    if (!placementsConfirmed && currentStep > 1) {
-      setCurrentStep(1);
-      setConfirmGate(true);
-      supabase
-        .from('product_sessions')
-        .update({ current_step: 1 })
-        .eq('id', session.id)
-        .eq('user_id', userId)
-        .throwOnError();
-    }
-  }, [placementsConfirmed, currentStep, steps.length, session.id, userId]);
-
-  // HOTFIX: Removed erasure logic that was deleting auto-copied placements
-  // Previous useEffect would set placements = null if isPlacementsEmpty() was true
-  // This broke auto-copy because it erased placements immediately after copying
-  // Now auto-copied placements are preserved and shown in confirmation gate
-
-  // If query has confirm=1, open the confirmation gate
-  useEffect(() => {
-    if (!placementsConfirmed) {
-      const confirmFlag = searchParams.get('confirm');
-      if (confirmFlag === '1') {
-        setConfirmGate(true);
-      }
-    }
-  }, [placementsConfirmed, searchParams]);
+  // REMOVED: Legacy boolean flag useEffects (now handled by state machine)
+  // - Force user back to step 1 if placements not confirmed
+  // - Erasure logic that deleted auto-copied placements
+  // - Query param confirm=1 handling
 
   // Extract actionable nudges from conversations when deliverable is ready
   useEffect(() => {
@@ -218,13 +218,31 @@ const [hasGuarded, setHasGuarded] = useState(false);
           if (msg.role !== 'assistant' || prevMsg.role !== 'user') continue;
           if (!msg.content) continue;
 
-          // PRIORITY 1: Extract explicitly formatted "Actionable nudge (timeframe):" statements
-          // Pattern: "Actionable nudge (this week): do something"
-          const explicitNudges = msg.content.match(/Actionable nudge[^:]{0,60}:[^.!?\n]{20,300}[.!]?/gi);
-          if (explicitNudges) {
-            explicitNudges.forEach((nudge: string) => {
-              const trimmed = nudge.trim().replace(/\*\*/g, ''); // Remove markdown bold
-              if (trimmed.length > 30) {
+          // PRIORITY 1: Extract explicit "Actionable alignment nudge" blocks (can span multiple lines)
+          // Capture content until a blank line or a new header-style line.
+          const content = String(msg.content);
+          const blockMatches = content.match(
+            /(?:^|\n)\s*(Actionable (?:alignment )?nudge(?:\s*\([^)]*\))?|One (?:alignment|micro-action|identity-shift|powerful) (?:nudge|action|step))\s*:\s*([\s\S]*?)(?=\n\s*\n|\n\s*(?:\*\*|#{1,3}\s)|$)/gi
+          );
+          if (blockMatches) {
+            blockMatches.forEach((block: string) => {
+              const cleaned = block
+                .replace(/\*\*/g, '')
+                .replace(/^\s+|\s+$/g, '')
+                .replace(/\n{3,}/g, '\n\n');
+              if (cleaned.length > 40) {
+                nudges.push(cleaned);
+              }
+            });
+          }
+
+          // PRIORITY 2: Extract end-of-response nudges/next steps
+          // Pattern: Sentences at end that start with action verbs
+          const endNudges = content.match(/(?:^|\n)(?:This week|Next step|Try this|Start by|Begin with)[^.!?]{20,250}[.!]/gi);
+          if (endNudges) {
+            endNudges.forEach((nudge: string) => {
+              const trimmed = nudge.trim();
+              if (trimmed.length > 30 && trimmed.length < 250) {
                 nudges.push(trimmed);
               }
             });
@@ -232,7 +250,7 @@ const [hasGuarded, setHasGuarded] = useState(false);
 
           // Extract specific insights/observations about them
           // Pattern: "Your [chart thing] says/means/shows [insight]"
-          const insights = msg.content.match(/Your [^.!?]{10,80}(?:says|means|shows|suggests|confirms|reveals)[^.!?]{20,120}[.!]/gi);
+          const insights = content.match(/Your [^.!?]{10,80}(?:says|means|shows|suggests|confirms|reveals)[^.!?]{20,120}[.!]/gi);
           if (insights) {
             insights.forEach((insight: string) => {
               const trimmed = insight.trim();
@@ -247,7 +265,7 @@ const [hasGuarded, setHasGuarded] = useState(false);
 
           // Extract actionable next steps (imperative statements with action verbs)
           // Expanded verb list to catch more actionable advice
-          const actions = msg.content.match(/(?:^|\n)(?:Choose|Write|Pick|Post|Add|Send|Reach out|Schedule|Plan|Draft|Review|Try|Start|Begin|Consider|Focus on|Design|Build|Create|Shift to|Release|Let go of|Lean into|Explore|Test|Practice|Run|Launch|Set up|Configure|Update|Refine)[^.!?]{30,200}[.!]/gi);
+          const actions = content.match(/(?:^|\n)(?:Choose|Write|Pick|Post|Add|Send|Reach out|Schedule|Plan|Draft|Review|Try|Start|Begin|Consider|Focus on|Design|Build|Create|Shift to|Release|Let go of|Lean into|Explore|Test|Practice|Run|Launch|Set up|Configure|Update|Refine)[^.!?]{30,200}[.!]/gi);
           if (actions) {
             actions.forEach((action: string) => {
               const trimmed = action.trim();
@@ -352,26 +370,9 @@ const [hasGuarded, setHasGuarded] = useState(false);
     loadUploads();
   }, [session.id]);
 
-  // Force confirmation gate on first load of step 1 to allow re-confirmation
-  useEffect(() => {
-    if (currentStep === 1 && !forcedConfirmOnce) {
-      const hasUploads = uploadedFiles.length > 0;
-      setConfirmGate(hasUploads);
-
-      setForcedConfirmOnce(true);
-    }
-  }, [currentStep, placementsConfirmed, forcedConfirmOnce, uploadedFiles.length, placements]);
-
-  // Only force reset if placements are actually empty (not if just on step > 1)
-  useEffect(() => {
-    if (!forcedInitReset && session.placements_confirmed && isPlacementsEmpty(session.placements)) {
-      console.log('[PX] Session claims placements confirmed but they are empty - forcing reconfirmation');
-      setPlacementsConfirmed(false);
-      setConfirmGate(true);
-      setCurrentStep(1);
-      setForcedInitReset(true);
-    }
-  }, [forcedInitReset, session.placements_confirmed, session.placements]);
+  // REMOVED: Legacy confirmation gate useEffects (now handled by state machine)
+  // - Force confirmation gate on first load
+  // - Force reset if placements empty but confirmed
 
   // Auto intro reply after placements confirmed
   useEffect(() => {
@@ -522,11 +523,10 @@ const [hasGuarded, setHasGuarded] = useState(false);
         setUploadError('Please attach at least one file to continue.');
         return;
       }
-      // For step 1, always force confirmation/extraction instead of advancing
+      // For step 1, trigger extraction when files are ready
       if (currentStep === 1) {
         setUploadError(null);
-        setIsSubmitting(true);
-        setConfirmGate(true);
+        await handleExtractPlacements(); // This will trigger state machine transitions
         return;
       }
     } else {
@@ -536,6 +536,34 @@ const [hasGuarded, setHasGuarded] = useState(false);
     setIsSubmitting(true);
 
     try {
+      // Persist step response in product_sessions.step_data for structured scans
+      try {
+        const stepKey = `step_${currentStep}`;
+        const { data: stepDataRecord } = await supabase
+          .from('product_sessions')
+          .select('step_data')
+          .eq('id', session.id)
+          .single();
+        const existingStepData = (stepDataRecord?.step_data as Record<string, any>) || {};
+        const nextStepData = {
+          ...existingStepData,
+          [stepKey]: {
+            answer: isUploadStep
+              ? `Uploaded files: ${uploadedFiles.join(', ')}`
+              : stepResponse,
+            completed_at: new Date().toISOString(),
+          },
+        };
+
+        await supabase
+          .from('product_sessions')
+          .update({ step_data: nextStepData, last_activity_at: new Date().toISOString() })
+          .eq('id', session.id)
+          .eq('user_id', userId);
+      } catch (e) {
+        console.error('[step-data] Failed to persist step data', e);
+      }
+
       // Save conversation to database (append to messages array)
       await appendConversation(currentStep, [
         {
@@ -615,7 +643,6 @@ const [hasGuarded, setHasGuarded] = useState(false);
         setStepResponse('');
         setShowFollowUp(false);
         setFollowUpCount(0);
-        setConfirmGate(false); // Reset confirm gate when moving to next step
         setAssistantReply(''); // Clear previous assistant reply for new step
         setSeedInsightShown(false); // Reset so GPT can respond at each step
         setShowIntroReply(false); // Reset intro reply flag
@@ -681,15 +708,14 @@ const [hasGuarded, setHasGuarded] = useState(false);
 
   const handleReviewCharts = async () => {
     // Reset to step 1 to review/edit placements
-    // BUT: Keep placements_confirmed true in DB so completed sessions can be auto-copied
-    setPlacementsConfirmed(false); // Client-side only - triggers confirmation gate
-    setConfirmGate(true); // Show confirmation gate
+    // Setting placementsConfirmed=false triggers REVIEW state in state machine
+    setPlacementsConfirmed(false); // Client-side triggers state machine REVIEW state
     setCurrentStep(1);
     setStepResponse('');
     setShowFollowUp(false);
     await supabase
       .from('product_sessions')
-      .update({ current_step: 1 }) // Don't reset placements_confirmed!
+      .update({ current_step: 1 }) // Don't reset placements_confirmed in DB
       .eq('id', session.id)
       .eq('user_id', userId)
       .throwOnError();
@@ -701,8 +727,7 @@ const [hasGuarded, setHasGuarded] = useState(false);
     // If user uploads new files, force re-confirmation
     if (placementsConfirmed) {
       console.log('[PX] new upload - resetting placementsConfirmed false');
-      setPlacementsConfirmed(false);
-      setConfirmGate(true);
+      setPlacementsConfirmed(false); // Triggers state machine UPLOAD state
       await supabase
         .from('product_sessions')
         .update({ placements_confirmed: false })
@@ -772,6 +797,7 @@ const [hasGuarded, setHasGuarded] = useState(false);
 
     setPlacementsError(null);
     setIsExtracting(true);
+    step1Machine.transitions.uploadComplete(); // Trigger EXTRACTING state
 
     try {
       const startTime = Date.now();
@@ -803,6 +829,7 @@ const [hasGuarded, setHasGuarded] = useState(false);
       const { placements: extracted } = responseData;
       setPlacements(extracted);
       console.log('=== CLIENT: EXTRACTION COMPLETED ===');
+      step1Machine.transitions.extractionComplete(); // Trigger REVIEW state
     } catch (err: any) {
       console.error('=== CLIENT: EXTRACTION FAILED ===');
       console.error('Error details:', {
@@ -811,199 +838,158 @@ const [hasGuarded, setHasGuarded] = useState(false);
         stack: err?.stack
       });
       setPlacementsError(err?.message || 'Failed to extract placements. Please try again.');
+      // Stay in current state on error (don't transition)
     } finally {
       setIsExtracting(false);
     }
   };
 
-  // Show confirmation gate on step 1 upload step ONLY after files are uploaded
-  useEffect(() => {
-    if (currentStep === 1 && currentStepData?.allow_file_upload) {
-      const hasFiles = uploadedFiles.length > 0;
-
-      // Show confirm gate ONLY if the user has uploaded files
-      if (hasFiles) {
-        if (!confirmGate) {
-          console.log('[PX] showing confirm gate after files uploaded', {
-            confirmGate,
-            placementsConfirmed,
-            placementsEmpty: !hasPlacementData,
-            hasFiles,
-            uploadsLoaded,
-          });
-          setConfirmGate(true);
-        }
-      } else {
-        // No files yet - show upload interface
-        if (confirmGate) {
-          console.log('[PX] hiding confirm gate - no files uploaded yet');
-          setConfirmGate(false);
-        }
-      }
-    }
-  }, [
-    currentStep,
-    currentStepData?.allow_file_upload,
-    confirmGate,
-    placements,
-    placementsConfirmed,
-    uploadedFiles.length,
-    uploadsLoaded,
-  ]);
-
-  // If placements already confirmed, skip the upload gate and proceed
-  useEffect(() => {
-    if (
-      currentStep === 1 &&
-      placementsConfirmed &&
-      hasPlacementData &&
-      !confirmGate &&
-      !showWelcome
-    ) {
-      supabase
-        .from('product_sessions')
-        .update({ current_step: 2, current_section: 1 })
-        .eq('id', session.id)
-        .eq('user_id', userId)
-        .throwOnError();
-      setCurrentStep(2);
-    }
-  }, [
-    currentStep,
-    placementsConfirmed,
-    hasPlacementData,
-    confirmGate,
-    showWelcome,
-    session.id,
-    userId,
-  ]);
-
-  // Guard: if placements are missing/unconfirmed, normalize state once
-  useEffect(() => {
-    const needGuard = !placementsConfirmed || isPlacementsEmpty(placements);
-    if (needGuard) {
-      if (currentStep !== 1) {
-        setCurrentStep(1);
-      }
-      // Don't force confirmGate here - let the upload logic handle it
-      // setConfirmGate(true);
-      if (!hasGuarded) {
-        setHasGuarded(true);
-        console.log('[PX] guard effect resetting session to step 1');
-        supabase
-          .from('product_sessions')
-          .update({
-            current_step: 1,
-            placements_confirmed: false,
-            // keep placements if we already have them; only null when empty
-            placements: isPlacementsEmpty(placements) ? null : placements,
-            current_section: 1,
-          })
-          .eq('id', session.id)
-          .eq('user_id', userId)
-          .throwOnError();
-      }
-    } else {
-      if (hasGuarded) setHasGuarded(false);
-    }
-  }, [placementsConfirmed, placements, currentStep, steps.length, session.id, userId, hasGuarded]);
+  // REMOVED: Legacy gate and auto-advance useEffects (now handled by state machine)
+  // - Show confirmation gate after files uploaded
+  // - Auto-advance to step 2 if placements confirmed
+  // - Guard effect to normalize state
 
   // If deliverable is ready, show it
   if (deliverable) {
+    const productSlug = product.product_slug;
+    const feedbackBlocks: ReactNode[] = [];
+
+    if (isBetaParticipant) {
+      if (THREE_RITES_PRODUCTS.PERCEPTION.includes(productSlug)) {
+        feedbackBlocks.push(
+          <ScanFeedbackForm
+            key={`${productSlug}-scan-feedback`}
+            productSlug={productSlug}
+            sessionId={session.id}
+          />
+        );
+
+        if (productSlug === THREE_RITES_PRODUCTS.PERCEPTION[THREE_RITES_PRODUCTS.PERCEPTION.length - 1]) {
+          feedbackBlocks.push(
+            <RiteOneConsolidationForm key="rite-one-consolidation" />
+          );
+        }
+      }
+
+      if (THREE_RITES_PRODUCTS.ORIENTATION.includes(productSlug)) {
+        feedbackBlocks.push(
+          <BlueprintFeedbackForm
+            key={`${productSlug}-blueprint-feedback`}
+            productSlug={productSlug}
+            sessionId={session.id}
+          />
+        );
+
+        if (productSlug === THREE_RITES_PRODUCTS.ORIENTATION[THREE_RITES_PRODUCTS.ORIENTATION.length - 1]) {
+          feedbackBlocks.push(
+            <RiteTwoConsolidationForm key="rite-two-consolidation" />
+          );
+        }
+      }
+
+      if (THREE_RITES_PRODUCTS.DECLARATION.includes(productSlug)) {
+        feedbackBlocks.push(
+          <DeclarationFeedbackForm
+            key={`${productSlug}-declaration-feedback`}
+            productSlug={productSlug}
+            sessionId={session.id}
+          />
+        );
+
+        if (productSlug === THREE_RITES_PRODUCTS.DECLARATION[THREE_RITES_PRODUCTS.DECLARATION.length - 1]) {
+          feedbackBlocks.push(
+            <CompleteJourneyForm key="complete-journey-feedback" />
+          );
+        }
+      }
+    }
+
     return (
       <DeliverableView
         deliverable={deliverable}
         productName={product.name}
         instructions={product.instructions}
         actionableNudges={actionableNudges}
+        feedback={feedbackBlocks.length ? <div className="space-y-10">{feedbackBlocks}</div> : undefined}
       />
     );
   }
 
-  if (showWelcome && product.instructions) {
-    return (
-      <WelcomeBanner
-        instructions={product.instructions}
-        onBegin={() => setShowWelcome(false)}
-      />
-    );
-  }
+  // Step 1 State Machine Render Logic
+  if (currentStep === 1) {
+    // WELCOME STATE
+    if (step1Machine.shouldShowWelcome) {
+      return (
+        <WelcomeBanner
+          instructions={product.instructions}
+          onBegin={() => step1Machine.transitions.welcomeComplete()}
+        />
+      );
+    }
 
-  // Auto-copied placements confirmation gate (when placements already exist)
-  if (showAutoCopiedGate) {
-    console.log('[PX] showing auto-copied placements confirmation gate');
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 via-gray-900 to-black p-6 md:p-10">
-        <div className="w-full max-w-3xl space-y-6 rounded-3xl border border-white/10 bg-white/5 p-6 md:p-8 backdrop-blur-xl shadow-[0_25px_120px_-40px_rgba(0,0,0,0.75)]">
-          <div className="space-y-2">
-            <p className="text-xs uppercase tracking-[0.18em] text-teal-200/80">Chart data found</p>
-            <h1 className="text-3xl font-semibold text-white">Use existing placements?</h1>
-            <p className="text-slate-200/85">
-              {userPlacements
-                ? 'Using your chart data from your Profile. You can use these placements or upload new charts if anything has changed.'
-                : 'We found your chart data from a previous product. You can use the same placements or upload new charts if anything has changed.'}
-            </p>
-            {userPlacements && (
-              <p className="text-xs text-teal-400/80 mt-2">
-                💡 Manage your chart data anytime in{' '}
-                <a href="/dashboard/profile" className="underline hover:text-teal-300">
-                  Profile Settings
-                </a>
+    // CONFIRMATION STATE (show "Use existing placements?" screen)
+    if (step1Machine.shouldShowConfirmation) {
+      console.log('[PX] showing confirmation gate');
+      return (
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 via-gray-900 to-black p-6 md:p-10">
+          <div className="w-full max-w-3xl space-y-6 rounded-3xl border border-white/10 bg-white/5 p-6 md:p-8 backdrop-blur-xl shadow-[0_25px_120px_-40px_rgba(0,0,0,0.75)]">
+            <div className="space-y-2">
+              <p className="text-xs uppercase tracking-[0.18em] text-teal-200/80">Chart Data Found</p>
+              <h1 className="text-3xl font-semibold text-white">Ready to continue?</h1>
+              <p className="text-slate-200/85">
+                {userPlacements
+                  ? 'Using your chart data from your Profile. You can use these placements or upload new charts if anything has changed.'
+                  : 'We found your chart data from a previous product. You can use the same placements or upload new charts if anything has changed.'}
               </p>
-            )}
-          </div>
+              {userPlacements && (
+                <p className="text-xs text-teal-400/80 mt-2">
+                  💡 Manage your chart data anytime in{' '}
+                  <a href="/dashboard/profile" className="underline hover:text-teal-300">
+                    Profile Settings
+                  </a>
+                </p>
+              )}
+            </div>
 
-          <div className="space-y-3">
-            <p className="text-xs uppercase tracking-[0.16em] text-slate-300/80">Your placements</p>
-            <div className="grid gap-3 md:grid-cols-2">
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-3">
-                <p className="text-sm font-semibold text-white">Astrology</p>
-                <div className="space-y-2 text-sm text-slate-200">
-                  {['sun', 'moon', 'rising', 'venus', 'mars'].map((key) => {
-                    const val = placements?.astrology?.[key] || 'Unknown';
-                    return (
-                      <div key={key} className="flex justify-between">
-                        <span className="capitalize text-slate-400">{key}:</span>
-                        <span className="font-medium">{val}</span>
-                      </div>
-                    );
-                  })}
+            <div className="space-y-3">
+              <p className="text-xs uppercase tracking-[0.16em] text-slate-300/80">Your placements</p>
+              <div className="grid gap-3 md:grid-cols-2">
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-3">
+                  <p className="text-sm font-semibold text-white">Astrology</p>
+                  <div className="space-y-2 text-sm text-slate-200">
+                    {['sun', 'moon', 'rising', 'venus', 'mars'].map((key) => {
+                      const val = placements?.astrology?.[key] || 'Unknown';
+                      return (
+                        <div key={key} className="flex justify-between">
+                          <span className="capitalize text-slate-400">{key}:</span>
+                          <span className="font-medium">{val}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
 
-              <div className="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-3">
-                <p className="text-sm font-semibold text-white">Human Design</p>
-                <div className="space-y-2 text-sm text-slate-200">
-                  {['type', 'strategy', 'authority', 'profile'].map((key) => {
-                    const val = placements?.human_design?.[key] || 'Unknown';
-                    return (
-                      <div key={key} className="flex justify-between">
-                        <span className="capitalize text-slate-400">{key}:</span>
-                        <span className="font-medium text-right ml-2">{val}</span>
-                      </div>
-                    );
-                  })}
+                <div className="rounded-2xl border border-white/10 bg-white/5 p-4 space-y-3">
+                  <p className="text-sm font-semibold text-white">Human Design</p>
+                  <div className="space-y-2 text-sm text-slate-200">
+                    {['type', 'strategy', 'authority', 'profile'].map((key) => {
+                      const val = placements?.human_design?.[key] || 'Unknown';
+                      return (
+                        <div key={key} className="flex justify-between">
+                          <span className="capitalize text-slate-400">{key}:</span>
+                          <span className="font-medium text-right ml-2">{val}</span>
+                        </div>
+                      );
+                    })}
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
 
-          <div className="flex flex-col gap-3">
-            <button
-              onClick={() => {
-                // Show editable confirmation gate instead of auto-accepting
-                setForceEditMode(true);
-                setConfirmGate(true);
-              }}
-              className="w-full rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 px-6 py-3.5 font-semibold text-white shadow-lg shadow-purple-500/30 transition-all hover:shadow-xl hover:shadow-purple-500/40 hover:scale-[1.02]"
-            >
-              ✏️ Review & Edit Placements
-            </button>
-            <div className="flex gap-3">
+            <div className="flex flex-col gap-3">
               <button
                 onClick={async () => {
-                  // Use existing placements as-is - advance to step 2
-                  // If user profile doesn't have placements, save to profile (dual-write)
+                  // Use existing placements - save to profile if needed, then move to step 2
                   if (!userPlacements) {
                     try {
                       await fetch('/api/profile/placements', {
@@ -1025,38 +1011,76 @@ const [hasGuarded, setHasGuarded] = useState(false);
                   setPlacementsConfirmed(true);
                   setCurrentStep(2);
                 }}
-                className="flex-1 rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-6 py-3.5 font-semibold text-white shadow-lg shadow-teal-500/30 transition-all hover:shadow-xl hover:shadow-teal-500/40 hover:scale-[1.02]"
+                className="w-full rounded-xl bg-gradient-to-r from-teal-500 to-cyan-500 px-6 py-3.5 font-semibold text-white shadow-lg shadow-teal-500/30 transition-all hover:shadow-xl hover:shadow-teal-500/40 hover:scale-[1.02]"
               >
-                ✓ Use As-Is
+                ✓ Continue to Questions →
               </button>
-              <button
-                onClick={() => {
-                  // Reset to allow new upload
-                  setPlacementsConfirmed(false);
-                  setPlacements(null);
-                  supabase
-                    .from('product_sessions')
-                    .update({ placements_confirmed: false, placements: null })
-                    .eq('id', session.id)
-                    .eq('user_id', userId);
-                }}
-                className="flex-1 rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 font-semibold text-white transition-all hover:bg-white/10"
-              >
-                Upload New
-              </button>
+              <div className="flex gap-3">
+                <button
+                  onClick={() => step1Machine.transitions.confirmEditPlacements()}
+                  className="flex-1 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 px-6 py-3.5 font-semibold text-white shadow-lg shadow-purple-500/30 transition-all hover:shadow-xl hover:shadow-purple-500/40 hover:scale-[1.02]"
+                >
+                  ✏️ Review & Edit
+                </button>
+                <button
+                  onClick={async () => {
+                    // Reset placements and go to upload
+                    setPlacements(null);
+                    setPlacementsConfirmed(false);
+                    await supabase
+                      .from('product_sessions')
+                      .update({ placements: null, placements_confirmed: false })
+                      .eq('id', session.id)
+                      .eq('user_id', userId);
+                    step1Machine.transitions.confirmUploadNew();
+                  }}
+                  className="flex-1 rounded-xl border border-white/20 bg-white/5 px-6 py-3.5 font-semibold text-white transition-all hover:bg-white/10"
+                >
+                  Upload New
+                </button>
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    );
+      );
+    }
+
+    // EXTRACTING STATE - show loading animation
+    if (step1Machine.shouldShowExtracting) {
+      const AILoadingAnimation = require('./AILoadingAnimation').default;
+      return (
+        <AILoadingAnimation message="Extracting your chart data..." />
+      );
+    }
+
+    // UPLOAD STATE - show upload interface (falls through to StepView)
+    if (step1Machine.shouldShowUpload) {
+      console.log('[PX] showing upload state');
+      // Falls through to StepView which has upload UI
+    }
+
+    // REVIEW STATE - show review/edit placements gate
+    if (step1Machine.shouldShowReview) {
+      console.log('[PX] showing review state');
+      // Continue to confirmation gate below (existing review UI)
+    }
+
+    // READY STATE - auto-advance to step 2
+    if (step1Machine.isReadyForStep2) {
+      console.log('[PX] auto-advancing to step 2');
+      supabase
+        .from('product_sessions')
+        .update({ current_step: 2, current_section: 1 })
+        .eq('id', session.id)
+        .eq('user_id', userId);
+      setCurrentStep(2);
+      return null; // Will re-render as step 2
+    }
   }
 
-  // Placement confirmation gate after uploads
-  if (confirmGate && !placementsConfirmed && !showAutoCopiedGate) {
-    console.log('[PX] showing confirmation gate', {
-      placementsEmpty: !hasPlacementData,
-      uploadedFiles: uploadedFiles.length,
-    });
+  // REVIEW STATE RENDER: Placements confirmation/edit gate (after extraction)
+  if (currentStep === 1 && step1Machine.shouldShowReview) {
+    console.log('[PX] showing review/edit placements gate');
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-gray-900 via-gray-900 to-black p-6 md:p-10">
         <div className="w-full max-w-3xl space-y-6 rounded-3xl border border-white/10 bg-white/5 p-6 md:p-8 backdrop-blur-xl shadow-[0_25px_120px_-40px_rgba(0,0,0,0.75)]">
@@ -1214,8 +1238,7 @@ const [hasGuarded, setHasGuarded] = useState(false);
                       .eq('user_id', userId);
                 if (!error) {
                   setPlacementsConfirmed(true);
-                  setConfirmGate(false);
-                  await moveToNextStep();
+                  step1Machine.transitions.reviewConfirmed(); // Trigger READY state → auto-advance to step 2
                 } else {
                   setPlacementsError('Could not save placements. Please try again.');
                 }
@@ -1235,11 +1258,11 @@ const [hasGuarded, setHasGuarded] = useState(false);
                       .eq('session_id', session.id);
 
                     // Clear state
-                    setConfirmGate(false);
                     setPlacements(null);
                     setUploadedFiles([]);
                     setUploadError(null);
                     setPlacementsError(null);
+                    step1Machine.transitions.reviewReupload(); // Go back to UPLOAD state
                   }}
                   className="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/10 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/15"
                 >
@@ -1264,8 +1287,7 @@ const [hasGuarded, setHasGuarded] = useState(false);
                     .delete()
                     .eq('session_id', session.id);
 
-                  // Clear state
-                  setConfirmGate(false);
+                  // Clear state - state machine will handle showing upload UI
                   setUploadedFiles([]);
                   setUploadError(null);
                   setPlacementsError(null);

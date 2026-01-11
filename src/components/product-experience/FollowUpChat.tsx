@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import { supabase } from '@/lib/supabase/client';
+import AILoadingAnimation from './AILoadingAnimation';
 
 interface Message {
   id: string;
@@ -218,17 +219,7 @@ export function FollowUpChat({
           </div>
         ))}
 
-        {isLoading && (
-          <div className="flex justify-start">
-            <div className="bg-white/10 rounded-2xl px-5 py-3">
-              <div className="flex space-x-2">
-                <div className="w-2 h-2 bg-[#F8F5FF]/60 rounded-full animate-bounce" />
-                <div className="w-2 h-2 bg-[#F8F5FF]/60 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }} />
-                <div className="w-2 h-2 bg-[#F8F5FF]/60 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }} />
-              </div>
-            </div>
-          </div>
-        )}
+        {isLoading && <AILoadingAnimation variant="compact" />}
 
         <div ref={messagesEndRef} />
       </div>
