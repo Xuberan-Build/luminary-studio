@@ -1,17 +1,26 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { auth } from '@/lib/auth/supabase-auth';
 import styles from './login.module.css';
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const redirectTo = searchParams.get('redirect') || '/dashboard';
+
+  useEffect(() => {
+    const prefill = searchParams.get('email');
+    if (prefill) {
+      setEmail(prefill);
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,7 +34,7 @@ export default function LoginPage() {
       console.log('Sign in successful:', result);
 
       // Use window.location for full page reload to ensure auth state is fresh
-      window.location.href = '/dashboard';
+      window.location.href = redirectTo;
     } catch (err: any) {
       console.error('Sign in error:', err);
       setError(err.message || 'Failed to sign in');
@@ -76,7 +85,7 @@ export default function LoginPage() {
           </div>
 
           <div className={styles.actions}>
-            <Link href="/auth/forgot-password" className={styles.link}>
+            <Link href="/forgot-password" className={styles.link}>
               Forgot password?
             </Link>
           </div>

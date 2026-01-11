@@ -4,25 +4,15 @@ import { supabase } from '@/lib/supabase/client';
 export const auth = {
   // Sign up new user
   signUp: async (email: string, password: string, name?: string) => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          name: name || '',
-        },
-      },
+    const response = await fetch('/api/auth/signup', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password, name }),
     });
 
-    if (error) throw error;
-
-    // Create user record in our database
-    if (data.user) {
-      await supabase.from('users').insert({
-        id: data.user.id,
-        email: data.user.email,
-        name: name || '',
-      });
+    const data = await response.json();
+    if (!response.ok) {
+      throw new Error(data?.error || 'Failed to create account');
     }
 
     return data;
@@ -62,7 +52,7 @@ export const auth = {
   // Reset password
   resetPassword: async (email: string) => {
     const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/auth/reset-password`,
+      redirectTo: `${window.location.origin}/reset-password`,
     });
 
     if (error) throw error;

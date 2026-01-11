@@ -1,13 +1,14 @@
 'use client';
 
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { auth } from '@/lib/auth/supabase-auth';
 import styles from '../login/login.module.css';
 
 export default function SignupPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -15,6 +16,14 @@ export default function SignupPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
+  const redirectTo = searchParams.get('redirect') || '/dashboard';
+
+  useEffect(() => {
+    const prefill = searchParams.get('email');
+    if (prefill) {
+      setEmail(prefill);
+    }
+  }, [searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -38,10 +47,12 @@ export default function SignupPage() {
       await auth.signUp(email, password, name);
       setSuccess(true);
 
-      // Redirect to login after 2 seconds
+      // Redirect to login after 1.5 seconds
       setTimeout(() => {
-        router.push('/login');
-      }, 2000);
+        const emailParam = encodeURIComponent(email);
+        const redirectParam = encodeURIComponent(redirectTo);
+        router.push(`/login?email=${emailParam}&redirect=${redirectParam}`);
+      }, 1500);
     } catch (err: any) {
       setError(err.message || 'Failed to create account');
     } finally {

@@ -191,6 +191,8 @@ export async function logAudit(entry: AuditLogEntry): Promise<void> {
   }
 }
 
+export const auditLog = logAudit;
+
 /**
  * Helper to extract request info from Next.js request
  * Includes trace ID extraction or generation for request correlation
@@ -519,6 +521,6 @@ export async function logApiError(params: {
  *
  * To apply enhancements to production:
  * ```bash
- * psql $DATABASE_URL -f database/migrations/010_audit_logging_enhancements.sql
+ * psql $DATABASE_URL -f supabase/migrations/20251230000002_audit_logging_enhancements.sql
  * ```
  */
