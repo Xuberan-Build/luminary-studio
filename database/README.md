@@ -7,12 +7,8 @@
 ├── README.md                    ← You are here
 ├── schema.sql                   ← Initial database schema (reference only)
 ├── seed-*.sql                   ← Product definitions (Quantum, Personal Alignment, etc.)
-├── migrations/                  ← OLD migration system (being deprecated)
-│   ├── 001_affiliate_system_core.sql
-│   ├── 002_enhance_users_for_affiliates.sql
-│   ├── 007_test_account_auto_access.sql  ⚠️ DUPLICATE NUMBER
-│   ├── 007_fix_rls_security.sql          ⚠️ DUPLICATE NUMBER
-│   └── ... (messy, needs cleanup)
+├── migrations/                  ← Archive only (legacy/skip/backups)
+│   └── archive/                 ← Archived legacy migrations and .skip files
 └── diagnostics/                 ← NEW: Database health checks
     ├── database_health_check.sql
     ├── storage_and_data_audit.sql
@@ -47,14 +43,10 @@
 
 We have **TWO** migration folders - this is the problem!
 
-#### `/database/migrations/` ❌ OLD SYSTEM
-- **Status**: Being deprecated
-- **Problem**: Numbered migrations (001, 002, etc.)
-- **Issues**:
-  - Duplicate numbers (007 appears twice, 008 appears twice)
-  - No automatic tracking of what's been applied
-  - Not compatible with Supabase CLI
-  - Can't tell which are in production vs local
+#### `/database/migrations/` ✅ ARCHIVE ONLY
+- **Status**: Archived
+- **Contains**: Legacy, duplicate, and .skip migrations for reference only
+- **Do not** run migrations from here
 
 #### `/supabase/migrations/` ✅ NEW SYSTEM
 - **Status**: Official going forward
@@ -212,11 +204,8 @@ user-uploads/
 
 ## ⚠️ Known Issues
 
-1. **Duplicate migrations** in `/database/migrations/`
-2. **No tracking** of which migrations applied to production
-3. **Orphaned data** - files/sessions/conversations without parent records
-4. **No automated cleanup** of old/incomplete sessions
-5. **Two migration systems** causing confusion
+1. **Orphaned data** - files/sessions/conversations without parent records
+2. **No automated cleanup** of old/incomplete sessions
 
 ## ✅ Next Steps
 
@@ -227,9 +216,8 @@ user-uploads/
 2. **Create cleanup migration** based on diagnostic results
 
 3. **Consolidate migrations**:
-   - Move all from `/database/migrations/` to `/supabase/migrations/`
-   - Add timestamps to avoid conflicts
-   - Document which are already in production
+   - Keep canonical migrations in `/supabase/migrations/`
+   - Archive legacy/skip/backups in `/database/migrations/archive/`
 
 4. **Set up migration tracking**:
    - Create `schema_migrations` table
