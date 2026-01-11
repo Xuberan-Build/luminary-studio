@@ -22,7 +22,7 @@ export const productDefinition: ProductDefinition = {
   model: 'gpt-4o', // or 'gpt-4-turbo', 'gpt-3.5-turbo'
 
   // CRM CONFIGURATION
-  sheet_id: '1EhC-MCjlqG_4otRZjxefEpttR98s5rXqr98vj2TnLTE',
+  sheet_id: '1rTuGFZePZPV1PpC9bm7rcLs4nWXdr6zsb931OGH3rr8',
   from_email: 'austin@xuberandigital.com',
   from_name: 'Quantum Strategies',
 

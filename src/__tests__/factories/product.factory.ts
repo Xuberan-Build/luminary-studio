@@ -40,7 +40,7 @@ export const createMockProduct = (overrides: any = {}) => ({
       max_follow_ups: 3,
     },
   ],
-  sheet_id: '1EhC-MCjlqG_4otRZjxefEpttR98s5rXqr98vj2TnLTE',
+  sheet_id: '1rTuGFZePZPV1PpC9bm7rcLs4nWXdr6zsb931OGH3rr8',
   from_email: 'austin@xuberandigital.com',
   from_name: 'Quantum Strategies',
   created_at: new Date().toISOString(),

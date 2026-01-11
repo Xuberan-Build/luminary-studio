@@ -4,6 +4,7 @@ import { PromptService } from '@/lib/services/PromptService';
 import { AIRequestService } from '@/lib/services/AIRequestService';
 import { EmailSequenceService, type EmailContent } from '@/lib/services/EmailSequenceService';
 import { EmailTemplateService } from '@/lib/services/EmailTemplateService';
+import { storeCustomerInsights } from '@/lib/google-sheets/customer-sync';
 
 export async function POST(req: Request) {
   try {
@@ -32,12 +33,32 @@ export async function POST(req: Request) {
       )
       .join('\n\n');
 
-    // Extract Wizard's actionable nudges/insights
+    // Extract Wizard's actionable nudges/insights (exclude follow-up clarifying questions)
     const wizardNudges = (conversations || [])
       .flatMap((c: any) =>
         ((c.messages as any[]) || [])
           .filter((m: any) => m.role === 'assistant' && m.type === 'step_insight')
-          .map((m: any) => `Step ${c.step_number} Insight: ${m.content}`)
+          .map((m: any) => {
+            let content = m.content || '';
+
+            // Find where clarifying questions begin (after actionable content)
+            // Look for paragraph breaks followed by question/clarification patterns
+            const questionPatterns = /\n\n(?:Now I need|I need to know|I need the|Answer in|Quick clarifier|Quick question|Help me understand|What specifically|Tell me more|Before (?:we|I)|Let me know|To (?:extract|understand|clarify)|Missing pieces)/i;
+            const match = content.match(questionPatterns);
+
+            if (match && match.index !== undefined) {
+              // Split at the question boundary - only include actionable content before it
+              content = content.substring(0, match.index).trim();
+            }
+
+            // Ensure proper line breaks for bullet points (each bullet on its own line)
+            // Fix cases where bullets are crammed together
+            content = content.replace(/([.!])\s*([•\-\*])/g, '$1\n$2');
+            content = content.replace(/([.!])\s*(Pick |Make |Inform |Start |Try |Begin |Create |Build |Focus |Define |Identify )/g, '$1\n$2');
+
+            return content ? `Step ${c.step_number} Insight: ${content}` : null;
+          })
+          .filter((insight: string | null) => insight !== null && insight.trim().length > 0)
       )
       .join('\n\n');
 
@@ -291,6 +312,33 @@ Generate the blueprint now.`;
             console.log(
               `[final-briefing] Skipping email (is_affiliate: ${user.is_affiliate}, opted_out: ${user.affiliate_opted_out})`
             );
+          }
+
+          // Store customer insights in CRM sheet
+          try {
+            const astro = placements?.astrology || {};
+            const hd = placements?.human_design || {};
+            const segmentTags = [hd.type, astro.sun, astro.moon, astro.rising]
+              .filter(Boolean)
+              .join(',');
+
+            await storeCustomerInsights({
+              email: user.email,
+              product: productName || product?.name || session.product_slug || productSlug,
+              completionDate: new Date().toISOString(),
+              completionStatus: 'completed',
+              sunSign: astro.sun,
+              moonSign: astro.moon,
+              risingSign: astro.rising,
+              hdType: hd.type,
+              hdStrategy: hd.strategy,
+              hdAuthority: hd.authority,
+              hdProfile: hd.profile,
+              segmentTags,
+              notes: `Auto-captured on deliverable completion. Session: ${sessionId}. Product slug: ${session.product_slug || productSlug}`,
+            });
+          } catch (insightError) {
+            console.error('[final-briefing] Failed to store customer insights:', insightError);
           }
         }
       }

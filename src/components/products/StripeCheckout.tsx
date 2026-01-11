@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { redirectToCheckout } from "@/lib/stripe/checkout";
 import styles from "./stripe-checkout.module.css";
 
 interface StripeCheckoutProps {
@@ -20,14 +21,19 @@ export default function StripeCheckout({ paymentLink, productName, price, produc
     setIsProcessing(true);
 
     try {
-      // Use direct payment link (same as working products)
+      if (productSlug) {
+        await redirectToCheckout(productSlug);
+        return;
+      }
+
       if (paymentLink) {
         window.location.href = paymentLink;
-      } else {
-        console.error("No payment link configured");
-        alert("Payment not configured. Please contact support.");
-        setIsProcessing(false);
+        return;
       }
+
+      console.error("No checkout configuration available");
+      alert("Payment not configured. Please contact support.");
+      setIsProcessing(false);
     } catch (error) {
       console.error("Checkout error:", error);
       alert("Checkout failed. Please try again or contact support.");
@@ -49,8 +55,8 @@ export default function StripeCheckout({ paymentLink, productName, price, produc
     );
   }
 
-  // Show error if payment link is missing
-  if (!paymentLink) {
+  // Show error if payment link is missing and API checkout cannot be used
+  if (!paymentLink && !productSlug) {
     return (
       <div className={styles.checkoutContainer}>
         <div className={styles.placeholder}>

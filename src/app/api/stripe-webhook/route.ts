@@ -12,6 +12,15 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
   apiVersion: '2025-12-15.clover',
 });
 
+function getGoogleCredentials() {
+  const client_email = process.env.GOOGLE_GMAIL_CLIENT_EMAIL || process.env.GOOGLE_DRIVE_CLIENT_EMAIL;
+  let private_key = process.env.GOOGLE_GMAIL_PRIVATE_KEY || process.env.GOOGLE_DRIVE_PRIVATE_KEY;
+  if (private_key && private_key.includes('\\n')) {
+    private_key = private_key.replace(/\\n/g, '\n');
+  }
+  return { client_email, private_key };
+}
+
 /**
  * Send GPT access email via Gmail API
  */
@@ -23,12 +32,10 @@ async function sendProductAccessEmail(params: {
   fromEmail: string;
   fromName: string;
   isBundle?: boolean;
+  bundleSlug?: string;
 }) {
   // Load Gmail service account from minimal env vars (avoids AWS Lambda 4KB limit)
-  const credentials = {
-    client_email: process.env.GOOGLE_GMAIL_CLIENT_EMAIL,
-    private_key: process.env.GOOGLE_GMAIL_PRIVATE_KEY,
-  };
+  const credentials = getGoogleCredentials();
 
   const auth = new google.auth.JWT({
     email: credentials.client_email,
@@ -47,6 +54,30 @@ async function sendProductAccessEmail(params: {
     ? '/dashboard?bundle=orientation'
     : `/products/${params.productSlug}/experience`;
   const loginUrl = `${baseUrl}/login?redirect=${encodeURIComponent(redirectPath)}`;
+
+  const bundleTitle = params.bundleSlug === 'declaration-rite-bundle'
+    ? 'Declaration Bundle'
+    : 'Orientation Bundle';
+
+  const bundleDetailsHtml = params.bundleSlug === 'orientation-bundle'
+    ? `
+        <ul style="margin: 0; padding-left: 20px;">
+          <li style="margin-bottom: 8px;"><strong>Personal Alignment Orientation</strong> - Discover your life purpose through Astrology & Human Design</li>
+          <li style="margin-bottom: 8px;"><strong>Business Alignment Orientation</strong> - Map your business model, offers, and pricing strategy</li>
+          <li style="margin-bottom: 8px;"><strong>Brand Alignment Orientation</strong> - Unify who you are with how you show up</li>
+        </ul>
+        <p style="margin: 12px 0 0 0; color: #1565c0;">All three orientations are now available in your dashboard!</p>
+      `
+    : params.bundleSlug === 'declaration-rite-bundle'
+      ? `
+        <ul style="margin: 0; padding-left: 20px;">
+          <li style="margin-bottom: 8px;"><strong>Life Vision Declaration</strong> - Declare your moonshot and revenue target</li>
+          <li style="margin-bottom: 8px;"><strong>Business Model Declaration</strong> - Design the system required to scale</li>
+          <li style="margin-bottom: 8px;"><strong>Strategic Path Declaration</strong> - Choose your solo or partnership path</li>
+        </ul>
+        <p style="margin: 12px 0 0 0; color: #1565c0;">All three declarations are now available in your dashboard!</p>
+      `
+      : '';
 
   const emailHtml = `
 <!DOCTYPE html>
@@ -152,13 +183,8 @@ async function sendProductAccessEmail(params: {
 
       ${params.isBundle ? `
       <div style="background: #f0f7ff; padding: 20px; border-radius: 8px; margin: 24px 0; border-left: 4px solid #2196f3;">
-        <h3 style="margin: 0 0 12px 0; color: #1976d2; font-size: 18px;">Your Complete Orientation Bundle Includes:</h3>
-        <ul style="margin: 0; padding-left: 20px;">
-          <li style="margin-bottom: 8px;"><strong>Personal Alignment Orientation</strong> - Discover your life purpose through Astrology & Human Design</li>
-          <li style="margin-bottom: 8px;"><strong>Business Alignment Orientation</strong> - Map your business model, offers, and pricing strategy</li>
-          <li style="margin-bottom: 8px;"><strong>Brand Alignment Orientation</strong> - Unify who you are with how you show up</li>
-        </ul>
-        <p style="margin: 12px 0 0 0; color: #1565c0;">All three orientations are now available in your dashboard!</p>
+        <h3 style="margin: 0 0 12px 0; color: #1976d2; font-size: 18px;">Your Complete ${bundleTitle} Includes:</h3>
+        ${bundleDetailsHtml}
       </div>
       ` : ''}
 
@@ -222,6 +248,24 @@ async function sendProductAccessEmail(params: {
   `;
 
   // Create plain text version
+  const bundleDetailsText = params.bundleSlug === 'orientation-bundle'
+    ? `
+• Personal Alignment Orientation - Discover your life purpose through Astrology & Human Design
+• Business Alignment Orientation - Map your business model, offers, and pricing strategy
+• Brand Alignment Orientation - Unify who you are with how you show up
+
+All three orientations are now available in your dashboard!
+`
+    : params.bundleSlug === 'declaration-rite-bundle'
+      ? `
+• Life Vision Declaration - Declare your moonshot and revenue target
+• Business Model Declaration - Design the system required to scale
+• Strategic Path Declaration - Choose your solo or partnership path
+
+All three declarations are now available in your dashboard!
+`
+      : '';
+
   const emailText = `
 Welcome to ${params.productName}!
 
@@ -230,13 +274,9 @@ Hi ${params.name},
 Thank you for your purchase! Your personalized product experience is ready.
 
 ${params.isBundle ? `
-YOUR COMPLETE ORIENTATION BUNDLE INCLUDES:
+YOUR COMPLETE ${bundleTitle.toUpperCase()} INCLUDES:
 
-• Personal Alignment Orientation - Discover your life purpose through Astrology & Human Design
-• Business Alignment Orientation - Map your business model, offers, and pricing strategy
-• Brand Alignment Orientation - Unify who you are with how you show up
-
-All three orientations are now available in your dashboard!
+${bundleDetailsText}
 ` : ''}
 
 GETTING STARTED (Simple 3-Step Process):
@@ -322,9 +362,10 @@ async function sendAdminNotification(params: {
   amount: number;
   sessionId: string;
 }) {
+  const adminEmail = process.env.STRIPE_ADMIN_NOTIFY_EMAIL || 'austin@xuberandigital.com';
+
   const credentials = {
-    client_email: process.env.GOOGLE_GMAIL_CLIENT_EMAIL,
-    private_key: process.env.GOOGLE_GMAIL_PRIVATE_KEY,
+    ...getGoogleCredentials(),
   };
 
   const auth = new google.auth.JWT({
@@ -400,7 +441,7 @@ https://dashboard.stripe.com/test/payments
 
   const email = [
     `From: "Quantum Strategies Notifications" <austin@xuberandigital.com>`,
-    `To: santos.93.aus@gmail.com`,
+    `To: ${adminEmail}`,
     `Subject: New Purchase: ${params.productName} - $${params.amount.toFixed(2)}`,
     'MIME-Version: 1.0',
     'Content-Type: multipart/alternative; boundary="boundary456"',
@@ -445,12 +486,16 @@ async function logToGoogleSheets(data: {
   emailSent: string;
   status: string;
   sheetId: string;
+  productSlugs?: string[];
+  userId?: string;
+  productAccessIds?: string[];
+  purchaseDate?: string;
+  amountPaid?: number;
+  stripePaymentIntentId?: string | null;
+  stripeCustomerId?: string | null;
 }) {
   // Load Drive service account from minimal env vars (avoids AWS Lambda 4KB limit)
-  const credentials = {
-    client_email: process.env.GOOGLE_DRIVE_CLIENT_EMAIL,
-    private_key: process.env.GOOGLE_DRIVE_PRIVATE_KEY,
-  };
+  const credentials = getGoogleCredentials();
 
   const auth = new google.auth.JWT({
     email: credentials.client_email,
@@ -461,13 +506,55 @@ async function logToGoogleSheets(data: {
   const sheets = google.sheets({ version: 'v4', auth });
   const spreadsheetId = data.sheetId;
 
+  const purchaseHeaders = [
+    'Timestamp',
+    'Email',
+    'Name',
+    'Product',
+    'Amount',
+    'Stripe Session ID',
+    'GPT Link',
+    'Email Sent',
+    'Status',
+    'Day 1 Email Sent',
+    'Day 3 Email Sent',
+    'Day 7 Email Sent',
+    'Last Email Sent',
+    'Sequence Status',
+    'Product Slugs',
+    'User ID',
+    'Product Access IDs',
+    'Purchase Date',
+    'Amount Paid',
+    'Stripe Payment Intent ID',
+    'Stripe Customer ID',
+  ];
+
+  // Ensure header row matches expected format (safe to overwrite headers only)
+  const headerResponse = await sheets.spreadsheets.values.get({
+    spreadsheetId,
+    range: 'Purchases!A1:U1',
+  });
+  const existingHeaders = (headerResponse.data.values || [])[0] || [];
+  const headersMatch = purchaseHeaders.every((header, index) => existingHeaders[index] === header);
+  if (!headersMatch) {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: 'Purchases!A1:U1',
+      valueInputOption: 'RAW',
+      requestBody: {
+        values: [purchaseHeaders],
+      },
+    });
+  }
+
   // Write to sheet columns A-I to match CRM structure:
   // A: Timestamp, B: Email, C: Name, D: Product, E: Amount, F: Stripe Session ID
   // G: GPT Link (empty, will be populated by automation later)
   // H: Email Sent, I: Status
   await sheets.spreadsheets.values.append({
     spreadsheetId,
-    range: 'Purchases!A:I',
+    range: 'Purchases!A:U',
     valueInputOption: 'USER_ENTERED',
     requestBody: {
       values: [[
@@ -480,6 +567,18 @@ async function logToGoogleSheets(data: {
         '',               // G: GPT Link (empty, for future automation)
         data.emailSent,   // H: Email Sent
         data.status,      // I: Status
+        '',               // J: Day 1 Email Sent
+        '',               // K: Day 3 Email Sent
+        '',               // L: Day 7 Email Sent
+        '',               // M: Last Email Sent
+        '',               // N: Sequence Status
+        (data.productSlugs || []).join(', '), // O: Product Slugs
+        data.userId || '',                    // P: User ID
+        (data.productAccessIds || []).join(', '), // Q: Product Access IDs
+        data.purchaseDate || data.timestamp,  // R: Purchase Date
+        data.amountPaid ?? '',                // S: Amount Paid
+        data.stripePaymentIntentId || '',     // T: Stripe Payment Intent ID
+        data.stripeCustomerId || '',          // U: Stripe Customer ID
       ]],
     },
   });
@@ -598,7 +697,8 @@ export async function POST(request: NextRequest) {
         productSlug,
         fromEmail: product.fromEmail,
         fromName: product.fromName,
-        isBundle: productSlug === 'orientation-bundle',
+        isBundle: productSlug?.endsWith('bundle'),
+        bundleSlug: productSlug?.endsWith('bundle') ? productSlug : undefined,
       });
 
       emailSent = '✅ Sent';
@@ -607,8 +707,9 @@ export async function POST(request: NextRequest) {
       console.log('Email sent successfully');
 
       // Send admin notification
+      const adminEmail = process.env.STRIPE_ADMIN_NOTIFY_EMAIL || 'austin@xuberandigital.com';
       try {
-        console.log('Sending admin notification to santos.93.aus@gmail.com');
+        console.log(`Sending admin notification to ${adminEmail}`);
         await sendAdminNotification({
           customerEmail,
           customerName,
@@ -629,6 +730,7 @@ export async function POST(request: NextRequest) {
 
     // Grant product access in Supabase
     let userId: string | undefined;
+    const productAccessIds: string[] = [];
 
     try {
       console.log('Granting product access in Supabase');
@@ -665,6 +767,22 @@ export async function POST(request: NextRequest) {
         // Bundle grants access to all 3 orientation products
         productsToGrant = ['personal-alignment', 'business-alignment', 'brand-alignment'];
         console.log('🎁 Bundle purchase detected - granting access to all 3 products');
+      } else if (productSlug === 'perception-rite-bundle') {
+        productsToGrant = [
+          'perception-rite-scan-1',
+          'perception-rite-scan-2',
+          'perception-rite-scan-3',
+          'perception-rite-scan-4',
+          'perception-rite-scan-5',
+        ];
+        console.log('🎁 Perception Rite bundle detected - granting access to all 5 scans');
+      } else if (productSlug === 'declaration-rite-bundle') {
+        productsToGrant = [
+          'declaration-rite-life-vision',
+          'declaration-rite-business-model',
+          'declaration-rite-strategic-path',
+        ];
+        console.log('🎁 Declaration Rite bundle detected - granting access to all 3 declarations');
       } else {
         // Single product purchase
         productsToGrant = [productSlug];
@@ -688,6 +806,8 @@ export async function POST(request: NextRequest) {
             amount_paid: amount,
             access_granted: true,
             purchase_date: timestamp,
+            purchase_source: productSlug?.endsWith('bundle') ? 'bundle' : 'single',
+            bundle_slug: productSlug?.endsWith('bundle') ? productSlug : null,
           })
           .select();
 
@@ -703,6 +823,8 @@ export async function POST(request: NextRequest) {
                 amount_paid: amount,
                 access_granted: true,
                 purchase_date: timestamp,
+                purchase_source: productSlug?.endsWith('bundle') ? 'bundle' : 'single',
+                bundle_slug: productSlug?.endsWith('bundle') ? productSlug : null,
               })
               .eq('user_id', userId)
               .eq('product_slug', slug);
@@ -710,6 +832,17 @@ export async function POST(request: NextRequest) {
             if (updateError) {
               console.error(`❌ Failed to update existing access for ${slug}:`, updateError);
               throw updateError;
+            }
+
+            const { data: existingAccess } = await supabaseAdmin
+              .from('product_access')
+              .select('id')
+              .eq('user_id', userId)
+              .eq('product_slug', slug)
+              .single();
+
+            if (existingAccess?.id) {
+              productAccessIds.push(existingAccess.id);
             }
 
             console.log(`✅ Updated existing access record for ${slug}`);
@@ -723,6 +856,10 @@ export async function POST(request: NextRequest) {
         } else {
           console.log(`✅ Product access granted successfully for ${slug}`);
           console.log('Access record:', accessData);
+          const insertedId = accessData?.[0]?.id;
+          if (insertedId) {
+            productAccessIds.push(insertedId);
+          }
         }
       }
     } catch (supabaseError: any) {
@@ -788,6 +925,13 @@ export async function POST(request: NextRequest) {
         emailSent,
         status,
         sheetId: product.sheetId,
+        productSlugs: productsToGrant,
+        userId,
+        productAccessIds,
+        purchaseDate: timestamp,
+        amountPaid: amount,
+        stripePaymentIntentId: session.payment_intent as string | null,
+        stripeCustomerId: (session.customer as string | null) || null,
       });
 
       console.log('Logged to Google Sheets successfully');
