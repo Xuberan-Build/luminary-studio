@@ -111,12 +111,12 @@ async function main() {
 
   const migrations = [
     {
-      path: path.resolve(__dirname, '../database/migrations/009_audit_logging_system.sql'),
-      name: '009_audit_logging_system',
+      path: path.resolve(__dirname, '../supabase/migrations/20251230000001_audit_logging_system.sql'),
+      name: '20251230000001_audit_logging_system',
     },
     {
-      path: path.resolve(__dirname, '../database/migrations/010_audit_logging_enhancements.sql'),
-      name: '010_audit_logging_enhancements',
+      path: path.resolve(__dirname, '../supabase/migrations/20251230000002_audit_logging_enhancements.sql'),
+      name: '20251230000002_audit_logging_enhancements',
     },
   ];
 

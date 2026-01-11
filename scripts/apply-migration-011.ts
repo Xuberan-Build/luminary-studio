@@ -9,7 +9,7 @@ import * as path from 'path';
 async function applyMigration() {
   console.log('🔧 Applying migration 011: Fix auto-copy placements confirmation\n');
 
-  const migrationPath = path.join(__dirname, '../database/migrations/011_fix_auto_copy_placements_confirmation.sql');
+  const migrationPath = path.join(__dirname, '../supabase/migrations/20251230000003_fix_auto_copy_placements_confirmation.sql');
   const sql = fs.readFileSync(migrationPath, 'utf-8');
 
   try {

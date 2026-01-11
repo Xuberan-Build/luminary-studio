@@ -114,23 +114,23 @@ async function main() {
   console.log(`🔗 URL: ${supabaseUrl}`);
   console.log('═'.repeat(80));
 
-  const migration1 = path.resolve(__dirname, '../database/migrations/009_audit_logging_system.sql');
-  const migration2 = path.resolve(__dirname, '../database/migrations/010_audit_logging_enhancements.sql');
+  const migration1 = path.resolve(__dirname, '../supabase/migrations/20251230000001_audit_logging_system.sql');
+  const migration2 = path.resolve(__dirname, '../supabase/migrations/20251230000002_audit_logging_enhancements.sql');
 
   console.log('\n⚠️  IMPORTANT: Supabase client does not support executing raw SQL directly.');
   console.log('Please use one of these methods instead:\n');
 
   console.log('📌 Method 1: Supabase SQL Editor (Recommended)');
   console.log('   1. Go to: https://supabase.com/dashboard/project/' + projectRef + '/sql/new');
-  console.log('   2. Copy contents of: database/migrations/009_audit_logging_system.sql');
+  console.log('   2. Copy contents of: supabase/migrations/20251230000001_audit_logging_system.sql');
   console.log('   3. Paste and click "Run"');
-  console.log('   4. Repeat with: database/migrations/010_audit_logging_enhancements.sql\n');
+  console.log('   4. Repeat with: supabase/migrations/20251230000002_audit_logging_enhancements.sql\n');
 
   console.log('📌 Method 2: psql Command Line');
   console.log('   1. Get your DATABASE_URL from Supabase Dashboard → Settings → Database');
   console.log('   2. Run:');
-  console.log('      psql "postgresql://postgres:[YOUR-PASSWORD]@..." -f database/migrations/009_audit_logging_system.sql');
-  console.log('      psql "postgresql://postgres:[YOUR-PASSWORD]@..." -f database/migrations/010_audit_logging_enhancements.sql\n');
+  console.log('      psql "postgresql://postgres:[YOUR-PASSWORD]@..." -f supabase/migrations/20251230000001_audit_logging_system.sql');
+  console.log('      psql "postgresql://postgres:[YOUR-PASSWORD]@..." -f supabase/migrations/20251230000002_audit_logging_enhancements.sql\n');
 
   console.log('📌 Method 3: Supabase CLI');
   console.log('   1. Link project: supabase link --project-ref ' + projectRef);

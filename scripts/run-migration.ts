@@ -25,7 +25,7 @@ async function runMigration(migrationFile: string) {
   console.log(`\n🔄 Running migration: ${migrationFile}\n`);
 
   // Read the migration file
-  const migrationPath = path.resolve(__dirname, '../database/migrations', migrationFile);
+  const migrationPath = path.resolve(__dirname, '../supabase/migrations', migrationFile);
 
   if (!fs.existsSync(migrationPath)) {
     console.error(`❌ Migration file not found: ${migrationPath}`);
@@ -106,7 +106,7 @@ const migrationFile = process.argv[2];
 
 if (!migrationFile) {
   console.error('Usage: npx tsx scripts/run-migration.ts <migration-file>');
-  console.error('Example: npx tsx scripts/run-migration.ts 005_sync_auth_users.sql');
+  console.error('Example: npx tsx scripts/run-migration.ts 20251201000005_sync_auth_users_v2.sql');
   process.exit(1);
 }
 

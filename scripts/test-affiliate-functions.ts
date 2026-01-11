@@ -88,9 +88,9 @@ async function testAffiliateFunctions() {
 
   console.log('\n' + '═'.repeat(60));
   console.log('\n💡 If any tests failed, run migrations:\n');
-  console.log('   psql $DATABASE_URL -f database/migrations/003_affiliate_functions.sql');
-  console.log('   psql $DATABASE_URL -f database/migrations/006_affiliate_opt_in_system.sql');
-  console.log('   psql $DATABASE_URL -f database/migrations/008_fix_function_search_path.sql\n');
+  console.log('   psql $DATABASE_URL -f supabase/migrations/20251201000003_affiliate_functions.sql');
+  console.log('   psql $DATABASE_URL -f supabase/migrations/20251201000006_affiliate_opt_in_system.sql');
+  console.log('   psql $DATABASE_URL -f supabase/migrations/20251201000009_fix_function_search_path.sql\n');
 }
 
 testAffiliateFunctions()
