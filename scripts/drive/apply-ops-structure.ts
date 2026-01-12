@@ -11,13 +11,13 @@ type DriveFile = {
   mimeType: string;
 };
 
-const ROOT_ID = process.argv[2] || process.env.GOOGLE_DRIVE_FOLDER_ID;
+const ROOT_ID = process.argv[2] ?? process.env.GOOGLE_DRIVE_FOLDER_ID ?? '';
 if (!ROOT_ID) {
   console.error('Missing root folder ID. Pass it as an argument or set GOOGLE_DRIVE_FOLDER_ID.');
   process.exit(1);
 }
 
-const rootId: string = ROOT_ID;
+const rootId = ROOT_ID;
 
 function getCredentials() {
   const serviceAccountFile = process.env.GOOGLE_SERVICE_ACCOUNT_FILE;
