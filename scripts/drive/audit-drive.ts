@@ -32,6 +32,8 @@ if (!ROOT_ID) {
   process.exit(1);
 }
 
+const rootId = ROOT_ID as string;
+
 function getCredentials() {
   const serviceAccountFile = process.env.GOOGLE_SERVICE_ACCOUNT_FILE;
   if (serviceAccountFile && fs.existsSync(serviceAccountFile)) {
@@ -143,15 +145,15 @@ function toCsv(records: FileRecord[]): string {
 
 async function audit() {
   console.log('Starting Drive audit...');
-  console.log(`Root folder: ${ROOT_ID}`);
+  console.log(`Root folder: ${rootId}`);
 
-  const rootMeta = await getRootMeta(ROOT_ID);
+  const rootMeta = await getRootMeta(rootId);
   const driveId = rootMeta.driveId;
   const rootName = rootMeta.name || 'Root';
 
   const records: FileRecord[] = [];
   const queue: Array<{ id: string; path: string; depth: number }> = [
-    { id: ROOT_ID, path: `/${rootName}`, depth: 0 },
+    { id: rootId, path: `/${rootName}`, depth: 0 },
   ];
 
   while (queue.length > 0) {
