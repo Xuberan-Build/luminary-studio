@@ -730,6 +730,7 @@ export async function POST(request: NextRequest) {
     // Grant product access in Supabase
     let userId: string | undefined;
     const productAccessIds: string[] = [];
+    let productsToGrant: string[] = [productSlug];
 
     try {
       console.log('Granting product access in Supabase');
@@ -760,7 +761,6 @@ export async function POST(request: NextRequest) {
       }
 
       // Determine which products to grant access to
-      let productsToGrant: string[];
 
       if (productSlug === 'orientation-bundle') {
         // Bundle grants access to all 3 orientation products

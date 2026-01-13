@@ -15,14 +15,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid email address.' }, { status: 400 });
     }
 
-    const { data: existingAuth, error: authLookupError } =
-      await supabaseAdmin.auth.admin.getUserByEmail(normalizedEmail);
+    const { data: authListData, error: authLookupError } =
+      await supabaseAdmin.auth.admin.listUsers();
     if (authLookupError) {
       console.error('[signup] auth lookup failed:', authLookupError);
       return NextResponse.json({ error: 'Failed to check user status.' }, { status: 500 });
     }
 
-    if (existingAuth?.user) {
+    const existingAuth = authListData.users.find(u => u.email?.toLowerCase() === normalizedEmail);
+    if (existingAuth) {
       return NextResponse.json({ error: 'Account already exists. Please sign in.' }, { status: 409 });
     }
 

@@ -15,14 +15,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Invalid email address' }, { status: 400 });
     }
 
-    const { data, error } = await supabaseAdmin.auth.admin.getUserByEmail(normalizedEmail);
+    const { data, error } = await supabaseAdmin.auth.admin.listUsers();
 
     if (error) {
       console.error('Beta email check failed:', error);
       return NextResponse.json({ error: 'Failed to check email' }, { status: 500 });
     }
 
-    return NextResponse.json({ exists: Boolean(data?.user?.id) });
+    const userExists = data.users.some(u => u.email?.toLowerCase() === normalizedEmail);
+    return NextResponse.json({ exists: userExists });
   } catch (error: any) {
     return NextResponse.json({ error: error?.message || 'Unexpected error' }, { status: 500 });
   }

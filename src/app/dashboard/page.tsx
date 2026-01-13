@@ -166,7 +166,7 @@ export default async function DashboardPage() {
     sessions.map(async (s) => [
       s.product_slug,
       await getSessionAttempts(session.user.id, s.product_slug),
-    ])
+    ] as const)
   );
   const attemptsBySlug = new Map(attemptsEntries);
 
