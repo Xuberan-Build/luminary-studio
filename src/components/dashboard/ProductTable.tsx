@@ -181,7 +181,6 @@ export default function ProductTable({ rows, createNewVersionAction }: Props) {
           <SortIndicator active={sortState.key === 'lastActivity'} direction={sortState.direction} />
         </button>
         <span className={styles.tableHeaderCellStatic}>Next Action</span>
-        <span className={styles.tableHeaderCellStatic}>Options</span>
       </div>
       {sortedRows.map((row) => (
         <div key={row.slug} className={styles.tableRow}>
@@ -190,6 +189,9 @@ export default function ProductTable({ rows, createNewVersionAction }: Props) {
             <div className={styles.productSub}>
               {row.estimatedDuration} • {row.totalSteps} steps
             </div>
+            <Link href={row.detailsHref} className={styles.secondaryAction}>
+              Overview
+            </Link>
           </div>
           <div className={styles.tableCell}>{row.riteLabel}</div>
           <div className={styles.tableCell}>{row.displayOrder}</div>
@@ -203,31 +205,28 @@ export default function ProductTable({ rows, createNewVersionAction }: Props) {
           <div className={styles.tableCell}>{row.progressLabel}</div>
           <div className={styles.tableCell}>{row.lastActivityLabel}</div>
           <div className={styles.tableCell}>
-            <Link
-              href={row.primaryHref}
-              className={row.primaryVariant === 'primary' ? styles.primaryAction : styles.purchaseAction}
-            >
-              {row.primaryLabel}
-            </Link>
-          </div>
-          <div className={styles.tableCell}>
-            <div className={styles.secondaryActions}>
-              <Link href={row.detailsHref} className={styles.secondaryAction}>
-                Overview
+            <div className={styles.actionStack}>
+              <Link
+                href={row.primaryHref}
+                className={row.primaryVariant === 'primary' ? styles.primaryAction : styles.purchaseAction}
+              >
+                {row.primaryLabel}
               </Link>
-              {row.showChat && row.chatHref && (
-                <Link href={row.chatHref} className={styles.secondaryAction}>
-                  View Chat
-                </Link>
-              )}
-              {row.sessionId && row.attemptsRemaining !== null && (
-                <SessionVersionManager
-                  sessionId={row.sessionId}
-                  productSlug={row.slug}
-                  attemptsRemaining={row.attemptsRemaining}
-                  createNewVersionAction={createNewVersionAction}
-                />
-              )}
+              <div className={styles.secondaryActions}>
+                {row.showChat && row.chatHref && (
+                  <Link href={row.chatHref} className={styles.secondaryAction}>
+                    View Chat
+                  </Link>
+                )}
+                {row.sessionId && row.attemptsRemaining !== null && (
+                  <SessionVersionManager
+                    sessionId={row.sessionId}
+                    productSlug={row.slug}
+                    attemptsRemaining={row.attemptsRemaining}
+                    createNewVersionAction={createNewVersionAction}
+                  />
+                )}
+              </div>
             </div>
           </div>
         </div>
