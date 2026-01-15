@@ -35,7 +35,22 @@ export async function POST(req: NextRequest) {
     });
 
     // Determine success URL based on product type
-    const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://quantumstrategies.online';
+    const requestOrigin = new URL(req.url).origin;
+    const rawBaseUrl = process.env.NEXT_PUBLIC_SITE_URL;
+    let baseUrl = requestOrigin;
+    if (rawBaseUrl) {
+      try {
+        const normalizedBaseUrl = rawBaseUrl.replace(/\/+$/, '');
+        baseUrl = new URL(
+          normalizedBaseUrl.startsWith('http')
+            ? normalizedBaseUrl
+            : `https://${normalizedBaseUrl}`
+        ).origin;
+      } catch (error) {
+        console.error('Invalid NEXT_PUBLIC_SITE_URL, falling back to request origin:', error);
+        baseUrl = requestOrigin;
+      }
+    }
     const isOrientationBundle = productSlug === 'orientation-bundle';
     const isPerceptionScan = productSlug?.startsWith('perception-rite-scan-');
     const isPerceptionBundle = productSlug === 'perception-rite-bundle';
