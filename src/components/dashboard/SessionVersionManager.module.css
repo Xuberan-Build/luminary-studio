@@ -1,8 +1,5 @@
 .container {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-  width: 100%;
+  display: contents;
 }
 
 .versionHistoryButton,
