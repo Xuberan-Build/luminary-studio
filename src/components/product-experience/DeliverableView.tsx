@@ -2,6 +2,8 @@
 
 import { ReactNode, useState, useMemo } from 'react';
 import jsPDF from 'jspdf';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import { ProductInstructions } from '@/lib/product-definitions/types';
 
 interface DeliverableViewProps {
@@ -293,77 +295,10 @@ export function DeliverableView({ deliverable, productName, instructions, action
                   </h3>
 
                   {/* Section Content */}
-                  <div className="text-[#F8F5FF]/90 leading-relaxed space-y-3">
-                    {section.content.split('\n').map((line, lineIndex) => {
-                      const trimmedLine = line.trim();
-                      if (!trimmedLine) return <div key={lineIndex} className="h-4" />;
-
-                      // Format text: bold **text**, italic *text*
-                      let formatted = trimmedLine
-                        .replace(/\*\*([^*]+)\*\*/g, '<strong class="text-[#F8F5FF] font-semibold">$1</strong>')
-                        .replace(/\*([^*]+)\*/g, '<em class="text-[#F8F5FF]/80 italic">$1</em>');
-
-                      // Sub-headers (###, ####)
-                      if (trimmedLine.startsWith('###') || trimmedLine.startsWith('####')) {
-                        const text = trimmedLine.replace(/^#{3,4}\s+/, '');
-                        return (
-                          <h4
-                            key={lineIndex}
-                            className="text-lg font-semibold text-[#F8F5FF] mt-4 mb-2"
-                            dangerouslySetInnerHTML={{ __html: text }}
-                          />
-                        );
-                      }
-
-                      // Unordered bullet points: - or • or *
-                      if (trimmedLine.match(/^[-•*]\s+/)) {
-                        return (
-                          <div key={lineIndex} className="flex items-start space-x-3 ml-4">
-                            <span className="text-[#6C5CE7] mt-1.5 flex-shrink-0">●</span>
-                            <p
-                              className="flex-1 text-[#F8F5FF]/90"
-                              dangerouslySetInnerHTML={{ __html: formatted.replace(/^[-•*]\s+/, '') }}
-                            />
-                          </div>
-                        );
-                      }
-
-                      // Numbered lists: 1., 2., etc.
-                      const numberedMatch = trimmedLine.match(/^(\d+)\.\s+(.+)/);
-                      if (numberedMatch) {
-                        return (
-                          <div key={lineIndex} className="flex items-start space-x-3 ml-4">
-                            <span className="text-[#6C5CE7] font-semibold min-w-[24px]">{numberedMatch[1]}.</span>
-                            <p
-                              className="flex-1 text-[#F8F5FF]/90"
-                              dangerouslySetInnerHTML={{ __html: formatted.replace(/^\d+\.\s+/, '') }}
-                            />
-                          </div>
-                        );
-                      }
-
-                      // Arrow lists: → or ->
-                      if (trimmedLine.match(/^[→>-]\s+/)) {
-                        return (
-                          <div key={lineIndex} className="flex items-start space-x-3 ml-4">
-                            <span className="text-[#6C5CE7] mt-1.5 flex-shrink-0">→</span>
-                            <p
-                              className="flex-1 text-[#F8F5FF]/90"
-                              dangerouslySetInnerHTML={{ __html: formatted.replace(/^[→>-]\s+/, '') }}
-                            />
-                          </div>
-                        );
-                      }
-
-                      // Regular paragraph
-                      return (
-                        <p
-                          key={lineIndex}
-                          className="text-[#F8F5FF]/90 leading-[1.7] mb-2"
-                          dangerouslySetInnerHTML={{ __html: formatted }}
-                        />
-                      );
-                    })}
+                  <div className="prose prose-invert prose-sm max-w-none [&_strong]:text-[#F8F5FF] [&_strong]:font-semibold [&_p]:text-[#F8F5FF]/90 [&_p]:leading-relaxed [&_li]:text-[#F8F5FF]/90 [&_h3]:text-[#F8F5FF] [&_h4]:text-[#F8F5FF] [&_ul>li]:marker:text-[#6C5CE7] [&_ol>li]:marker:text-[#6C5CE7] [&_ol>li]:marker:font-semibold">
+                    <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                      {section.content}
+                    </ReactMarkdown>
                   </div>
                 </div>
               ))
@@ -391,24 +326,18 @@ export function DeliverableView({ deliverable, productName, instructions, action
                   <p className="text-[#F8F5FF]/70 mb-6">
                     Key insights and next steps from your journey:
                   </p>
-                  <div className="space-y-3">
-                    {actionableNudges.map((nudge, index) => {
-                      // Clean and format markdown in nudges
-                      const cleanNudge = nudge.trim();
-                      const formattedNudge = cleanNudge
-                        .replace(/\*\*([^*]+)\*\*/g, '<strong class="text-[#F8F5FF] font-semibold">$1</strong>')
-                        .replace(/\*([^*]+)\*/g, '<em class="text-[#F8F5FF]/80 italic">$1</em>');
-
-                      return (
-                        <div key={index} className="flex items-start space-x-3">
-                          <span className="text-[#6C5CE7] mt-1.5 flex-shrink-0">●</span>
-                          <p
-                            className="text-[#F8F5FF]/90 leading-relaxed"
-                            dangerouslySetInnerHTML={{ __html: formattedNudge }}
-                          />
-                        </div>
-                      );
-                    })}
+                  <div className="prose prose-invert prose-sm max-w-none [&_strong]:text-[#F8F5FF] [&_strong]:font-semibold [&_p]:text-[#F8F5FF]/90 [&_p]:leading-relaxed [&_ul>li]:marker:text-[#6C5CE7] [&_ol>li]:marker:text-[#6C5CE7]">
+                    <ul>
+                      {actionableNudges.map((nudge, index) => (
+                        <li key={index}>
+                          <span className="inline">
+                            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+                              {nudge.trim()}
+                            </ReactMarkdown>
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
               </div>

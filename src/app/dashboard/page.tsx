@@ -6,6 +6,7 @@ import { getProductBySlug } from '@/lib/constants/products';
 import ProductTable from '@/components/dashboard/ProductTable';
 import Link from 'next/link';
 import { ALL_BETA_PRODUCTS } from '@/lib/beta/constants';
+import BetaCommitmentModal from '@/components/beta/BetaCommitmentModal';
 
 export const dynamic = 'force-dynamic';
 
@@ -142,6 +143,32 @@ function getRiteLabel(productSlug: string) {
   return 'Other';
 }
 
+async function getLatestUnpaidBetaCompletion(userId: string) {
+  try {
+    const { data, error } = await supabaseAdmin
+      .from('product_access')
+      .select('product_slug, completed_at, amount_paid')
+      .eq('user_id', userId)
+      .eq('access_granted', true)
+      .not('completed_at', 'is', null)
+      .in('product_slug', ALL_BETA_PRODUCTS as unknown as string[])
+      .or('amount_paid.is.null,amount_paid.eq.0')
+      .order('completed_at', { ascending: false })
+      .limit(1)
+      .maybeSingle();
+
+    if (error) {
+      console.error('Error fetching unpaid beta completion:', error?.message || error);
+      return null;
+    }
+
+    return data || null;
+  } catch (e: any) {
+    console.error('Error fetching unpaid beta completion:', e?.message || e);
+    return null;
+  }
+}
+
 export default async function DashboardPage() {
   const supabase = await createServerSupabaseClient();
 
@@ -158,6 +185,14 @@ export default async function DashboardPage() {
     .select('*')
     .eq('id', session.user.id)
     .single();
+
+  const { data: betaParticipant } = await supabase
+    .from('beta_participants')
+    .select('id')
+    .eq('user_id', session.user.id)
+    .maybeSingle();
+
+  const isBetaParticipant = Boolean(betaParticipant?.id);
 
   const products = await getAllProductsWithAccess(session.user.id);
   const sessions = await getUserSessions(session.user.id);
@@ -191,8 +226,24 @@ export default async function DashboardPage() {
     return null;
   })();
 
+  const unpaidBetaCompletion = isBetaParticipant
+    ? await getLatestUnpaidBetaCompletion(session.user.id)
+    : null;
+
+  const commitmentProduct = unpaidBetaCompletion
+    ? getProductBySlug(unpaidBetaCompletion.product_slug)
+    : null;
+
   return (
     <div className={styles.container}>
+      {commitmentProduct && (
+        <BetaCommitmentModal
+          productSlug={commitmentProduct.slug}
+          productName={commitmentProduct.name}
+          price={commitmentProduct.price}
+          completedAt={unpaidBetaCompletion?.completed_at}
+        />
+      )}
       <header className={styles.header}>
         <h1>Welcome back, {user?.name || 'there'}!</h1>
         <p className={styles.subtitle}>Manage your products and view your progress</p>
@@ -300,6 +351,7 @@ export default async function DashboardPage() {
                   estimatedDuration: product.estimated_duration || '—',
                   totalSteps: Number(product.total_steps || 0),
                   riteLabel: getRiteLabel(product.product_slug),
+                  displayOrder: product.display_order ?? 0,
                   statusLabel: status,
                   statusClass,
                   statusRank,
