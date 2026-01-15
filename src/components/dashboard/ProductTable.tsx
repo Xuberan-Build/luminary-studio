@@ -11,6 +11,7 @@ export type ProductTableRow = {
   estimatedDuration: string;
   totalSteps: number;
   riteLabel: string;
+  displayOrder: number;
   statusLabel: 'Locked' | 'Ready' | 'In Progress' | 'Complete';
   statusClass: string;
   statusRank: number;
@@ -28,7 +29,7 @@ export type ProductTableRow = {
   attemptsRemaining: number | null;
 };
 
-type SortKey = 'product' | 'rite' | 'status' | 'progress' | 'lastActivity';
+type SortKey = 'product' | 'rite' | 'order' | 'status' | 'progress' | 'lastActivity';
 
 type SortState = {
   key: SortKey;
@@ -48,6 +49,7 @@ const defaultSort: SortState = {
 const defaultDirectionByKey: Record<SortKey, SortState['direction']> = {
   product: 'asc',
   rite: 'asc',
+  order: 'asc',
   status: 'asc',
   progress: 'desc',
   lastActivity: 'desc',
@@ -59,6 +61,8 @@ function getSortValue(row: ProductTableRow, key: SortKey) {
       return row.name.toLowerCase();
     case 'rite':
       return row.riteLabel.toLowerCase();
+    case 'order':
+      return row.displayOrder;
     case 'status':
       return row.statusRank;
     case 'progress':
@@ -147,6 +151,14 @@ export default function ProductTable({ rows, createNewVersionAction }: Props) {
         <button
           type="button"
           className={styles.tableHeaderCell}
+          onClick={() => handleSort('order')}
+        >
+          Order
+          <SortIndicator active={sortState.key === 'order'} direction={sortState.direction} />
+        </button>
+        <button
+          type="button"
+          className={styles.tableHeaderCell}
           onClick={() => handleSort('status')}
         >
           Status
@@ -180,6 +192,7 @@ export default function ProductTable({ rows, createNewVersionAction }: Props) {
             </div>
           </div>
           <div className={styles.tableCell}>{row.riteLabel}</div>
+          <div className={styles.tableCell}>{row.displayOrder}</div>
           <div className={styles.tableCell}>
             <span
               className={`${styles.statusPill} ${styles[row.statusClass]}`}
