@@ -46,11 +46,11 @@ export default function Meet() {
           </p>
         </div>
         <div className="hero-image">
-          <img
-            src="https://i.ibb.co/nzVMGDy/Austin-Headshot.jpg"
-            alt="Austin Santos - Value Creation Strategist"
-            loading="lazy"
-          />
+            <img
+              src="/images/meet-headshot.webp"
+              alt="Austin Santos - Value Creation Strategist"
+              loading="lazy"
+            />
         </div>
       </section>
 

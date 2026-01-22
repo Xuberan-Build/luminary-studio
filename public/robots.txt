@@ -38,7 +38,7 @@ User-agent: Slurp
 Allow: /
 
 # Sitemap location
-Sitemap: https://luminary-studio.netlify.app/sitemap.xml
+Sitemap: https://quantumstrategies.online/sitemap.xml
 
 # Crawl-delay for respectful crawling
 Crawl-delay: 1

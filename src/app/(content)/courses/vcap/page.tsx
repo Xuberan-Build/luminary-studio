@@ -32,9 +32,48 @@ function getModuleData(moduleId: string) {
 export default function VCAPCoursePage() {
   const course = getCourseData();
   const modules = course.modules.map((m: any) => getModuleData(m.id));
+  const faqs = [
+    {
+      question: "How long does it take to complete?",
+      answer:
+        "The protocol includes 8 hours of content across 3 modules. Most participants complete it over 2-3 weeks, spending 30-60 minutes per session. However, you have lifetime access to go at your own pace.",
+    },
+    {
+      question: "Do I need prior experience with NLP?",
+      answer:
+        "No prior experience needed. The protocol is designed to be accessible while maintaining depth. We break down complex NLP and Psychocybernetics concepts into practical, actionable frameworks.",
+    },
+    {
+      question: "How is this different from other courses?",
+      answer:
+        "Most courses focus on tactics without transforming identity. VCAP starts with reprogramming your unconscious operating system. The interactive slideshow format creates deeper retention than passive video watching.",
+    },
+    {
+      question: "Can I access on mobile?",
+      answer:
+        "Yes! The course is fully responsive. The interactive slideshows work on all devices, though we recommend desktop/tablet for the best experience with the larger visual elements.",
+    },
+  ];
+
+  const faqJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faqs.map((faq) => ({
+      "@type": "Question",
+      name: faq.question,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: faq.answer,
+      },
+    })),
+  };
 
   return (
     <div className={styles.page}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
+      />
       {/* Hero Section */}
       <section className={styles.hero}>
         <SacredGeometry variant="circles" opacity={0.08} />
@@ -203,41 +242,12 @@ export default function VCAPCoursePage() {
         <div className={styles.container}>
           <h2 className={styles.sectionTitle}>Common Questions</h2>
           <div className={styles.faqGrid}>
-            <div className={styles.faqItem}>
-              <h3 className={styles.faqQuestion}>How long does it take to complete?</h3>
-              <p className={styles.faqAnswer}>
-                The protocol includes 8 hours of content across 3 modules. Most participants
-                complete it over 2-3 weeks, spending 30-60 minutes per session. However, you have
-                lifetime access to go at your own pace.
-              </p>
-            </div>
-
-            <div className={styles.faqItem}>
-              <h3 className={styles.faqQuestion}>Do I need prior experience with NLP?</h3>
-              <p className={styles.faqAnswer}>
-                No prior experience needed. The protocol is designed to be accessible while
-                maintaining depth. We break down complex NLP and Psychocybernetics concepts into
-                practical, actionable frameworks.
-              </p>
-            </div>
-
-            <div className={styles.faqItem}>
-              <h3 className={styles.faqQuestion}>How is this different from other courses?</h3>
-              <p className={styles.faqAnswer}>
-                Most courses focus on tactics without transforming identity. VCAP starts with
-                reprogramming your unconscious operating system. The interactive slideshow format
-                creates deeper retention than passive video watching.
-              </p>
-            </div>
-
-            <div className={styles.faqItem}>
-              <h3 className={styles.faqQuestion}>Can I access on mobile?</h3>
-              <p className={styles.faqAnswer}>
-                Yes! The course is fully responsive. The interactive slideshows work on all
-                devices, though we recommend desktop/tablet for the best experience with the
-                larger visual elements.
-              </p>
-            </div>
+            {faqs.map((faq) => (
+              <div key={faq.question} className={styles.faqItem}>
+                <h3 className={styles.faqQuestion}>{faq.question}</h3>
+                <p className={styles.faqAnswer}>{faq.answer}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>

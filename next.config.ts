@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const config: NextConfig = {
-  images: { unoptimized: true },
+  images: {
+    unoptimized: true,
+    remotePatterns: [{ protocol: "https", hostname: "i.ibb.co" }],
+  },
   trailingSlash: true,
   pageExtensions: ["js","jsx","ts","tsx","md","mdx"],
   typedRoutes: false,

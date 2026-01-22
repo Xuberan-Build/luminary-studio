@@ -48,7 +48,7 @@ export default function ServicesSection() {
 
         <div className={styles.saturnContainer}>
           <img
-            src="https://i.ibb.co/wSRxNJF/Saturn-trans-transformed.png"
+            src="/images/saturn.webp"
             alt="Saturn planet graphic"
             className={styles.saturnImage}
             loading="lazy"

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
 import styles from "./hero.module.css";
 
 type Props = {
@@ -58,14 +59,15 @@ export default function Hero({ onOpenResume, onOpenPortfolio }: Props) {
     >
       <div className={styles.heroContent}>
         <div className={styles.shipWrapper}>
-          <img
+          <Image
             ref={shipRef}
-            src="https://i.ibb.co/4PRWQnT/ship1.png"
+            src="/images/hero-ship.webp"
             alt="Futuristic spaceship representing innovative marketing strategies"
             className={styles.ship}
-            loading="eager"
+            priority
             width={500}
             height={333}
+            sizes="(min-width: 900px) 520px, 90vw"
           />
         </div>
 

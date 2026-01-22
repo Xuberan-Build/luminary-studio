@@ -73,9 +73,34 @@ export default async function ArticlePage({ params }: PageProps) {
 
   const fileContent = fs.readFileSync(article.filePath, "utf-8");
   const { data, content } = matter(fileContent);
+  const stat = fs.statSync(article.filePath);
+  const baseUrl = "https://quantumstrategies.online";
+  const articleUrl = `${baseUrl}/articles/${slug}/`;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: data.title,
+    description: data.description,
+    datePublished: data.date || undefined,
+    dateModified: stat.mtime.toISOString(),
+    author: {
+      "@type": "Organization",
+      name: data.author || "Quantum Strategies",
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Quantum Strategies",
+    },
+    mainEntityOfPage: articleUrl,
+    url: articleUrl,
+  };
 
   return (
     <article className={styles.article}>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <header className={styles.header}>
         {data.category && <div className={styles.category}>{data.category}</div>}
         <h1 className={styles.title}>{data.title}</h1>

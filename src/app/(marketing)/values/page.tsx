@@ -14,7 +14,7 @@ export default function Values() {
           </div>
           <div className="hero-image">
             <img
-              src="https://i.ibb.co/M2MwMJg/600ea488-4b0e-422d-90cc-96b6661f0998.webp"
+              src="/images/values-grid-optimized.webp"
               alt="Hero Image"
             />
           </div>

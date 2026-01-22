@@ -1,13 +1,38 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import styles from "./contact.module.css";
 
 export default function ContactSection() {
   const [mode, setMode] = useState<"email" | "calendar">("email");
+  const [isReady, setIsReady] = useState(false);
+  const sectionRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    if (isReady) return;
+    const target = sectionRef.current;
+    if (!target) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setIsReady(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "300px" }
+    );
+
+    observer.observe(target);
+    return () => observer.disconnect();
+  }, [isReady]);
 
   return (
-    <section aria-labelledby="contact-heading" className={styles.contactSection}>
+    <section
+      ref={sectionRef}
+      aria-labelledby="contact-heading"
+      className={styles.contactSection}
+    >
       <div className={`${styles.container} container`}>
         <header className={styles.header}>
           <h2 id="contact-heading" className={styles.heading}>
@@ -49,7 +74,7 @@ export default function ContactSection() {
             </div>
 
             <img
-              src="https://i.ibb.co/5kBrLSz/Austin-Headshot-cropped-2-transformed-2.png"
+              src="/images/headshot.webp"
               alt="Austin Santos professional headshot"
               className={styles.headshot}
               loading="lazy"
@@ -59,22 +84,26 @@ export default function ContactSection() {
           </div>
 
           <div className={styles.rightColumn}>
-            {mode === "email" ? (
+            {isReady && mode === "email" ? (
               <iframe
                 title="Contact form"
                 role="tabpanel"
                 aria-label="Contact form"
                 className={styles.iframe}
                 src="https://docs.google.com/forms/d/e/1FAIpQLSfiOL95LteVJpnqd-au0uO1oSAY-lpc_LKqnAOpRb9G2eFhSg/viewform?embedded=true"
+                loading="lazy"
               />
-            ) : (
+            ) : isReady ? (
               <iframe
                 title="Appointment booking calendar"
                 role="tabpanel"
                 aria-label="Appointment booking calendar"
                 className={styles.iframe}
                 src="https://calendar.google.com/calendar/appointments/schedules/AcZssZ14pSdT57UMffOY9pWiLb0z0b0tu9WUZuJ1q050pXyTC0ADfI3d_DsAf3HjiSs2AlSX-yWs7F5e?gv=true"
+                loading="lazy"
               />
+            ) : (
+              <div className={styles.iframe} aria-hidden="true" />
             )}
           </div>
         </div>

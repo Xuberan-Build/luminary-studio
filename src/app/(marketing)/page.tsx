@@ -1,13 +1,24 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import dynamic from "next/dynamic";
 import Hero from "@/components/hero/Hero";
-import Modal from "@/components/modals/Modal";
 import FlashOverlay from "@/components/layout/FlashOverlay";
 import ServicesSection from "@/components/services/ServicesSection";
-import ResultsSection from "@/components/results/ResultsSection";
-import PortfolioModal from "@/components/modals/PortfolioModal";
-import ContactSection from "@/components/contact/ContactSection";
+import LazyMount from "@/components/performance/LazyMount";
+
+const ResultsSection = dynamic(() => import("@/components/results/ResultsSection"), {
+  ssr: false,
+});
+const ContactSection = dynamic(() => import("@/components/contact/ContactSection"), {
+  ssr: false,
+});
+const Modal = dynamic(() => import("@/components/modals/Modal"), {
+  ssr: false,
+});
+const PortfolioModal = dynamic(() => import("@/components/modals/PortfolioModal"), {
+  ssr: false,
+});
 
 export default function Home() {
   const [resumeOpen, setResumeOpen] = useState(false);
@@ -58,12 +69,13 @@ export default function Home() {
         onOpenPortfolio={() => setPortfolioOpen(true)}
       />
 
-      <Modal
-        title="Resume — Austin Santos"
-        isOpen={resumeOpen}
-        onClose={() => setResumeOpen(false)}
-      >
-        <article className="stack" aria-labelledby="resume-name">
+      {resumeOpen && (
+        <Modal
+          title="Resume — Austin Santos"
+          isOpen={resumeOpen}
+          onClose={() => setResumeOpen(false)}
+        >
+          <article className="stack" aria-labelledby="resume-name">
           <header className="stack">
             <h3 id="resume-name" style={{ margin: 0, color: "#fff" }}>
               Austin Santos
@@ -234,18 +246,25 @@ export default function Home() {
               Monday · HTML · CSS · React · Webflow · Shopify · WordPress · BigCommerce · Magento.
             </p>
           </section>
-        </article>
-      </Modal>
+          </article>
+        </Modal>
+      )}
 
-      <PortfolioModal isOpen={portfolioOpen} onClose={() => setPortfolioOpen(false)} />
+      {portfolioOpen && (
+        <PortfolioModal isOpen={portfolioOpen} onClose={() => setPortfolioOpen(false)} />
+      )}
 
       <section ref={servicesRef}>
         <ServicesSection />
       </section>
 
-      <ResultsSection />
+      <LazyMount minHeight={600}>
+        <ResultsSection />
+      </LazyMount>
 
-      <ContactSection />
+      <LazyMount minHeight={800}>
+        <ContactSection />
+      </LazyMount>
     </>
   );
 }
