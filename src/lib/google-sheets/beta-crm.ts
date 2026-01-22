@@ -31,6 +31,10 @@ const HEADERS = [
   'Notes',
 ];
 
+function normalizeEmail(value: string) {
+  return value.trim().toLowerCase();
+}
+
 function getGoogleCredentials() {
   const serviceAccountPath = process.env.GOOGLE_SERVICE_ACCOUNT_FILE;
   let fileCredentials: { client_email?: string; private_key?: string } | null = null;
@@ -111,7 +115,10 @@ async function findExistingRow(
   });
 
   const rows = response.data.values || [];
-  const idx = rows.findIndex((row, index) => index > 0 && row[0] === email);
+  const normalizedEmail = normalizeEmail(email);
+  const idx = rows.findIndex(
+    (row, index) => index > 0 && normalizeEmail(row[0] || '') === normalizedEmail
+  );
   return idx > -1 ? idx + 1 : null;
 }
 
@@ -131,10 +138,11 @@ export async function appendBetaEnrollmentToCRM(payload: BetaEnrollmentRow): Pro
   const sheets = google.sheets({ version: 'v4', auth });
   await ensureTab(sheets);
 
-  const existingRow = await findExistingRow(sheets, payload.email);
+  const normalizedEmail = normalizeEmail(payload.email);
+  const existingRow = await findExistingRow(sheets, normalizedEmail);
   const rowValues = [
     payload.enrollmentDate,
-    payload.email,
+    normalizedEmail,
     payload.name || '',
     payload.userId,
     payload.betaParticipantId,

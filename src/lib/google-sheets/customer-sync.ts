@@ -52,6 +52,18 @@ export interface CustomerInsightData {
   notes?: string;
 }
 
+function normalizeEmail(value: string) {
+  return value.trim().toLowerCase();
+}
+
+function getSpreadsheetId() {
+  return (
+    process.env.GOOGLE_CRM_SHEET_ID ||
+    process.env.GOOGLE_SHEET_ID ||
+    '1rTuGFZePZPV1PpC9bm7rcLs4nWXdr6zsb931OGH3rr8'
+  );
+}
+
 function getGoogleCredentials() {
   const serviceAccountPath = process.env.GOOGLE_SERVICE_ACCOUNT_FILE;
   let fileCredentials: { client_email?: string; private_key?: string } | null = null;
@@ -88,10 +100,8 @@ export async function syncCustomer(data: CustomerData): Promise<void> {
   });
 
   const sheets = google.sheets({ version: 'v4', auth });
-  const spreadsheetId =
-    process.env.GOOGLE_CRM_SHEET_ID ||
-    process.env.GOOGLE_SHEET_ID ||
-    '1rTuGFZePZPV1PpC9bm7rcLs4nWXdr6zsb931OGH3rr8';
+  const spreadsheetId = getSpreadsheetId();
+  const normalizedEmail = normalizeEmail(data.email);
 
   // Check if customer exists
   const response = await sheets.spreadsheets.values.get({
@@ -101,7 +111,7 @@ export async function syncCustomer(data: CustomerData): Promise<void> {
 
   const rows = response.data.values || [];
   const existingCustomerIndex = rows.findIndex((row, index) =>
-    index > 0 && row[0] === data.email // Skip header row
+    index > 0 && normalizeEmail(row[0] || '') === normalizedEmail // Skip header row
   );
 
   if (existingCustomerIndex > -1) {
@@ -136,8 +146,8 @@ export async function syncCustomer(data: CustomerData): Promise<void> {
   } else {
     // Create new customer
     const newCustomer = [
-      data.email,                         // A: Email
-      data.name,                          // B: Name
+      normalizedEmail,                    // A: Email
+      data.name?.trim() || '',            // B: Name
       data.purchaseDate,                  // C: First Purchase Date
       data.purchaseDate,                  // D: Last Purchase Date
       '1',                                // E: Total Purchases
@@ -167,7 +177,7 @@ export async function syncCustomer(data: CustomerData): Promise<void> {
       },
     });
 
-    console.log(`✅ Created new customer: ${data.email}`);
+    console.log(`✅ Created new customer: ${normalizedEmail}`);
   }
 }
 
@@ -184,10 +194,8 @@ export async function storeCustomerInsights(data: CustomerInsightData): Promise<
   });
 
   const sheets = google.sheets({ version: 'v4', auth });
-  const spreadsheetId =
-    process.env.GOOGLE_CRM_SHEET_ID ||
-    process.env.GOOGLE_SHEET_ID ||
-    '1rTuGFZePZPV1PpC9bm7rcLs4nWXdr6zsb931OGH3rr8';
+  const spreadsheetId = getSpreadsheetId();
+  const normalizedEmail = normalizeEmail(data.email);
 
   // Generate segment tags based on profile
   const tags = [];
@@ -197,7 +205,7 @@ export async function storeCustomerInsights(data: CustomerInsightData): Promise<
   const segmentTags = data.segmentTags || tags.join(',');
 
   const insightRow = [
-    data.email,                           // A
+    normalizedEmail,                      // A
     data.product,                         // B
     data.completionDate || new Date().toISOString().split('T')[0], // C
     data.completionStatus || 'completed', // D
@@ -233,7 +241,9 @@ export async function storeCustomerInsights(data: CustomerInsightData): Promise<
 
   const rows = response.data.values || [];
   const existingIndex = rows.findIndex((row, index) =>
-    index > 0 && row[0] === data.email && row[1] === data.product
+    index > 0 &&
+    normalizeEmail(row[0] || '') === normalizedEmail &&
+    row[1] === data.product
   );
 
   if (existingIndex > -1) {
@@ -247,7 +257,7 @@ export async function storeCustomerInsights(data: CustomerInsightData): Promise<
         values: [insightRow],
       },
     });
-    console.log(`✅ Updated insights for: ${data.email}`);
+    console.log(`✅ Updated insights for: ${normalizedEmail}`);
   } else {
     // Append new insights
     await sheets.spreadsheets.values.append({
@@ -258,11 +268,11 @@ export async function storeCustomerInsights(data: CustomerInsightData): Promise<
         values: [insightRow],
       },
     });
-    console.log(`✅ Stored new insights for: ${data.email}`);
+    console.log(`✅ Stored new insights for: ${normalizedEmail}`);
   }
 
   // Also update customer tags in Customers sheet
-  await updateCustomerTags(data.email, segmentTags);
+  await updateCustomerTags(normalizedEmail, segmentTags);
 }
 
 /**
@@ -278,7 +288,8 @@ async function updateCustomerTags(email: string, tags: string): Promise<void> {
   });
 
   const sheets = google.sheets({ version: 'v4', auth });
-  const spreadsheetId = '1rTuGFZePZPV1PpC9bm7rcLs4nWXdr6zsb931OGH3rr8';
+  const spreadsheetId = getSpreadsheetId();
+  const normalizedEmail = normalizeEmail(email);
 
   // Find customer row
   const response = await sheets.spreadsheets.values.get({
@@ -288,7 +299,7 @@ async function updateCustomerTags(email: string, tags: string): Promise<void> {
 
   const rows = response.data.values || [];
   const customerIndex = rows.findIndex((row, index) =>
-    index > 0 && row[0] === email
+    index > 0 && normalizeEmail(row[0] || '') === normalizedEmail
   );
 
   if (customerIndex > -1) {
@@ -301,6 +312,6 @@ async function updateCustomerTags(email: string, tags: string): Promise<void> {
         values: [[tags]],
       },
     });
-    console.log(`✅ Updated customer tags: ${email} → ${tags}`);
+    console.log(`✅ Updated customer tags: ${normalizedEmail} → ${tags}`);
   }
 }

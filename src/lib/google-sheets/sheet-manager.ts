@@ -1,6 +1,10 @@
 import { google } from 'googleapis';
 import { PurchaseRecord } from '../email/sequence-manager';
 
+function normalizeEmail(value: string) {
+  return value.trim().toLowerCase();
+}
+
 /**
  * Fetch all purchases from Google Sheets
  */
@@ -52,7 +56,7 @@ export async function fetchPurchasesFromSheet(): Promise<PurchaseRecord[]> {
 
     return {
       timestamp: row[0] || '',
-      email: row[1] || '',
+      email: normalizeEmail(row[1] || ''),
       name: row[2] || '',
       product: productName,
       productSlug,
@@ -98,7 +102,8 @@ export async function updateSheetEmailStatus(
   const dataRows = rows.slice(1);
 
   // Find the row index (add 2 to account for header row and 0-indexing)
-  const rowIndex = dataRows.findIndex(row => row[0] === email);
+  const normalizedEmail = normalizeEmail(email);
+  const rowIndex = dataRows.findIndex(row => normalizeEmail(row[0] || '') === normalizedEmail);
   if (rowIndex === -1) {
     console.error(`Email not found in sheet: ${email}`);
     return;
@@ -167,7 +172,8 @@ export async function updateSheetUnsubscribe(email: string): Promise<void> {
   const rows = response.data.values || [];
   const dataRows = rows.slice(1);
 
-  const rowIndex = dataRows.findIndex(row => row[0] === email);
+  const normalizedEmail = normalizeEmail(email);
+  const rowIndex = dataRows.findIndex(row => normalizeEmail(row[0] || '') === normalizedEmail);
   if (rowIndex === -1) {
     console.error(`Email not found in sheet: ${email}`);
     return;
