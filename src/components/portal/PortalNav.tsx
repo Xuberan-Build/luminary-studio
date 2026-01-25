@@ -14,19 +14,24 @@ export default function PortalNav({ userName }: PortalNavProps) {
 
   const navItems = [
     {
-      label: 'Dashboard',
-      href: '/dashboard',
-      active: pathname === '/dashboard',
+      label: 'Products',
+      href: '/dashboard/products',
+      active: pathname?.startsWith('/dashboard/products'),
     },
     {
-      label: 'Profile',
-      href: '/dashboard/profile',
-      active: pathname?.startsWith('/dashboard/profile'),
+      label: 'Courses',
+      href: '/dashboard/courses',
+      active: pathname?.startsWith('/dashboard/courses'),
     },
     {
       label: 'Affiliate',
       href: '/dashboard/affiliate',
       active: pathname?.startsWith('/dashboard/affiliate'),
+    },
+    {
+      label: 'Profile',
+      href: '/dashboard/profile',
+      active: pathname?.startsWith('/dashboard/profile'),
     },
   ];
 

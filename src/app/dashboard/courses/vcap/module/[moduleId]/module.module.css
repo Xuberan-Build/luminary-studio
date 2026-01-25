@@ -1,0 +1,275 @@
+.layout {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) 1fr;
+  gap: 32px;
+  padding: 0 2rem 4rem 2rem;
+}
+
+.sidebar {
+  border-radius: 20px;
+  border: 1px solid rgba(206, 190, 255, 0.2);
+  background: rgba(10, 6, 20, 0.75);
+  padding: 20px;
+  height: fit-content;
+  position: sticky;
+  top: 110px;
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.35);
+  transition: transform 0.3s ease;
+}
+
+.sidebarOpen {
+  transform: translateX(0);
+}
+
+.sidebarClosed {
+  transform: translateX(-110%);
+}
+
+.sidebarHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.sidebarTitle {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.sidebarSubtitle {
+  margin-top: 6px;
+  color: rgba(206, 190, 255, 0.75);
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.drawerToggle {
+  border: 1px solid rgba(206, 190, 255, 0.3);
+  background: rgba(93, 63, 211, 0.15);
+  color: #ffffff;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  cursor: pointer;
+}
+
+.mobileOverlay {
+  display: none;
+}
+
+.submoduleList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.submoduleItem {
+  display: block;
+  padding: 12px 14px;
+  border-radius: 14px;
+  border: 1px solid transparent;
+  background: rgba(15, 7, 32, 0.6);
+  color: #fefcfb;
+  text-decoration: none;
+  transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
+}
+
+.submoduleItem:hover {
+  border-color: rgba(93, 63, 211, 0.6);
+  transform: translateY(-1px);
+  background: rgba(93, 63, 211, 0.18);
+}
+
+.submoduleItemActive {
+  border-color: rgba(124, 58, 237, 0.8);
+  background: rgba(93, 63, 211, 0.28);
+  box-shadow: 0 8px 20px rgba(93, 63, 211, 0.3);
+}
+
+.submoduleIndex {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(206, 190, 255, 0.7);
+  margin-bottom: 6px;
+}
+
+.submoduleTitle {
+  font-weight: 600;
+  font-size: 0.95rem;
+  margin-bottom: 4px;
+}
+
+.submoduleMeta {
+  font-size: 0.8rem;
+  color: rgba(206, 190, 255, 0.7);
+}
+
+.viewer {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.viewerHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.viewerActions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.viewerTitle {
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.viewerMeta {
+  margin-top: 6px;
+  color: rgba(206, 190, 255, 0.75);
+}
+
+.backLink {
+  text-decoration: none;
+  color: #ffffff;
+  border: 1px solid rgba(206, 190, 255, 0.3);
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+}
+
+.openDrawerButton {
+  border: 1px solid rgba(206, 190, 255, 0.3);
+  background: rgba(93, 63, 211, 0.2);
+  color: #ffffff;
+  padding: 8px 14px;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.slideShell {
+  position: relative;
+  border-radius: 20px;
+  border: 1px solid rgba(206, 190, 255, 0.2);
+  background: rgba(10, 6, 20, 0.8);
+  min-height: 520px;
+  padding: 24px;
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.4);
+}
+
+.slidePlaceholder {
+  height: 100%;
+  border-radius: 16px;
+  border: 1px dashed rgba(206, 190, 255, 0.25);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: rgba(206, 190, 255, 0.75);
+  font-size: 0.95rem;
+  gap: 8px;
+  padding: 40px;
+}
+
+.slideLabel {
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.slideNote {
+  max-width: 360px;
+  line-height: 1.4;
+}
+
+.pipVideo {
+  position: absolute;
+  right: 24px;
+  bottom: 24px;
+  width: 240px;
+  height: 150px;
+  border-radius: 14px;
+  background: rgba(26, 16, 46, 0.95);
+  border: 1px solid rgba(206, 190, 255, 0.3);
+  box-shadow: 0 12px 26px rgba(0, 0, 0, 0.45);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.pipHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  font-size: 0.75rem;
+  color: rgba(206, 190, 255, 0.85);
+  background: rgba(93, 63, 211, 0.25);
+}
+
+.pipClose {
+  border: none;
+  background: transparent;
+  color: rgba(206, 190, 255, 0.9);
+  cursor: pointer;
+  font-size: 0.7rem;
+}
+
+.pipBody {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  color: rgba(206, 190, 255, 0.7);
+}
+
+@media (max-width: 980px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    position: fixed;
+    top: 90px;
+    left: 20px;
+    right: 20px;
+    max-width: 360px;
+    z-index: 20;
+    transform: translateX(-110%);
+  }
+
+  .sidebarOpen {
+    transform: translateX(0);
+  }
+
+  .mobileOverlay {
+    position: fixed;
+    inset: 0;
+    border: none;
+    background: rgba(7, 4, 16, 0.7);
+    display: block;
+    z-index: 10;
+  }
+}
+
+@media (max-width: 768px) {
+  .layout {
+    padding: 0 1.5rem 3rem 1.5rem;
+  }
+
+  .pipVideo {
+    width: 200px;
+    height: 130px;
+  }
+}
