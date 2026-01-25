@@ -70,6 +70,9 @@ export default function VCAPCoursePage() {
 
   return (
     <div className={styles.page}>
+      <div className={styles.portalBanner}>
+        Portal access required. You will be redirected to sign in or create an account.
+      </div>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
@@ -107,13 +110,16 @@ export default function VCAPCoursePage() {
           </div>
 
           <div className={styles.heroCTA}>
-            <Link href="#modules" className={styles.primaryButton}>
-              Begin Protocol →
+            <Link href="/login?redirect=/dashboard/courses/vcap" className={styles.primaryButton}>
+              Access in Portal →
             </Link>
             <Link href="#curriculum" className={styles.secondaryButton}>
               View Curriculum
             </Link>
           </div>
+          <p className={styles.portalNote}>
+            Portal access required. You will be redirected to sign in or create an account.
+          </p>
         </div>
       </section>
 
@@ -185,7 +191,7 @@ export default function VCAPCoursePage() {
                   outcome={module.outcome}
                   icon={module.icon}
                   color={module.color}
-                  href={`/courses/vcap/module/${module.id}`}
+                  href={`/login?redirect=/dashboard/courses/vcap/module/${module.id}`}
                   isLocked={false}
                 />
               </div>
@@ -222,15 +228,14 @@ export default function VCAPCoursePage() {
           <div className={styles.enrollCard}>
             <h2 className={styles.enrollTitle}>Begin Your Activation</h2>
             <p className={styles.enrollDescription}>
-              Start with Module 1 free. No credit card required. Experience the protocol before
-              committing.
+              Access the full protocol inside your portal with guided submodules and progress tracking.
             </p>
             <div className={styles.enrollButtons}>
-              <Link href="/courses/vcap/module/module1" className={styles.enrollButton}>
-                Start Free Preview →
+              <Link href="/login?redirect=/dashboard/courses/vcap" className={styles.enrollButton}>
+                Access VCAP in Portal →
               </Link>
               <div className={styles.enrollNote}>
-                Preview includes full access to Module 1's interactive slideshow
+                Portal access is required to begin the course
               </div>
             </div>
           </div>

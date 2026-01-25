@@ -119,6 +119,9 @@ export default async function ModulePage({ params }: ModulePageProps) {
             <div className={styles.moduleLabel}>Module {module.number}</div>
             <h1 className={styles.heroTitle}>{module.title}</h1>
             <p className={styles.heroSubtitle}>{module.subtitle}</p>
+            <p className={styles.portalNote}>
+              Portal access required. You will be redirected to sign in or create an account.
+            </p>
 
             <div className={styles.stats}>
               <div className={styles.stat}>
@@ -185,13 +188,7 @@ export default async function ModulePage({ params }: ModulePageProps) {
 
               // Determine the href based on lesson type
               let lessonHref = "#";
-              if (lesson.type === "slides") {
-                lessonHref = `/courses/vcap/module/${moduleId}/slides`;
-              } else if (lesson.type === "text") {
-                lessonHref = `/courses/vcap/module/${moduleId}/lesson/${lesson.id}`;
-              } else if (lesson.type === "video") {
-                lessonHref = `/courses/vcap/module/${moduleId}/lesson/${lesson.id}`;
-              }
+              lessonHref = `/login?redirect=/dashboard/courses/vcap/module/${moduleId}`;
 
               return (
                 <Link
@@ -269,14 +266,10 @@ export default async function ModulePage({ params }: ModulePageProps) {
             <div className={styles.nextStepsButtons}>
               {module.lessons[0] && (
                 <Link
-                  href={
-                    module.lessons[0].type === "slides"
-                      ? `/courses/vcap/module/${moduleId}/slides`
-                      : `/courses/vcap/module/${moduleId}/lesson/${module.lessons[0].id}`
-                  }
+                  href={`/login?redirect=/dashboard/courses/vcap/module/${moduleId}`}
                   className={styles.startButton}
                 >
-                  Start First Lesson →
+                  Access Module in Portal →
                 </Link>
               )}
               <Link href="/courses/vcap" className={styles.backButton}>

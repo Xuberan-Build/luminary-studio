@@ -82,6 +82,12 @@
   line-height: 1.4;
 }
 
+.portalNote {
+  font-size: 0.95rem;
+  color: rgba(254, 252, 251, 0.8);
+  margin: -1.5rem 0 2rem;
+}
+
 .stats {
   display: flex;
   justify-content: center;

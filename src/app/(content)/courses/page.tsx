@@ -31,6 +31,9 @@ const courses = [
 export default function CoursesPage() {
   return (
     <div className={styles.page}>
+      <div className={styles.portalBanner}>
+        Portal access required. You will be redirected to sign in or create an account.
+      </div>
       {/* Hero Section */}
       <section className={styles.hero}>
         <SacredGeometry variant="minimal" opacity={0.1} />
@@ -39,6 +42,9 @@ export default function CoursesPage() {
           <p className={styles.heroSubtitle}>
             Where consciousness meets commerce. Transform your identity, clarify your vision, and
             build systems that create predictable results.
+          </p>
+          <p className={styles.heroSubtitle}>
+            Access is delivered inside your portal.
           </p>
 
           <div className={styles.trustIndicators}>
@@ -128,11 +134,10 @@ export default function CoursesPage() {
         <div className={styles.container}>
           <h2 className={styles.ctaTitle}>Begin Your Transformation</h2>
           <p className={styles.ctaDescription}>
-            Start with the Visionary Creator's Activation Protocol. Preview Module 1 free, no
-            credit card required.
+            Start with the Visionary Creator's Activation Protocol inside your portal.
           </p>
-          <Link href="/courses/vcap" className={styles.ctaButton}>
-            Explore VCAP Protocol →
+          <Link href="/login?redirect=/dashboard/courses" className={styles.ctaButton}>
+            Access Courses in Portal →
           </Link>
         </div>
       </section>

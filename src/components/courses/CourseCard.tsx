@@ -23,9 +23,9 @@ export default function CourseCard({
   outcomes = [],
 }: CourseCardProps) {
   const statusConfig = {
-    preview: { label: "Free Preview", color: "#10B981" },
+    preview: { label: "View Details", color: "#10B981" },
     enrolled: { label: "Continue Learning", color: "#5D3FD3" },
-    locked: { label: "Enroll Now", color: "#9333EA" },
+    locked: { label: "Access in Portal", color: "#9333EA" },
   };
 
   const currentStatus = statusConfig[status];
@@ -66,6 +66,10 @@ export default function CourseCard({
             ))}
           </ul>
         )}
+
+        <div className={styles.portalNote}>
+          Portal access required.
+        </div>
 
         <div className={styles.statusBadge} style={{ backgroundColor: currentStatus.color }}>
           {currentStatus.label} →

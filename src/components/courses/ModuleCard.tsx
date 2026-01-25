@@ -68,7 +68,7 @@ export default function ModuleCard({
           </>
         ) : (
           <>
-            Preview Module {number} →
+            Open Module {number} in Portal →
           </>
         )}
       </Link>
