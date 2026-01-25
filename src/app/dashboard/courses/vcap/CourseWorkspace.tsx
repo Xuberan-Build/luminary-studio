@@ -1,9 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import styles from './vcap-workspace.module.css';
 import portalStyles from '../../dashboard.module.css';
+import SlideDeck from '@/components/courses/SlideDeck';
 
 type CourseModule = {
   id: string;
@@ -99,48 +101,87 @@ export default function CourseWorkspace({
       ? initialSubmoduleId
       : submodules[0]?.id || null
   );
+  const router = useRouter();
+  const searchParams = useSearchParams();
 
   const activeSubmodule = submodules.find((item) => item.id === activeSubmoduleId) || null;
+
+  const updateQuery = (moduleId: string, submoduleId: string | null) => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.set('module', moduleId);
+    if (submoduleId) {
+      params.set('submodule', submoduleId);
+    } else {
+      params.delete('submodule');
+    }
+    router.replace(`?${params.toString()}`, { scroll: false });
+  };
 
   const handleModuleSelect = (moduleId: string) => {
     setActiveModuleId(moduleId);
     const nextSubmodules = submodulesByModule[moduleId] || [];
-    setActiveSubmoduleId(nextSubmodules[0]?.id || null);
+    const nextSubmoduleId = nextSubmodules[0]?.id || null;
+    setActiveSubmoduleId(nextSubmoduleId);
+    updateQuery(moduleId, nextSubmoduleId);
   };
+
+  const handleSubmoduleSelect = (submoduleId: string) => {
+    setActiveSubmoduleId(submoduleId);
+    updateQuery(activeModule.id, submoduleId);
+  };
+
+  useEffect(() => {
+    const moduleParam = searchParams.get('module');
+    const submoduleParam = searchParams.get('submodule');
+    const moduleExists = moduleParam ? modules.some((module) => module.id === moduleParam) : false;
+
+    if (moduleParam && moduleExists && moduleParam !== activeModuleId) {
+      const nextSubmodules = submodulesByModule[moduleParam] || [];
+      const nextSubmoduleId =
+        submoduleParam && nextSubmodules.some((item) => item.id === submoduleParam)
+          ? submoduleParam
+          : nextSubmodules[0]?.id || null;
+      setActiveModuleId(moduleParam);
+      setActiveSubmoduleId(nextSubmoduleId);
+      return;
+    }
+
+    if (submoduleParam && submoduleParam !== activeSubmoduleId) {
+      if (submodules.some((item) => item.id === submoduleParam)) {
+        setActiveSubmoduleId(submoduleParam);
+      }
+    }
+  }, [searchParams, modules, activeModuleId, activeSubmoduleId, submodules]);
 
   return (
     <div className={portalStyles.container}>
       <header className={portalStyles.header}>
         <h1>{courseTitle}</h1>
         <p className={portalStyles.subtitle}>{courseTagline}</p>
-        <div className={portalStyles.tabRow}>
-          <Link href="/dashboard/products" className={portalStyles.tabLink}>
-            Products
-          </Link>
-          <Link href="/dashboard/courses" className={portalStyles.tabLink}>
-            Courses
-          </Link>
-          <Link href="/dashboard/affiliate" className={portalStyles.tabLink}>
-            Affiliate
-          </Link>
-        </div>
       </header>
 
       <main className={styles.layout}>
         {drawerOpen && <button className={styles.mobileOverlay} onClick={() => setDrawerOpen(false)} />}
+        {!drawerOpen && (
+          <button className={styles.drawerHandle} type="button" onClick={() => setDrawerOpen(true)}>
+            Modules
+          </button>
+        )}
         <aside className={`${styles.sidebar} ${drawerOpen ? styles.sidebarOpen : styles.sidebarClosed}`}>
           <div className={styles.sidebarHeader}>
             <div>
               <div className={styles.sidebarTitle}>Modules</div>
               <div className={styles.sidebarSubtitle}>{courseDescription}</div>
             </div>
-            <button
-              className={styles.drawerToggle}
-              type="button"
-              onClick={() => setDrawerOpen((prev) => !prev)}
-            >
-              {drawerOpen ? 'Hide' : 'Show'}
-            </button>
+            {drawerOpen && (
+              <button
+                className={styles.drawerCorner}
+                type="button"
+                onClick={() => setDrawerOpen(false)}
+              >
+                Hide
+              </button>
+            )}
           </div>
 
           <div className={styles.moduleList}>
@@ -166,7 +207,7 @@ export default function CourseWorkspace({
                   key={submodule.id}
                   type="button"
                   className={`${styles.submoduleItem} ${isActive ? styles.submoduleItemActive : ''}`}
-                  onClick={() => setActiveSubmoduleId(submodule.id)}
+                  onClick={() => handleSubmoduleSelect(submodule.id)}
                 >
                   <div className={styles.submoduleIndex}>Submodule {index + 1}</div>
                   <div className={styles.submoduleTitle}>{submodule.title}</div>
@@ -190,13 +231,6 @@ export default function CourseWorkspace({
               </div>
             </div>
             <div className={styles.viewerActions}>
-              <button
-                className={styles.openDrawerButton}
-                type="button"
-                onClick={() => setDrawerOpen(true)}
-              >
-                Modules
-              </button>
               <Link href="/dashboard/courses" className={styles.backLink}>
                 Back to Courses
               </Link>
@@ -204,10 +238,13 @@ export default function CourseWorkspace({
           </div>
 
           <div className={styles.slideShell}>
-            <div className={styles.slidePlaceholder}>
-              <div className={styles.slideLabel}>Slide player (PWA experience)</div>
-              <div className={styles.slideNote}>Progress saves automatically and resumes where you left off.</div>
-            </div>
+            <SlideDeck
+              moduleId={activeModule.id}
+              submoduleId={activeSubmoduleId}
+              title={
+                activeSubmodule ? `${activeModule.title} - ${activeSubmodule.title}` : 'VCAP Slide Deck'
+              }
+            />
 
             <div className={styles.pipVideo}>
               <div className={styles.pipHeader}>

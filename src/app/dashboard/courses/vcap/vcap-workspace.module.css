@@ -3,6 +3,10 @@
   grid-template-columns: minmax(280px, 340px) 1fr;
   gap: 32px;
   padding: 0 2rem 4rem 2rem;
+  position: relative;
+  --drawer-rail: clamp(280px, 28vw, 340px);
+  --drawer-tab-top: 18px;
+  --sidebar-top: 110px;
 }
 
 .sidebar {
@@ -45,14 +49,43 @@
   line-height: 1.4;
 }
 
-.drawerToggle {
+.drawerHandle {
+  position: fixed;
+  left: 0;
+  top: calc(var(--sidebar-top) + var(--drawer-tab-top));
+  transform: translateX(-4px);
+  z-index: 30;
   border: 1px solid rgba(206, 190, 255, 0.3);
-  background: rgba(93, 63, 211, 0.15);
+  background: rgba(18, 10, 34, 0.9);
+  color: #ffffff;
+  padding: 14px 8px;
+  border-radius: 0 12px 12px 0;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.35);
+  white-space: nowrap;
+  writing-mode: vertical-rl;
+  text-orientation: mixed;
+}
+
+.drawerCorner {
+  border: 1px solid rgba(206, 190, 255, 0.3);
+  background: rgba(18, 10, 34, 0.9);
   color: #ffffff;
   padding: 6px 12px;
   border-radius: 999px;
-  font-size: 0.75rem;
+  font-size: 0.7rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
   cursor: pointer;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.25);
+  position: absolute;
+  right: -12px;
+  top: var(--drawer-tab-top);
 }
 
 .moduleList {
@@ -204,18 +237,11 @@
   font-size: 0.85rem;
 }
 
-.openDrawerButton {
-  border: 1px solid rgba(206, 190, 255, 0.3);
-  background: rgba(93, 63, 211, 0.2);
-  color: #ffffff;
-  padding: 8px 14px;
-  border-radius: 10px;
-  font-size: 0.85rem;
-  cursor: pointer;
-}
-
 .slideShell {
   position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   border-radius: 20px;
   border: 1px solid rgba(206, 190, 255, 0.2);
   background: rgba(10, 6, 20, 0.8);
@@ -299,6 +325,8 @@
 @media (max-width: 980px) {
   .layout {
     grid-template-columns: 1fr;
+    --drawer-tab-top: 16px;
+    --sidebar-top: 90px;
   }
 
   .sidebar {
@@ -323,6 +351,15 @@
     display: block;
     z-index: 10;
   }
+
+  .drawerHandle {
+    left: 0;
+    transform: none;
+  }
+
+  .drawerCorner {
+    right: 12px;
+  }
 }
 
 @media (max-width: 768px) {
@@ -333,5 +370,10 @@
   .pipVideo {
     width: 200px;
     height: 130px;
+  }
+
+  .drawerHandle {
+    transform: none;
+    left: 0;
   }
 }
