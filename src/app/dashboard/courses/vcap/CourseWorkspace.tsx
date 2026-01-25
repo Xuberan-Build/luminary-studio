@@ -5,7 +5,6 @@ import { useMemo, useState, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import styles from './vcap-workspace.module.css';
 import portalStyles from '../../dashboard.module.css';
-import SlideDeck from '@/components/courses/SlideDeck';
 
 type CourseModule = {
   id: string;
@@ -238,13 +237,13 @@ export default function CourseWorkspace({
           </div>
 
           <div className={styles.slideShell}>
-            <SlideDeck
-              moduleId={activeModule.id}
-              submoduleId={activeSubmoduleId}
-              title={
-                activeSubmodule ? `${activeModule.title} - ${activeSubmodule.title}` : 'VCAP Slide Deck'
-              }
-            />
+            <div className={styles.slidePlaceholder}>
+              <div className={styles.slideLabel}>Slide deck coming soon</div>
+              <p className={styles.slideNote}>
+                We are migrating the interactive slides into the portal. Keep exploring modules while we
+                wire the new player.
+              </p>
+            </div>
 
             <div className={styles.pipVideo}>
               <div className={styles.pipHeader}>
