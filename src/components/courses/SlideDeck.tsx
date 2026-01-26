@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import type { RefObject } from 'react';
 import styles from './slide-deck.module.css';
 
@@ -25,6 +26,22 @@ export default function SlideDeck({ moduleId, submoduleId, startCoords, iframeRe
   const iframeSrc = `${baseUrl}/?${params.toString()}`;
   const iframeKey = `${moduleId}:${submoduleId || ''}:${startCoords || ''}`;
 
+  useEffect(() => {
+    const origin = new URL(baseUrl).origin;
+    const existing = document.querySelector(`link[rel="preconnect"][href="${origin}"]`);
+    if (!existing) {
+      const preconnect = document.createElement('link');
+      preconnect.rel = 'preconnect';
+      preconnect.href = origin;
+      document.head.appendChild(preconnect);
+
+      const dnsPrefetch = document.createElement('link');
+      dnsPrefetch.rel = 'dns-prefetch';
+      dnsPrefetch.href = origin;
+      document.head.appendChild(dnsPrefetch);
+    }
+  }, [baseUrl]);
+
   return (
     <div className={styles.wrapper}>
       <iframe
@@ -34,6 +51,8 @@ export default function SlideDeck({ moduleId, submoduleId, startCoords, iframeRe
         title={title || 'VCAP Slide Deck'}
         allow="fullscreen"
         ref={iframeRef}
+        loading="lazy"
+        fetchPriority="low"
       />
     </div>
   );

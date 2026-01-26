@@ -44,47 +44,6 @@ async function createNewVersion(formData: FormData) {
   redirect(`/products/${productSlug}/experience`);
 }
 
-async function getAllProductsWithAccess(userId: string) {
-  const supabase = await createServerSupabaseClient();
-
-  // Get ALL product definitions
-  const { data: allProducts, error: productsError } = await supabase
-    .from('product_definitions')
-    .select('*')
-    .order('created_at', { ascending: true });
-
-  if (productsError) {
-    console.error('Error fetching products:', productsError);
-    return [];
-  }
-
-  if (!allProducts || allProducts.length === 0) {
-    return [];
-  }
-
-  // Get user's product access
-  const { data: productAccess } = await supabase
-    .from('product_access')
-    .select('*')
-    .eq('user_id', userId)
-    .eq('access_granted', true);
-
-  // Map products to include access status
-  const productsWithAccess = allProducts.map((product) => {
-    const access = productAccess?.find(
-      (a) => a.product_slug === product.product_slug
-    );
-
-    return {
-      product: product,
-      access: access || null,
-      hasAccess: !!access,
-    };
-  });
-
-  return productsWithAccess;
-}
-
 async function getUserSessions(userId: string) {
   try {
     // Get only latest versions of each product
@@ -102,31 +61,6 @@ async function getUserSessions(userId: string) {
   } catch (e: any) {
     console.error('Error fetching sessions:', e?.message || e);
     return [];
-  }
-}
-
-async function getSessionAttempts(userId: string, productSlug: string) {
-  try {
-    const { data, error } = await supabaseAdmin
-      .from('product_access')
-      .select('free_attempts_used, free_attempts_limit')
-      .eq('user_id', userId)
-      .eq('product_slug', productSlug)
-      .single();
-
-    if (error) {
-      console.error('Error fetching attempts:', error?.message || error);
-      return { used: 0, limit: 2, remaining: 2 };
-    }
-
-    return {
-      used: data?.free_attempts_used || 0,
-      limit: data?.free_attempts_limit || 2,
-      remaining: (data?.free_attempts_limit || 2) - (data?.free_attempts_used || 0),
-    };
-  } catch (e: any) {
-    console.error('Error fetching attempts:', e?.message || e);
-    return { used: 0, limit: 2, remaining: 2 };
   }
 }
 
@@ -180,30 +114,50 @@ export default async function ProductsDashboardPage() {
     redirect('/login');
   }
 
-  const { data: user } = await supabase
-    .from('users')
-    .select('*')
-    .eq('id', session.user.id)
-    .single();
-
-  const { data: betaParticipant } = await supabase
-    .from('beta_participants')
-    .select('id')
-    .eq('user_id', session.user.id)
-    .maybeSingle();
+  const [
+    { data: user },
+    { data: betaParticipant },
+    { data: allProducts },
+    { data: productAccess },
+    sessions,
+  ] = await Promise.all([
+    supabase.from('users').select('id, name, email').eq('id', session.user.id).single(),
+    supabase.from('beta_participants').select('id').eq('user_id', session.user.id).maybeSingle(),
+    supabase
+      .from('product_definitions')
+      .select('product_slug, name, description, price, total_steps, estimated_duration, display_order')
+      .order('created_at', { ascending: true }),
+    supabase
+      .from('product_access')
+      .select('product_slug, access_granted, started_at, completed_at, purchase_date, free_attempts_used, free_attempts_limit')
+      .eq('user_id', session.user.id),
+    getUserSessions(session.user.id),
+  ]);
 
   const isBetaParticipant = Boolean(betaParticipant?.id);
 
-  const products = await getAllProductsWithAccess(session.user.id);
-  const sessions = await getUserSessions(session.user.id);
+  const products = (allProducts || []).map((product) => {
+    const access = productAccess?.find(
+      (a) => a.product_slug === product.product_slug && a.access_granted
+    );
+    return {
+      product: product,
+      access: access || null,
+      hasAccess: !!access,
+    };
+  });
+
   const sessionBySlug = new Map(sessions.map((s) => [s.product_slug, s]));
-  const attemptsEntries = await Promise.all(
-    sessions.map(async (s) => [
-      s.product_slug,
-      await getSessionAttempts(session.user.id, s.product_slug),
-    ] as const)
+  const attemptsBySlug = new Map(
+    (productAccess || []).map((access) => [
+      access.product_slug,
+      {
+        used: access.free_attempts_used || 0,
+        limit: access.free_attempts_limit || 2,
+        remaining: (access.free_attempts_limit || 2) - (access.free_attempts_used || 0),
+      },
+    ])
   );
-  const attemptsBySlug = new Map(attemptsEntries);
 
   const nextActionItem = (() => {
     for (const s of sessions) {
