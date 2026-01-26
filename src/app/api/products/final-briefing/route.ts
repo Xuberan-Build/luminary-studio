@@ -33,34 +33,18 @@ export async function POST(req: Request) {
       )
       .join('\n\n');
 
-    // Extract Wizard's actionable nudges/insights (exclude follow-up clarifying questions)
+    // Extract Wizard's insights from each step (GPT will intelligently filter for actionable content)
     const wizardNudges = (conversations || [])
       .flatMap((c: any) =>
         ((c.messages as any[]) || [])
           .filter((m: any) => m.role === 'assistant' && m.type === 'step_insight')
           .map((m: any) => {
-            let content = m.content || '';
-
-            // Find where clarifying questions begin (after actionable content)
-            // Look for paragraph breaks followed by question/clarification patterns
-            const questionPatterns = /\n\n(?:Now I need|I need to know|I need the|Answer in|Quick clarifier|Quick question|Help me understand|What specifically|Tell me more|Before (?:we|I)|Let me know|To (?:extract|understand|clarify)|Missing pieces)/i;
-            const match = content.match(questionPatterns);
-
-            if (match && match.index !== undefined) {
-              // Split at the question boundary - only include actionable content before it
-              content = content.substring(0, match.index).trim();
-            }
-
-            // Ensure proper line breaks for bullet points (each bullet on its own line)
-            // Fix cases where bullets are crammed together
-            content = content.replace(/([.!])\s*([•\-\*])/g, '$1\n$2');
-            content = content.replace(/([.!])\s*(Pick |Make |Inform |Start |Try |Begin |Create |Build |Focus |Define |Identify )/g, '$1\n$2');
-
-            return content ? `Step ${c.step_number} Insight: ${content}` : null;
+            const content = m.content || '';
+            return content ? `Step ${c.step_number} Insight:\n${content}` : null;
           })
           .filter((insight: string | null) => insight !== null && insight.trim().length > 0)
       )
-      .join('\n\n');
+      .join('\n\n---\n\n');
 
     const astro = placements?.astrology || {};
     const hd = placements?.human_design || {};
@@ -157,11 +141,9 @@ ${placementSummary ? 'Use this chart data to inform your analysis.' : 'Limited c
 
 ${userResponses || 'No detailed responses provided.'}
 
-${wizardNudges ? `\n\n${wizardLabel}'S ACTIONABLE NUDGES (synthesize these into the final deliverable):\n\n${wizardNudges}` : ''}
+${wizardNudges ? `\n\n${wizardLabel}'S INSIGHTS FROM EACH STEP:\n\n${wizardNudges}` : ''}
 
-${!isPersonalAlignment && moneyNotes ? `\n\nMONEY/REVENUE GOALS MENTIONED:\n${moneyNotes}` : ''}
-
-Reference specific details I shared in my responses. IMPORTANT: Synthesize the ${wizardLabel}'s actionable nudges into concrete next steps.`;
+${!isPersonalAlignment && moneyNotes ? `\n\nMONEY/REVENUE GOALS MENTIONED:\n${moneyNotes}` : ''}`;
 
     // Use product-specific deliverable prompt or fallback to hardcoded Quantum Blueprint
     const instructionMessage = product?.final_deliverable_prompt || `Generate my Quantum Brand Blueprint with these 7 sections:
@@ -211,6 +193,30 @@ REQUIREMENTS:
 
 Generate the blueprint now.`;
 
+    const actionableNudgeInstruction = `CRITICAL: Extract and Surface Actionable Nudges
+
+Review all the insights from each step above. Identify the 5-7 MOST actionable nudges - insights that are:
+- Concrete and specific (not abstract or theoretical)
+- Immediately implementable (can be acted on this week)
+- Connected to the user's actual responses and situation
+- Transformational (not just surface-level tips)
+
+Create a dedicated section in the deliverable called "Your Actionable Nudges" or similar.
+Position this section prominently (near the top or bottom of the report).
+
+For each nudge:
+- Make it specific and concrete (avoid generic advice)
+- Tie it back to something the user shared in their responses
+- Frame it as an action, not just an observation
+- Keep it concise (1-2 sentences max per nudge)
+
+Example format:
+Your Actionable Nudges
+1. [Specific action based on their pattern] - because [insight from their responses]
+2. [Specific behavior change] - this addresses [specific thing they mentioned]
+
+DO NOT just copy the step insights verbatim. DISTILL them into the most impactful, implementable actions.`;
+
     // Generate final briefing using AIRequestService
     let briefing = '';
     try {
@@ -221,6 +227,7 @@ Generate the blueprint now.`;
           { role: 'user', content: chartDataMessage },
           { role: 'user', content: conversationMessage },
           { role: 'user', content: instructionMessage },
+          { role: 'user', content: actionableNudgeInstruction },
         ],
         maxTokens: 15000,
         context: 'final-briefing',

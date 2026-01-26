@@ -2,6 +2,7 @@
 
 import { ChatWindow } from './ChatWindow';
 import WheelOfLife from './WheelOfLife';
+import { SliderAllocation } from './SliderAllocation';
 import { useRef, useState, useEffect, useMemo } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -50,6 +51,7 @@ export function StepView({
   const [structuredOther, setStructuredOther] = useState('');
   const [textValue, setTextValue] = useState('');
   const [multiTextValues, setMultiTextValues] = useState<Record<string, string>>({});
+  const [dutyCycleValues, setDutyCycleValues] = useState<Record<string, number>>({});
   const textMinLength = step?.text_input?.min_length || 0;
   const textLength = textValue.trim().length;
 
@@ -72,6 +74,22 @@ Contribution: ${ratings.contribution}/10
 
     // Update response
     onResponseChange(ratingsText);
+  };
+
+  // Handle duty cycle slider changes
+  const handleDutyCycleChange = (values: Record<string, number>) => {
+    setDutyCycleValues(values);
+
+    // Format as percentages for GPT
+    const dutyCycleText = `Duty Cycle Allocation:
+Green (Energizing): ${values.green}%
+Yellow (Neutral): ${values.yellow}%
+Red (Draining): ${values.red}%
+Black (Recovery): ${values.black}%
+
+${textValue}`.trim();
+
+    onResponseChange(dutyCycleText);
   };
 
   // Rotate through processing messages every 2.5 seconds
@@ -100,6 +118,7 @@ Contribution: ${ratings.contribution}/10
     setStructuredOther('');
     setTextValue('');
     setMultiTextValues({});
+    setDutyCycleValues({});
     onResponseChange('');
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stepNumber]);
@@ -149,6 +168,14 @@ Contribution: ${ratings.contribution}/10
   };
 
   const canSubmit = useMemo(() => {
+    // Special handling for duty cycle map
+    if (step?.title === 'Duty Cycle Map') {
+      const total = Object.values(dutyCycleValues).reduce((sum, val) => sum + val, 0);
+      const hasAllocation = total === 100;
+      const hasText = textValue.trim().length >= (step?.text_input?.min_length || 0);
+      return hasAllocation && hasText;
+    }
+
     if (step?.input_type === 'mixed') {
       const structured = step?.structured_options;
       const selected = Array.isArray(structuredValue) ? structuredValue : structuredValue ? [structuredValue] : [];
@@ -192,7 +219,15 @@ Contribution: ${ratings.contribution}/10
     }
 
     return response.trim().length > 0;
-  }, [step, structuredValue, structuredOther, textValue, multiTextValues, response]);
+  }, [step, structuredValue, structuredOther, textValue, multiTextValues, response, dutyCycleValues]);
+
+  // Update response when text changes (for duty cycle reflection)
+  useEffect(() => {
+    if (step?.title === 'Duty Cycle Map' && Object.keys(dutyCycleValues).length > 0) {
+      handleDutyCycleChange(dutyCycleValues);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [textValue]);
 
   useEffect(() => {
     if (
@@ -203,6 +238,10 @@ Contribution: ${ratings.contribution}/10
       step?.text_inputs ||
       step?.text_input
     ) {
+      // Skip if this is duty cycle map (handled separately)
+      if (step?.title === 'Duty Cycle Map') {
+        return;
+      }
       const nextResponse = buildStructuredResponse();
       onResponseChange(nextResponse);
     }
@@ -390,20 +429,73 @@ Contribution: ${ratings.contribution}/10
           )}
 
           {step?.input_type === 'interactive' && step?.text_input && (
-            <div className="space-y-2">
-              <label className="text-sm text-gray-400">{step.text_input.label}</label>
-              <textarea
-                value={textValue}
-                onChange={(e) => setTextValue(e.target.value)}
-                onKeyDown={handleKeyPress}
-                placeholder={step.text_input.placeholder || 'Type your answer here...'}
-                className="w-full h-64 bg-gray-900/50 border border-gray-700/50 rounded-xl px-6 py-4 text-white text-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all resize-none"
-                disabled={isSubmitting}
-              />
-              {textMinLength > 0 && (
-                <p className="text-xs text-gray-500">
-                  Minimum {textMinLength} characters · {textLength}/{textMinLength}
-                </p>
+            <div className="space-y-6">
+              {step.title === 'Duty Cycle Map' ? (
+                <>
+                  <SliderAllocation
+                    categories={[
+                      {
+                        key: 'green',
+                        label: 'Green - Energizing',
+                        description: 'Activities that energize and restore you (exercise, creative flow, deep connection)',
+                        color: 'bg-green-500',
+                      },
+                      {
+                        key: 'yellow',
+                        label: 'Yellow - Neutral',
+                        description: 'Necessary activities that are neither draining nor energizing (emails, errands, admin)',
+                        color: 'bg-yellow-500',
+                      },
+                      {
+                        key: 'red',
+                        label: 'Red - Draining',
+                        description: 'Draining but necessary activities (difficult conversations, hard decisions)',
+                        color: 'bg-red-500',
+                      },
+                      {
+                        key: 'black',
+                        label: 'Black - Recovery',
+                        description: 'True rest and recovery time (sleep, stillness, unplugged time)',
+                        color: 'bg-gray-500',
+                      },
+                    ]}
+                    onChange={handleDutyCycleChange}
+                    disabled={isSubmitting}
+                  />
+                  <div className="space-y-2 mt-6">
+                    <label className="text-sm text-gray-400">{step.text_input.label}</label>
+                    <textarea
+                      value={textValue}
+                      onChange={(e) => setTextValue(e.target.value)}
+                      onKeyDown={handleKeyPress}
+                      placeholder={step.text_input.placeholder || 'Type your answer here...'}
+                      className="w-full h-32 bg-gray-900/50 border border-gray-700/50 rounded-xl px-6 py-4 text-white text-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all resize-none"
+                      disabled={isSubmitting}
+                    />
+                    {textMinLength > 0 && (
+                      <p className="text-xs text-gray-500">
+                        Minimum {textMinLength} characters · {textLength}/{textMinLength}
+                      </p>
+                    )}
+                  </div>
+                </>
+              ) : (
+                <div className="space-y-2">
+                  <label className="text-sm text-gray-400">{step.text_input.label}</label>
+                  <textarea
+                    value={textValue}
+                    onChange={(e) => setTextValue(e.target.value)}
+                    onKeyDown={handleKeyPress}
+                    placeholder={step.text_input.placeholder || 'Type your answer here...'}
+                    className="w-full h-64 bg-gray-900/50 border border-gray-700/50 rounded-xl px-6 py-4 text-white text-lg placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-teal-500 transition-all resize-none"
+                    disabled={isSubmitting}
+                  />
+                  {textMinLength > 0 && (
+                    <p className="text-xs text-gray-500">
+                      Minimum {textMinLength} characters · {textLength}/{textMinLength}
+                    </p>
+                  )}
+                </div>
               )}
             </div>
           )}

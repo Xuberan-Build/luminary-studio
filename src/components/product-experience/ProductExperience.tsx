@@ -172,8 +172,13 @@ export default function ProductExperience({
     );
   }, [placementsConfirmed, currentStep, step1Machine.state, placements, uploadedFiles.length, showFollowUp]);
 
-  // Use steps directly from product (now stored in Supabase)
-  const steps = product.steps || [];
+  // Use steps directly from product (now stored in Supabase), sorted by explicit order when present.
+  const steps = (product.steps || []).slice().sort((a: any, b: any) => {
+    const orderA = typeof a?.order === 'number' ? a.order : Number.POSITIVE_INFINITY;
+    const orderB = typeof b?.order === 'number' ? b.order : Number.POSITIVE_INFINITY;
+    if (orderA === orderB) return 0;
+    return orderA - orderB;
+  });
   const currentStepData = steps[currentStep - 1];
   const isLastStep = currentStep === steps.length;
   const completionPercentage = Math.round((currentStep / steps.length) * 100);
