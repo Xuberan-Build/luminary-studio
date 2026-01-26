@@ -259,18 +259,24 @@ export default function CourseWorkspace({
 
     lastSentCoordRef.current = currentCoords;
 
-    supabase.rpc('record_course_slide_event', {
-      p_user_id: userIdRef.current,
-      p_course_slug: courseSlug,
-      p_module_id: activeModule.id,
-      p_submodule_id: currentSubmoduleId,
-      p_coord: currentCoords,
-      p_coord_x: coordX,
-      p_coord_y: coordY,
-    }).catch((error) => {
-      console.error('Failed to record slide event', error);
-      lastSentCoordRef.current = null;
-    });
+    const recordEvent = async () => {
+      const { error } = await supabase.rpc('record_course_slide_event', {
+        p_user_id: userIdRef.current,
+        p_course_slug: courseSlug,
+        p_module_id: activeModule.id,
+        p_submodule_id: currentSubmoduleId,
+        p_coord: currentCoords,
+        p_coord_x: coordX,
+        p_coord_y: coordY,
+      });
+
+      if (error) {
+        console.error('Failed to record slide event', error);
+        lastSentCoordRef.current = null;
+      }
+    };
+
+    void recordEvent();
   }, [currentCoords, activeModule.id, currentSubmoduleId]);
 
   const nextSubmodule = currentSubmoduleId
