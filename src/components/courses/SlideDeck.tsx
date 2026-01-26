@@ -7,7 +7,7 @@ type SlideDeckProps = {
   moduleId: string;
   submoduleId?: string | null;
   startCoords?: string | null;
-  iframeRef?: RefObject<HTMLIFrameElement>;
+  iframeRef?: RefObject<HTMLIFrameElement | null>;
   title?: string;
 };
 
