@@ -351,6 +351,18 @@
   justify-content: flex-start;
 }
 
+.moduleLocked {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.55rem 1rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: rgba(206, 190, 255, 0.8);
+  font-weight: 600;
+  font-size: 0.85rem;
+  border: 1px solid rgba(206, 190, 255, 0.15);
+}
+
 .moduleButton {
   display: inline-flex;
   align-items: center;

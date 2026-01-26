@@ -5,6 +5,12 @@
   position: sticky;
   top: 0;
   z-index: 100;
+  transition: transform 0.25s ease, opacity 0.25s ease;
+}
+
+.navHidden {
+  transform: translateY(-100%);
+  opacity: 0;
 }
 
 .navContainer {

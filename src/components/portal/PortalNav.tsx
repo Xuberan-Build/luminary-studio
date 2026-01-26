@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import styles from './portal-nav.module.css';
@@ -11,6 +12,11 @@ interface PortalNavProps {
 export default function PortalNav({ userName }: PortalNavProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const [hidden, setHidden] = useState(false);
+  const lastScrollY = useRef(0);
+  const rafId = useRef<number | null>(null);
+  const ticking = useRef(false);
+  const hideOnScroll = pathname?.startsWith('/dashboard/courses');
 
   const navItems = [
     {
@@ -51,8 +57,48 @@ export default function PortalNav({ userName }: PortalNavProps) {
     }
   };
 
+  useEffect(() => {
+    const onScroll = () => {
+      if (ticking.current) return;
+      ticking.current = true;
+      rafId.current = window.requestAnimationFrame(() => {
+        const currentY = window.scrollY;
+        const scrollingDown = currentY > lastScrollY.current;
+
+        if (!hideOnScroll) {
+          if (hidden) {
+            setHidden(false);
+          }
+          lastScrollY.current = currentY;
+          ticking.current = false;
+          return;
+        }
+
+        if (currentY < 80) {
+          setHidden(false);
+        } else if (scrollingDown && !hidden) {
+          setHidden(true);
+        } else if (!scrollingDown && hidden) {
+          setHidden(false);
+        }
+
+        lastScrollY.current = currentY;
+        ticking.current = false;
+      });
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', onScroll);
+      if (rafId.current) {
+        window.cancelAnimationFrame(rafId.current);
+      }
+      ticking.current = false;
+    };
+  }, [hidden, hideOnScroll]);
+
   return (
-    <nav className={styles.nav}>
+    <nav className={`${styles.nav} ${hidden ? styles.navHidden : ''}`}>
       <div className={styles.navContainer}>
         {/* Logo/Brand */}
         <div className={styles.brand}>

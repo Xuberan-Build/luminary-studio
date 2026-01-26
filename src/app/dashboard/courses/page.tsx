@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import { createServerSupabaseClient } from '@/lib/supabase/server';
 import styles from '../dashboard.module.css';
 import vcapCourse from '@/content/courses/vcap/course.json';
 import module1 from '@/content/courses/vcap/modules/module1/module.json';
@@ -9,11 +11,47 @@ export const dynamic = 'force-dynamic';
 
 type VcapModule = typeof module1;
 
+async function enrollInCourse(formData: FormData) {
+  'use server';
+
+  const courseSlug = formData.get('courseSlug') as string;
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session) {
+    redirect('/login');
+  }
+
+  const { error } = await supabase
+    .from('course_enrollments')
+    .insert({ user_id: session.user.id, course_slug: courseSlug })
+    .select()
+    .single();
+
+  if (error && error.code !== '23505') {
+    console.error('Enrollment failed', error);
+    return;
+  }
+
+  redirect(`/dashboard/courses/${courseSlug}`);
+}
+
 export default async function CoursesDashboard({
   searchParams,
 }: {
   searchParams?: { module?: string };
 }) {
+  const supabase = await createServerSupabaseClient();
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  if (!session) {
+    redirect('/login');
+  }
+
   const vcapModuleById = new Map<string, VcapModule>([
     [module1.id, module1],
     [module2.id, module2],
@@ -23,6 +61,15 @@ export default async function CoursesDashboard({
   const vcapModules = vcapCourse.modules
     .map((moduleEntry) => vcapModuleById.get(moduleEntry.id))
     .filter((module): module is VcapModule => Boolean(module));
+
+  const { data: enrollment } = await supabase
+    .from('course_enrollments')
+    .select('id, status')
+    .eq('user_id', session.user.id)
+    .eq('course_slug', 'vcap')
+    .maybeSingle();
+
+  const isEnrolled = Boolean(enrollment?.id);
 
   return (
     <div className={styles.container}>
@@ -62,12 +109,21 @@ export default async function CoursesDashboard({
               </div>
               <div className={styles.courseActions}>
                 <span className={styles.courseBadge}>Active</span>
-                <Link
-                  href="/dashboard/courses/vcap"
-                  className={styles.courseCta}
-                >
-                  Open Course
-                </Link>
+                {isEnrolled ? (
+                  <Link
+                    href="/dashboard/courses/vcap"
+                    className={styles.courseCta}
+                  >
+                    Open Course
+                  </Link>
+                ) : (
+                  <form action={enrollInCourse}>
+                    <input type="hidden" name="courseSlug" value="vcap" />
+                    <button type="submit" className={styles.courseCta}>
+                      Enroll in Course
+                    </button>
+                  </form>
+                )}
               </div>
             </div>
           </div>
@@ -101,12 +157,18 @@ export default async function CoursesDashboard({
                     <span>{module.lessons.length} lessons</span>
                   </div>
                   <div className={styles.moduleActions}>
-                    <Link
-                      href={`/dashboard/courses/vcap?module=${module.id}`}
-                      className={styles.moduleButton}
-                    >
-                      Open Module
-                    </Link>
+                    {isEnrolled ? (
+                      <Link
+                        href={`/dashboard/courses/vcap?module=${module.id}`}
+                        className={styles.moduleButton}
+                      >
+                        Open Module
+                      </Link>
+                    ) : (
+                      <span className={styles.moduleLocked}>
+                        Enroll to access
+                      </span>
+                    )}
                   </div>
                 </div>
               );
@@ -114,11 +176,13 @@ export default async function CoursesDashboard({
           </div>
         </section>
 
-        <section className={styles.section}>
-          <div className={styles.emptyState}>
-            <p>Select a module to view its submodules and begin the slides.</p>
-          </div>
-        </section>
+        {!isEnrolled && (
+          <section className={styles.section}>
+            <div className={styles.emptyState}>
+              <p>Enroll to unlock modules, slides, and progress tracking.</p>
+            </div>
+          </section>
+        )}
       </main>
     </div>
   );
