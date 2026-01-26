@@ -52,7 +52,6 @@ export default function SlideDeck({ moduleId, submoduleId, startCoords, iframeRe
         allow="fullscreen"
         ref={iframeRef}
         loading="lazy"
-        fetchPriority="low"
       />
     </div>
   );
