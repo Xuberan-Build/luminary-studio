@@ -41,6 +41,9 @@ export async function generateMetadata({ params }: PageProps) {
   return {
     title: `${data.title} | Quantum Strategies`,
     description: data.description,
+    alternates: {
+      canonical: `https://quantumstrategies.online/whitepapers/${slug}/`,
+    },
   };
 }
 

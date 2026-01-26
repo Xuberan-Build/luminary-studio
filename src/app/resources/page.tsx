@@ -7,7 +7,10 @@ import styles from "./resources.module.css";
 
 export const metadata = {
   title: "Resources | Quantum Strategies",
-  description: "Strategic frameworks, courses, and insights to accelerate your business growth. Articles, white papers, and actionable courses."
+  description: "Strategic frameworks, courses, and insights to accelerate your business growth. Articles, white papers, and actionable courses.",
+  alternates: {
+    canonical: "https://quantumstrategies.online/resources/",
+  },
 };
 
 function getFeaturedArticles() {

@@ -40,6 +40,9 @@ export const metadata = {
   title: "White Papers | Quantum Strategies",
   description:
     "Deep research and strategic frameworks that connect consciousness, commerce, and measurable growth.",
+  alternates: {
+    canonical: "https://quantumstrategies.online/whitepapers/",
+  },
 };
 
 export default function WhitepapersPage() {

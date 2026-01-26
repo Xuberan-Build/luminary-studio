@@ -7,12 +7,8 @@ import FlashOverlay from "@/components/layout/FlashOverlay";
 import ServicesSection from "@/components/services/ServicesSection";
 import LazyMount from "@/components/performance/LazyMount";
 
-const ResultsSection = dynamic(() => import("@/components/results/ResultsSection"), {
-  ssr: false,
-});
-const ContactSection = dynamic(() => import("@/components/contact/ContactSection"), {
-  ssr: false,
-});
+const ResultsSection = dynamic(() => import("@/components/results/ResultsSection"));
+const ContactSection = dynamic(() => import("@/components/contact/ContactSection"));
 const Modal = dynamic(() => import("@/components/modals/Modal"), {
   ssr: false,
 });

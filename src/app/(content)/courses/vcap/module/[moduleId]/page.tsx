@@ -53,6 +53,9 @@ export async function generateMetadata({ params }: ModulePageProps): Promise<Met
   return {
     title: `${module.title} - VCAP - Quantum Strategies`,
     description: module.description,
+    alternates: {
+      canonical: `https://quantumstrategies.online/courses/vcap/module/${moduleId}/`,
+    },
   };
 }
 

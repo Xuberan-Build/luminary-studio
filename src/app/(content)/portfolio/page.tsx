@@ -5,6 +5,9 @@ export const metadata = {
   title: "Case Studies | Quantum Strategies",
   description:
     "A portfolio of strategic marketing transformations and measurable growth outcomes.",
+  alternates: {
+    canonical: "https://quantumstrategies.online/portfolio/",
+  },
 };
 
 export default function PortfolioPage() {

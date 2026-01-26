@@ -20,6 +20,20 @@ export const metadata: Metadata = {
   title: "Quantum Strategies - Strategic Consulting & Business Growth",
   description:
     "Transform your business with strategic consulting, proven frameworks, and actionable courses. Master customer acquisition, product development, and operations.",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  alternates: {
+    canonical: "https://quantumstrategies.online/",
+  },
   openGraph: {
     title: "Quantum Strategies - Strategic Consulting & Business Growth",
     description:

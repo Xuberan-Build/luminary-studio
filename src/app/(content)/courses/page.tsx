@@ -8,6 +8,9 @@ export const metadata: Metadata = {
   title: "Courses - Quantum Strategies",
   description:
     "Transform your consciousness and business strategy with our comprehensive courses. From identity transformation to strategic frameworks, master the bridge between consciousness and commerce.",
+  alternates: {
+    canonical: "https://quantumstrategies.online/courses/",
+  },
 };
 
 const courses = [

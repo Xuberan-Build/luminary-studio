@@ -7,6 +7,9 @@ export const metadata: Metadata = {
   title: "The Rite System - Three Stages of Strategic Transformation",
   description:
     "A three-part framework for strategic clarity: Perception (see patterns), Orientation (locate yourself), Declaration (choose direction). Learn how the Rite System works.",
+  alternates: {
+    canonical: "https://quantumstrategies.online/the-rite-system/",
+  },
 };
 
 export default function RiteSystemPage() {

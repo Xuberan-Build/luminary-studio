@@ -10,6 +10,9 @@ export const metadata: Metadata = {
   title: "Visionary Creator's Activation Protocol - Quantum Strategies",
   description:
     "Reprogram your consciousness for creative life mastery. Master the 10 presuppositions of NLP, discover your Life's Task, and build systems that turn consciousness into commerce.",
+  alternates: {
+    canonical: "https://quantumstrategies.online/courses/vcap/",
+  },
 };
 
 // Load course and module data

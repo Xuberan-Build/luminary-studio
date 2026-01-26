@@ -43,7 +43,10 @@ function getAllArticles(): Article[] {
 
 export const metadata = {
   title: "Articles | Quantum Strategies",
-  description: "Strategic insights on customer acquisition, product development, and operations. Proven frameworks and actionable tactics for business growth."
+  description: "Strategic insights on customer acquisition, product development, and operations. Proven frameworks and actionable tactics for business growth.",
+  alternates: {
+    canonical: "https://quantumstrategies.online/articles/",
+  },
 };
 
 export default function ArticlesPage() {
