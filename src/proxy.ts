@@ -1,8 +1,43 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
+import { APP_URL, MARKETING_URL } from '@/lib/config/urls';
+
+const appHost = new URL(APP_URL).hostname;
+const marketingHost = new URL(MARKETING_URL).hostname;
+
+const appAuthPaths = ['/login', '/signup', '/forgot-password', '/reset-password'];
+const appPrefixes = ['/dashboard'];
+const appExactPaths = ['/products/personal-alignment/interact'];
+
+function isAppPath(pathname: string): boolean {
+  if (appAuthPaths.includes(pathname)) return true;
+  if (appExactPaths.includes(pathname)) return true;
+  if (appPrefixes.some((prefix) => pathname.startsWith(prefix))) return true;
+  if (/^\/products\/[^/]+\/experience\/?$/.test(pathname)) return true;
+  return false;
+}
 
 export async function proxy(req: NextRequest) {
+  const hostname = req.nextUrl.hostname;
+  const { pathname, search } = req.nextUrl;
+
+  if (hostname === appHost) {
+    if (pathname === '/') {
+      return NextResponse.redirect(new URL(`${APP_URL}/login`), 308);
+    }
+
+    if (!isAppPath(pathname)) {
+      return NextResponse.redirect(new URL(`${MARKETING_URL}${pathname}${search}`), 308);
+    }
+  }
+
+  if (hostname === marketingHost) {
+    if (isAppPath(pathname)) {
+      return NextResponse.redirect(new URL(`${APP_URL}${pathname}${search}`), 308);
+    }
+  }
+
   const res = NextResponse.next();
 
   const supabase = createServerClient(
@@ -60,7 +95,7 @@ export async function proxy(req: NextRequest) {
   });
 
   // Redirect to login if not authenticated
-  if (isProtectedPath && !session) {
+  if (hostname === appHost && isProtectedPath && !session) {
     const redirectUrl = req.nextUrl.clone();
     redirectUrl.pathname = '/login';
     redirectUrl.searchParams.set('redirect', req.nextUrl.pathname);
@@ -68,7 +103,11 @@ export async function proxy(req: NextRequest) {
   }
 
   // Redirect to dashboard if already logged in and trying to access auth pages
-  if (session && (req.nextUrl.pathname === '/login' || req.nextUrl.pathname === '/signup')) {
+  if (
+    hostname === appHost &&
+    session &&
+    (req.nextUrl.pathname === '/login' || req.nextUrl.pathname === '/signup')
+  ) {
     const redirectUrl = req.nextUrl.clone();
     redirectUrl.pathname = '/dashboard';
     return NextResponse.redirect(redirectUrl);
