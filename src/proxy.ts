@@ -7,6 +7,10 @@ const appHost = new URL(APP_URL).hostname;
 const marketingHost = new URL(MARKETING_URL).hostname;
 const hasSubdomainSplit = appHost !== marketingHost;
 
+function isMarketingHost(hostname: string): boolean {
+  return hostname === marketingHost || hostname === `www.${marketingHost}`;
+}
+
 const appAuthPaths = ['/login', '/signup', '/forgot-password', '/reset-password'];
 const appPrefixes = ['/dashboard'];
 const appExactPaths = ['/products/personal-alignment/interact'];
@@ -36,7 +40,7 @@ export async function proxy(req: NextRequest) {
       }
     }
 
-    if (hostname === marketingHost) {
+    if (isMarketingHost(hostname)) {
       if (isAppPath(pathname)) {
         return NextResponse.redirect(new URL(`${APP_URL}${pathname}${search}`), 308);
       }
