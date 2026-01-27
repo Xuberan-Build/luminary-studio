@@ -7,6 +7,13 @@ import styles from "./CookieConsent.module.css";
 const COOKIE_NAME = "qs_cookie_consent";
 const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
+declare global {
+  interface Window {
+    dataLayer: Record<string, unknown>[];
+    gtag: (...args: unknown[]) => void;
+  }
+}
+
 function getCookieValue(name: string) {
   const cookies = document.cookie.split("; ").map(item => item.trim());
   const match = cookies.find(cookie => cookie.startsWith(`${name}=`));
@@ -19,6 +26,20 @@ function setConsentCookie(value: string) {
   )}; max-age=${COOKIE_MAX_AGE}; path=/; SameSite=Lax`;
 }
 
+function updateGoogleConsent(granted: boolean) {
+  window.dataLayer = window.dataLayer || [];
+  function gtag(...args: unknown[]) {
+    window.dataLayer.push(args);
+  }
+
+  gtag("consent", "update", {
+    analytics_storage: granted ? "granted" : "denied",
+    ad_storage: granted ? "granted" : "denied",
+    ad_user_data: granted ? "granted" : "denied",
+    ad_personalization: granted ? "granted" : "denied",
+  });
+}
+
 export default function CookieConsent() {
   const [visible, setVisible] = useState(false);
 
@@ -26,6 +47,9 @@ export default function CookieConsent() {
     const existing = getCookieValue(COOKIE_NAME);
     if (!existing) {
       setVisible(true);
+    } else {
+      // Apply previously saved consent to GTM
+      updateGoogleConsent(existing === "accepted");
     }
   }, []);
 
@@ -52,6 +76,7 @@ export default function CookieConsent() {
             type="button"
             onClick={() => {
               setConsentCookie("rejected");
+              updateGoogleConsent(false);
               setVisible(false);
             }}
           >
@@ -62,6 +87,7 @@ export default function CookieConsent() {
             type="button"
             onClick={() => {
               setConsentCookie("accepted");
+              updateGoogleConsent(true);
               setVisible(false);
             }}
           >
