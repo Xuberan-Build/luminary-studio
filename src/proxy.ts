@@ -1,7 +1,7 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { APP_URL, MARKETING_URL } from '@/lib/config/urls';
+import { APP_URL, MARKETING_URL } from './lib/config/urls';
 
 const appHost = new URL(APP_URL).hostname;
 const marketingHost = new URL(MARKETING_URL).hostname;
