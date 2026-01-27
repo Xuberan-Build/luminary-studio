@@ -5,6 +5,7 @@ import { APP_URL, MARKETING_URL } from './lib/config/urls';
 
 const appHost = new URL(APP_URL).hostname;
 const marketingHost = new URL(MARKETING_URL).hostname;
+const hasSubdomainSplit = appHost !== marketingHost;
 
 const appAuthPaths = ['/login', '/signup', '/forgot-password', '/reset-password'];
 const appPrefixes = ['/dashboard'];
@@ -22,19 +23,23 @@ export async function proxy(req: NextRequest) {
   const hostname = req.nextUrl.hostname;
   const { pathname, search } = req.nextUrl;
 
-  if (hostname === appHost) {
-    if (pathname === '/') {
-      return NextResponse.redirect(new URL(`${APP_URL}/login`), 308);
+  // Only perform host-based redirects when subdomain split is configured
+  // This prevents redirect loops when APP_URL and MARKETING_URL are the same
+  if (hasSubdomainSplit) {
+    if (hostname === appHost) {
+      if (pathname === '/') {
+        return NextResponse.redirect(new URL(`${APP_URL}/login`), 308);
+      }
+
+      if (!isAppPath(pathname)) {
+        return NextResponse.redirect(new URL(`${MARKETING_URL}${pathname}${search}`), 308);
+      }
     }
 
-    if (!isAppPath(pathname)) {
-      return NextResponse.redirect(new URL(`${MARKETING_URL}${pathname}${search}`), 308);
-    }
-  }
-
-  if (hostname === marketingHost) {
-    if (isAppPath(pathname)) {
-      return NextResponse.redirect(new URL(`${APP_URL}${pathname}${search}`), 308);
+    if (hostname === marketingHost) {
+      if (isAppPath(pathname)) {
+        return NextResponse.redirect(new URL(`${APP_URL}${pathname}${search}`), 308);
+      }
     }
   }
 
