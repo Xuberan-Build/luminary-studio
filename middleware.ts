@@ -141,11 +141,35 @@ export async function middleware(request: NextRequest) {
   const hostname = request.nextUrl.hostname;
   const { pathname, search } = request.nextUrl;
   const origin = request.headers.get('origin');
+  const isRsc = isRscRequest(request);
+
+  // -------------------------------------------------------------------------
+  // DEBUG LOGGING - Remove after fixing CORS issue
+  // -------------------------------------------------------------------------
+  console.log('[Middleware]', {
+    method: request.method,
+    hostname,
+    pathname,
+    origin,
+    isRsc,
+    hasSubdomainSplit,
+    appHost,
+    marketingHost,
+    isMarketingHost: isMarketingHost(hostname),
+    isAppPath: isAppPath(pathname),
+    headers: {
+      rsc: request.headers.get('rsc'),
+      'next-router-prefetch': request.headers.get('next-router-prefetch'),
+      'next-router-state-tree': request.headers.get('next-router-state-tree'),
+      '_rsc': request.nextUrl.searchParams.get('_rsc'),
+    }
+  });
 
   // -------------------------------------------------------------------------
   // 1. CORS PREFLIGHT
   // -------------------------------------------------------------------------
   if (request.method === 'OPTIONS') {
+    console.log('[Middleware] Handling OPTIONS preflight');
     const response = new NextResponse(null, { status: 204 });
     return addCorsHeaders(response, origin);
   }
@@ -154,14 +178,14 @@ export async function middleware(request: NextRequest) {
   // 2. SUBDOMAIN ROUTING
   // -------------------------------------------------------------------------
   if (hasSubdomainSplit) {
-    const isRsc = isRscRequest(request);
-
     // On app subdomain: redirect non-app paths to marketing
     if (hostname === appHost) {
       if (pathname === '/') {
+        console.log('[Middleware] App root -> redirect to login');
         return createCorsRedirect(`${APP_URL}/login`, origin);
       }
       if (!isAppPath(pathname)) {
+        console.log('[Middleware] App non-app-path -> redirect to marketing:', `${MARKETING_URL}${pathname}${search}`);
         return createCorsRedirect(`${MARKETING_URL}${pathname}${search}`, origin);
       }
     }
@@ -172,12 +196,17 @@ export async function middleware(request: NextRequest) {
         // For RSC/prefetch requests, use rewrite to avoid CORS issues
         // The content is the same (same Next.js app), just different subdomain
         if (isRsc) {
-          return NextResponse.rewrite(new URL(`${APP_URL}${pathname}${search}`));
+          console.log('[Middleware] Marketing RSC app-path -> REWRITE to:', `${APP_URL}${pathname}${search}`);
+          const rewriteResponse = NextResponse.rewrite(new URL(`${APP_URL}${pathname}${search}`));
+          return addCorsHeaders(rewriteResponse, origin);
         }
+        console.log('[Middleware] Marketing app-path -> REDIRECT to:', `${APP_URL}${pathname}${search}`);
         return createCorsRedirect(`${APP_URL}${pathname}${search}`, origin);
       }
     }
   }
+
+  console.log('[Middleware] No routing match, continuing normally');
 
   // -------------------------------------------------------------------------
   // 3. CREATE RESPONSE & SUPABASE CLIENT
