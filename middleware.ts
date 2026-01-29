@@ -101,6 +101,7 @@ function isRscRequest(request: NextRequest): boolean {
   return request.headers.has('rsc') ||
          request.headers.has('next-router-prefetch') ||
          request.headers.has('next-router-state-tree') ||
+         request.headers.has('next-router-segment-prefetch') ||
          request.nextUrl.searchParams.has('_rsc');
 }
 
@@ -161,6 +162,7 @@ export async function middleware(request: NextRequest) {
       rsc: request.headers.get('rsc'),
       'next-router-prefetch': request.headers.get('next-router-prefetch'),
       'next-router-state-tree': request.headers.get('next-router-state-tree'),
+      'next-router-segment-prefetch': request.headers.get('next-router-segment-prefetch'),
       '_rsc': request.nextUrl.searchParams.get('_rsc'),
     }
   });
