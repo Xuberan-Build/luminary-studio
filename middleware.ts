@@ -1,29 +1,72 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
+import { APP_URL, MARKETING_URL } from './src/lib/config/urls';
 
 /**
- * Middleware
- * - Handles CORS for cross-subdomain RSC requests (www <-> app)
- * - Protects /admin routes with email whitelist authentication
+ * Unified Middleware
  *
- * To disable admin in production, set ADMIN_DISABLED=true
+ * 1. CORS - Cross-subdomain RSC requests (www <-> app)
+ * 2. Subdomain Routing - Direct traffic between marketing/app sites
+ * 3. Referral Tracking - Capture ?ref= codes
+ * 4. Admin Protection - Email whitelist for /admin routes
+ * 5. Auth Guards - Protected routes & auth page redirects
  */
 
-// Allowed origins for CORS (cross-subdomain requests)
+// ============================================================================
+// CONFIGURATION
+// ============================================================================
+
+// CORS: Allowed origins for cross-subdomain requests
 const ALLOWED_ORIGINS = [
   'https://www.quantumstrategies.online',
   'https://quantumstrategies.online',
   'https://app.quantumstrategies.online',
 ];
 
-// Admin emails that can access /admin routes
+// Admin: Emails that can access /admin routes
 const ADMIN_EMAILS = [
   'santos.93.aus@gmail.com',
   'austin@quantumstrategies.online',
 ];
 
-// Set ADMIN_DISABLED=true in production .env to completely hide admin
+// Admin: Set ADMIN_DISABLED=true in production to hide admin entirely
 const ADMIN_DISABLED = process.env.ADMIN_DISABLED === 'true';
+
+// Subdomain routing configuration
+const appHost = new URL(APP_URL).hostname;
+const marketingHost = new URL(MARKETING_URL).hostname;
+const hasSubdomainSplit = appHost !== marketingHost;
+
+// Paths that belong to the app subdomain
+const appAuthPaths = ['/login', '/signup', '/forgot-password', '/reset-password'];
+const appPrefixes = ['/dashboard', '/admin'];
+const appExactPaths = ['/products/personal-alignment/interact'];
+
+// Protected paths requiring authentication
+const protectedPathPatterns = ['/dashboard', '/products/*/experience', '/products/*/interact'];
+
+// ============================================================================
+// HELPER FUNCTIONS
+// ============================================================================
+
+function isMarketingHost(hostname: string): boolean {
+  return hostname === marketingHost || hostname === `www.${marketingHost}`;
+}
+
+function isAppPath(pathname: string): boolean {
+  if (appAuthPaths.includes(pathname)) return true;
+  if (appExactPaths.includes(pathname)) return true;
+  if (appPrefixes.some((prefix) => pathname.startsWith(prefix))) return true;
+  if (/^\/products\/[^/]+\/experience\/?$/.test(pathname)) return true;
+  return false;
+}
+
+function isProtectedPath(pathname: string): boolean {
+  return protectedPathPatterns.some(pattern => {
+    const regex = new RegExp(`^${pattern.replace(/\*/g, '[^/]+')}`)
+    return regex.test(pathname);
+  });
+}
 
 function addCorsHeaders(response: NextResponse, origin: string | null): NextResponse {
   if (origin && ALLOWED_ORIGINS.includes(origin)) {
@@ -38,36 +81,8 @@ function addCorsHeaders(response: NextResponse, origin: string | null): NextResp
   return response;
 }
 
-export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
-  const origin = request.headers.get('origin');
-
-  // Handle CORS preflight requests
-  if (request.method === 'OPTIONS') {
-    const response = new NextResponse(null, { status: 204 });
-    return addCorsHeaders(response, origin);
-  }
-
-  // For non-admin routes, just add CORS headers and continue
-  if (!pathname.startsWith('/admin')) {
-    const response = NextResponse.next();
-    return addCorsHeaders(response, origin);
-  }
-
-  // If admin is disabled (production), return 404
-  if (ADMIN_DISABLED) {
-    return NextResponse.rewrite(new URL('/not-found', request.url));
-  }
-
-  // Create response to pass to supabase client
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  });
-
-  // Create Supabase client with cookie handling
-  const supabase = createServerClient(
+function createSupabaseClient(request: NextRequest, response: NextResponse) {
+  return createServerClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
@@ -84,34 +99,135 @@ export async function middleware(request: NextRequest) {
       },
     }
   );
+}
 
-  // Get session
+// ============================================================================
+// MIDDLEWARE
+// ============================================================================
+
+export async function middleware(request: NextRequest) {
+  const hostname = request.nextUrl.hostname;
+  const { pathname, search } = request.nextUrl;
+  const origin = request.headers.get('origin');
+
+  // -------------------------------------------------------------------------
+  // 1. CORS PREFLIGHT
+  // -------------------------------------------------------------------------
+  if (request.method === 'OPTIONS') {
+    const response = new NextResponse(null, { status: 204 });
+    return addCorsHeaders(response, origin);
+  }
+
+  // -------------------------------------------------------------------------
+  // 2. SUBDOMAIN ROUTING
+  // -------------------------------------------------------------------------
+  if (hasSubdomainSplit) {
+    // On app subdomain: redirect non-app paths to marketing
+    if (hostname === appHost) {
+      if (pathname === '/') {
+        return NextResponse.redirect(new URL(`${APP_URL}/login`), 308);
+      }
+      if (!isAppPath(pathname)) {
+        return NextResponse.redirect(new URL(`${MARKETING_URL}${pathname}${search}`), 308);
+      }
+    }
+
+    // On marketing subdomain: redirect app paths to app subdomain
+    if (isMarketingHost(hostname)) {
+      if (isAppPath(pathname)) {
+        return NextResponse.redirect(new URL(`${APP_URL}${pathname}${search}`), 308);
+      }
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // 3. CREATE RESPONSE & SUPABASE CLIENT
+  // -------------------------------------------------------------------------
+  let response = NextResponse.next({
+    request: { headers: request.headers },
+  });
+
+  const supabase = createSupabaseClient(request, response);
   const { data: { session } } = await supabase.auth.getSession();
 
-  // Not logged in - redirect to login
-  if (!session) {
-    const loginUrl = new URL('/login', request.url);
+  // -------------------------------------------------------------------------
+  // 4. REFERRAL CODE CAPTURE
+  // -------------------------------------------------------------------------
+  const referralCode = request.nextUrl.searchParams.get('ref');
+  if (referralCode) {
+    const { data: referralExists } = await supabase
+      .from('referral_hierarchy')
+      .select('id')
+      .eq('referral_code', referralCode)
+      .single();
+
+    if (referralExists) {
+      response.cookies.set('referral_code', referralCode, {
+        maxAge: 30 * 24 * 60 * 60, // 30 days
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax',
+        path: '/',
+      });
+    }
+  }
+
+  // -------------------------------------------------------------------------
+  // 5. ADMIN ROUTE PROTECTION
+  // -------------------------------------------------------------------------
+  if (pathname.startsWith('/admin')) {
+    if (ADMIN_DISABLED) {
+      return NextResponse.rewrite(new URL('/not-found', request.url));
+    }
+
+    if (!session) {
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    const email = session.user.email?.toLowerCase() || '';
+    if (!ADMIN_EMAILS.includes(email)) {
+      const dashboardUrl = new URL('/dashboard', request.url);
+      dashboardUrl.searchParams.set('error', 'unauthorized');
+      return NextResponse.redirect(dashboardUrl);
+    }
+
+    return addCorsHeaders(response, origin);
+  }
+
+  // -------------------------------------------------------------------------
+  // 6. PROTECTED ROUTE AUTHENTICATION
+  // -------------------------------------------------------------------------
+  if (isProtectedPath(pathname) && !session) {
+    const loginUrl = request.nextUrl.clone();
+    loginUrl.pathname = '/login';
     loginUrl.searchParams.set('redirect', pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  // Check if admin
-  const email = session.user.email?.toLowerCase() || '';
-  const isAdmin = ADMIN_EMAILS.includes(email);
-
-  // Not admin - redirect to dashboard
-  if (!isAdmin) {
-    const dashboardUrl = new URL('/dashboard', request.url);
-    dashboardUrl.searchParams.set('error', 'unauthorized');
+  // -------------------------------------------------------------------------
+  // 7. AUTH PAGE REDIRECTS (already logged in)
+  // -------------------------------------------------------------------------
+  if (session && (pathname === '/login' || pathname === '/signup')) {
+    const dashboardUrl = request.nextUrl.clone();
+    dashboardUrl.pathname = '/dashboard';
     return NextResponse.redirect(dashboardUrl);
   }
 
+  // -------------------------------------------------------------------------
+  // 8. RETURN WITH CORS HEADERS
+  // -------------------------------------------------------------------------
   return addCorsHeaders(response, origin);
 }
 
+// ============================================================================
+// MATCHER CONFIG
+// ============================================================================
+
 export const config = {
   matcher: [
-    // Match all paths except static files and API routes
+    // Match all paths except static files
     '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
   ],
 };
