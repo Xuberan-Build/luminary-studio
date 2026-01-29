@@ -91,8 +91,24 @@ function addCorsHeaders(response: NextResponse, origin: string | null): NextResp
     response.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
     response.headers.set(
       'Access-Control-Allow-Headers',
-      'Content-Type, Authorization, X-Requested-With, rsc, RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Url, next-router-state-tree, next-router-prefetch, next-url'
+      'Content-Type, Authorization, X-Requested-With, rsc, RSC, Next-Router-State-Tree, Next-Router-Prefetch, Next-Router-Segment-Prefetch, Next-Url, next-router-state-tree, next-router-prefetch, next-router-segment-prefetch, next-url, x-nextjs-data'
     );
+  }
+  return response;
+}
+
+function isRscRequest(request: NextRequest): boolean {
+  return request.headers.has('rsc') ||
+         request.headers.has('next-router-prefetch') ||
+         request.headers.has('next-router-state-tree') ||
+         request.nextUrl.searchParams.has('_rsc');
+}
+
+function createCorsRedirect(url: string, origin: string | null): NextResponse {
+  const response = NextResponse.redirect(new URL(url), 308);
+  if (origin && ALLOWED_ORIGINS.includes(origin)) {
+    response.headers.set('Access-Control-Allow-Origin', origin);
+    response.headers.set('Access-Control-Allow-Credentials', 'true');
   }
   return response;
 }
@@ -138,20 +154,27 @@ export async function middleware(request: NextRequest) {
   // 2. SUBDOMAIN ROUTING
   // -------------------------------------------------------------------------
   if (hasSubdomainSplit) {
+    const isRsc = isRscRequest(request);
+
     // On app subdomain: redirect non-app paths to marketing
     if (hostname === appHost) {
       if (pathname === '/') {
-        return NextResponse.redirect(new URL(`${APP_URL}/login`), 308);
+        return createCorsRedirect(`${APP_URL}/login`, origin);
       }
       if (!isAppPath(pathname)) {
-        return NextResponse.redirect(new URL(`${MARKETING_URL}${pathname}${search}`), 308);
+        return createCorsRedirect(`${MARKETING_URL}${pathname}${search}`, origin);
       }
     }
 
     // On marketing subdomain: redirect app paths to app subdomain
     if (isMarketingHost(hostname)) {
       if (isAppPath(pathname)) {
-        return NextResponse.redirect(new URL(`${APP_URL}${pathname}${search}`), 308);
+        // For RSC/prefetch requests, use rewrite to avoid CORS issues
+        // The content is the same (same Next.js app), just different subdomain
+        if (isRsc) {
+          return NextResponse.rewrite(new URL(`${APP_URL}${pathname}${search}`));
+        }
+        return createCorsRedirect(`${APP_URL}${pathname}${search}`, origin);
       }
     }
   }
