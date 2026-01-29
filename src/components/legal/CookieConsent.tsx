@@ -9,7 +9,7 @@ const COOKIE_MAX_AGE = 60 * 60 * 24 * 365;
 
 declare global {
   interface Window {
-    dataLayer: Record<string, unknown>[];
+    dataLayer: unknown[];
     gtag: (...args: unknown[]) => void;
   }
 }
@@ -28,8 +28,9 @@ function setConsentCookie(value: string) {
 
 function updateGoogleConsent(granted: boolean) {
   window.dataLayer = window.dataLayer || [];
-  function gtag(...args: unknown[]) {
-    window.dataLayer.push(args);
+  function gtag(..._args: unknown[]) {
+    // eslint-disable-next-line prefer-rest-params
+    (window.dataLayer as unknown[]).push(arguments);
   }
 
   gtag("consent", "update", {
