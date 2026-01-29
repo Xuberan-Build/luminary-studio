@@ -177,8 +177,11 @@ export async function middleware(request: NextRequest) {
   }
 
   // -------------------------------------------------------------------------
-  // 2. SUBDOMAIN ROUTING
+  // 2. SUBDOMAIN ROUTING (TEMPORARILY DISABLED - CORS fix)
   // -------------------------------------------------------------------------
+  // TODO: Re-enable after CORS is fixed. For now, serve all content from any domain.
+  // The app works the same on both subdomains since it's one Next.js deployment.
+  /*
   if (hasSubdomainSplit) {
     // On app subdomain: redirect non-app paths to marketing
     if (hostname === appHost) {
@@ -187,7 +190,6 @@ export async function middleware(request: NextRequest) {
         return createCorsRedirect(`${APP_URL}/login`, origin);
       }
       if (!isAppPath(pathname)) {
-        // For RSC requests, don't redirect - serve from current domain
         if (isRsc) {
           console.log('[Middleware] App RSC non-app-path -> PASS THROUGH (no redirect)');
           const response = NextResponse.next();
@@ -201,9 +203,6 @@ export async function middleware(request: NextRequest) {
     // On marketing subdomain: redirect app paths to app subdomain
     if (isMarketingHost(hostname)) {
       if (isAppPath(pathname)) {
-        // For RSC/prefetch requests, DON'T redirect - just serve from current domain
-        // This avoids CORS issues since the content is identical (same Next.js app)
-        // The browser URL doesn't change for RSC fetches anyway
         if (isRsc) {
           console.log('[Middleware] Marketing RSC app-path -> PASS THROUGH (no redirect)');
           const response = NextResponse.next();
@@ -214,6 +213,7 @@ export async function middleware(request: NextRequest) {
       }
     }
   }
+  */
 
   console.log('[Middleware] No routing match, continuing normally');
 
