@@ -1,6 +1,14 @@
 import { createServerClient } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
-import { APP_URL, MARKETING_URL } from './src/lib/config/urls';
+
+// Inline URL config to avoid dependency tracing overhead
+function normalizeUrl(url: string | undefined, fallback: string): string {
+  if (!url) return fallback;
+  const trimmed = url.trim().replace(/\/+$/, '');
+  return trimmed.startsWith('http') ? trimmed : `https://${trimmed}`;
+}
+const APP_URL = normalizeUrl(process.env.NEXT_PUBLIC_APP_URL || process.env.NEXT_PUBLIC_SITE_URL, 'http://localhost:3000');
+const MARKETING_URL = normalizeUrl(process.env.NEXT_PUBLIC_MARKETING_URL || process.env.NEXT_PUBLIC_SITE_URL, 'http://localhost:3000');
 
 /**
  * Unified Middleware
@@ -33,8 +41,16 @@ const ADMIN_EMAILS = [
 const ADMIN_DISABLED = process.env.ADMIN_DISABLED === 'true';
 
 // Subdomain routing configuration
-const appHost = new URL(APP_URL).hostname;
-const marketingHost = new URL(MARKETING_URL).hostname;
+function getHostname(url: string): string {
+  const withScheme = url.startsWith('http') ? url : `https://${url}`;
+  try {
+    return new URL(withScheme).hostname;
+  } catch {
+    return 'localhost';
+  }
+}
+const appHost = getHostname(APP_URL);
+const marketingHost = getHostname(MARKETING_URL);
 const hasSubdomainSplit = appHost !== marketingHost;
 
 // Paths that belong to the app subdomain
